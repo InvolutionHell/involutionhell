@@ -75,6 +75,10 @@ function isKebabCase(name) {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(base);
 }
 
+function isAllowedAbsolute(url) {
+  return ALLOWED_ABSOLUTE_PREFIXES.some((p) => url.startsWith(p));
+}
+
 /**
  * 校验单个 MD(X) 文件中的图片使用：
  * - 非站点级的绝对路径 `/images/*` 会被提示应改为相对路径
@@ -97,8 +101,8 @@ function buildRefs() {
     for (const m of s.matchAll(reHtml)) urls.add(m[1]);
     for (const url of urls) {
       const u = url.replace(/\\/g, "/");
-      if (!u.startsWith("/images/")) continue;
-      if (ALLOWED_ABSOLUTE_PREFIXES.some((p) => u.startsWith(p))) continue;
+      if (!u.startsWith("/")) continue;
+      if (isAllowedAbsolute(u)) continue;
       if (!refs.has(u)) refs.set(u, new Set());
       refs.get(u).add(f);
     }
@@ -122,18 +126,28 @@ function checkFile(file, refs) {
     const urlNorm = url.replace(/\\/g, "/");
     if (/^https?:\/\//i.test(urlNorm)) return; // 外链忽略
     // 绝对路径
-    if (urlNorm.startsWith("/images/")) {
-      const okAbs =
-        ALLOWED_ABSOLUTE_PREFIXES.some((p) => urlNorm.startsWith(p)) ||
-        (refs.get(urlNorm)?.size || 0) > 1;
-      if (!okAbs) {
-        problems.push(
-          `${loc}: prefer co-located images; use ${expectedRelPrefix}<file> (avoid ${urlNorm})`,
+    if (urlNorm.startsWith("/")) {
+      if (!isAllowedAbsolute(urlNorm)) {
+        const sharedCount = refs.get(urlNorm)?.size || 0;
+        if (sharedCount <= 1) {
+          problems.push(
+            `${loc}: prefer co-located images; use ${expectedRelPrefix}<file> (avoid ${urlNorm})`,
+          );
+        }
+        const publicPath = path.join(
+          ROOT,
+          "public",
+          urlNorm.replace(/^\/+/, ""),
         );
+        const ext = path.extname(publicPath).toLowerCase();
+        if (IMAGE_FILE_EXTS.has(ext)) {
+          if (!fs.existsSync(publicPath))
+            problems.push(`${loc}: image file not found -> ${urlNorm}`);
+          const fname = urlNorm.split("/").pop() || "";
+          if (!isKebabCase(fname))
+            problems.push(`${loc}: filename not kebab-case -> ${fname}`);
+        }
       }
-      const fname = urlNorm.split("/").pop() || "";
-      if (!isKebabCase(fname))
-        problems.push(`${loc}: filename not kebab-case -> ${fname}`);
       return;
     }
     // 相对路径

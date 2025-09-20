@@ -78,7 +78,7 @@ function buildRefs() {
     for (const m of content.matchAll(mdxImg)) urls.add(m[1]);
     for (const m of content.matchAll(htmlImg)) urls.add(m[1]);
     for (const url of urls) {
-      if (!url.startsWith("/images/")) continue;
+      if (!url.startsWith("/")) continue;
       if (EXCLUDE_PREFIXES.some((p) => url.startsWith(p))) continue;
       if (!refs.has(url)) refs.set(url, new Set());
       refs.get(url).add(f);
@@ -111,7 +111,7 @@ function moveForFile(file, refs) {
 
   for (const url of urls) {
     // 仅处理以 /images/ 开头的绝对路径
-    if (!url.startsWith("/images/")) continue;
+    if (!url.startsWith("/")) continue;
     // 站点级与组件级图片跳过（保持绝对路径）
     if (EXCLUDE_PREFIXES.some((p) => url.startsWith(p))) continue;
 
@@ -122,7 +122,7 @@ function moveForFile(file, refs) {
     }
 
     // 计算 public 下的源文件路径
-    const relFromPublic = url.replace(/^\//, "");
+    const relFromPublic = url.replace(/^\/+/, "");
     const src = path.join(PUBLIC_DIR, relFromPublic);
     if (!fs.existsSync(src)) {
       console.warn(
