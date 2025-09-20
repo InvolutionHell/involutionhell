@@ -71,6 +71,6 @@ _斜体字体_ `*斜体字体*`
 
 **示例**
 
-![测试图片](/CommonUsedMarkdown.assets/testpic1.jpg "autumn")
+![测试图片](./CommonUsedMarkdown.assets/testpic1.jpg "autumn")
 
 `![测试图片](./CommonUsedMarkdown.assets/testpic1.jpg "autumn")`
