@@ -12,6 +12,10 @@ jobs:
     env:
       NEXT_TELEMETRY_DISABLED: "1"
       CI: "true"
+      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+      AUTH_GITHUB_ID: ${{ secrets.AUTH_GITHUB_ID }}
+      AUTH_GITHUB_SECRET: ${{ secrets.AUTH_GITHUB_SECRET }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - uses: actions/checkout@v4
 
