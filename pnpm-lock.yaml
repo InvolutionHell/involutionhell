@@ -91,6 +91,9 @@ importers:
       next:
         specifier: ^15.5.3
         version: 15.5.3(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      next-auth:
+        specifier: 5.0.0-beta.29
+        version: 5.0.0-beta.29(next@15.5.3(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
       next-intl:
         specifier: ^4.3.8
         version: 4.3.8(next@15.5.3(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)(typescript@5.9.2)
@@ -344,6 +347,23 @@ packages:
       react: "*"
     peerDependenciesMeta:
       react:
+        optional: true
+
+  "@auth/core@0.40.0":
+    resolution:
+      {
+        integrity: sha512-n53uJE0RH5SqZ7N1xZoMKekbHfQgjd0sAEyUbE+IYJnmuQkbvuZnXItCU7d+i7Fj8VGOgqvNO7Mw4YfBTlZeQw==,
+      }
+    peerDependencies:
+      "@simplewebauthn/browser": ^9.0.1
+      "@simplewebauthn/server": ^9.0.2
+      nodemailer: ^6.8.0
+    peerDependenciesMeta:
+      "@simplewebauthn/browser":
+        optional: true
+      "@simplewebauthn/server":
+        optional: true
+      nodemailer:
         optional: true
 
   "@babel/runtime@7.28.4":
@@ -1164,6 +1184,12 @@ packages:
         integrity: sha512-xGMlS4JyFulH9gOOnT7xygyX/6mtITOfjPRH2pvDyJBcBIZMUdmJ4VQpb59dxloMRv8Tfj8bcKkzhspkrcJ9Sw==,
       }
     engines: { node: ">= 20.0.0" }
+
+  "@panva/hkdf@1.2.1":
+    resolution:
+      {
+        integrity: sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==,
+      }
 
   "@radix-ui/number@1.1.1":
     resolution:
@@ -4133,6 +4159,12 @@ packages:
       }
     hasBin: true
 
+  jose@6.1.0:
+    resolution:
+      {
+        integrity: sha512-TTQJyoEoKcC1lscpVDCSsVgYzUDg/0Bt3WE//WiTPK6uOCQC2KZS4MpugbMWt/zyjkopgZoXhZuCi00gLudfUA==,
+      }
+
   js-tokens@4.0.0:
     resolution:
       {
@@ -4893,6 +4925,25 @@ packages:
       }
     engines: { node: ">= 0.6" }
 
+  next-auth@5.0.0-beta.29:
+    resolution:
+      {
+        integrity: sha512-Ukpnuk3NMc/LiOl32njZPySk7pABEzbjhMUFd5/n10I0ZNC7NCuVv8IY2JgbDek2t/PUOifQEoUiOOTLy4os5A==,
+      }
+    peerDependencies:
+      "@simplewebauthn/browser": ^9.0.1
+      "@simplewebauthn/server": ^9.0.2
+      next: ^14.0.0-0 || ^15.0.0-0
+      nodemailer: ^6.6.5
+      react: ^18.2.0 || ^19.0.0-0
+    peerDependenciesMeta:
+      "@simplewebauthn/browser":
+        optional: true
+      "@simplewebauthn/server":
+        optional: true
+      nodemailer:
+        optional: true
+
   next-intl@4.3.8:
     resolution:
       {
@@ -4958,6 +5009,12 @@ packages:
         integrity: sha512-tt6PvKu4WyzPwWUzy/hvPFqn+uwXO0K1ZHka8az3NnrhWJDmSqI8ncWq0fkL0k/lmmi5tAC11FXwXuh0rFbt1A==,
       }
     engines: { node: ^12.22.0 || ^14.17.0 || >=16.0.0 }
+
+  oauth4webapi@3.8.1:
+    resolution:
+      {
+        integrity: sha512-olkZDELNycOWQf9LrsELFq8n05LwJgV8UkrS0cburk6FOwf8GvLam+YB+Uj5Qvryee+vwWOfQVeI5Vm0MVg7SA==,
+      }
 
   object-assign@4.1.1:
     resolution:
@@ -5162,6 +5219,20 @@ packages:
         integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==,
       }
     engines: { node: ^10 || ^12 || >=14 }
+
+  preact-render-to-string@6.5.11:
+    resolution:
+      {
+        integrity: sha512-ubnauqoGczeGISiOh6RjX0/cdaF8v/oDXIjO85XALCQjwQP+SB4RDXXtvZ6yTYSjG+PC1QRP2AhPgCEsM2EvUw==,
+      }
+    peerDependencies:
+      preact: ">=10"
+
+  preact@10.24.3:
+    resolution:
+      {
+        integrity: sha512-Z2dPnBnMUfyQfSQ+GBdsGa16hz35YmLmtTLhM169uW944hYL6xzTYkJjC07j+Wosz733pMWx0fgON3JNw1jJQA==,
+      }
 
   prelude-ls@1.2.1:
     resolution:
@@ -6759,6 +6830,14 @@ snapshots:
     optionalDependencies:
       react: 19.1.1
 
+  "@auth/core@0.40.0":
+    dependencies:
+      "@panva/hkdf": 1.2.1
+      jose: 6.1.0
+      oauth4webapi: 3.8.1
+      preact: 10.24.3
+      preact-render-to-string: 6.5.11(preact@10.24.3)
+
   "@babel/runtime@7.28.4": {}
 
   "@emnapi/core@1.5.0":
@@ -7170,6 +7249,8 @@ snapshots:
   "@orama/tokenizers@3.1.13":
     dependencies:
       "@orama/orama": 3.1.13
+
+  "@panva/hkdf@1.2.1": {}
 
   "@radix-ui/number@1.1.1": {}
 
@@ -9368,6 +9449,8 @@ snapshots:
 
   jiti@2.5.1: {}
 
+  jose@6.1.0: {}
+
   js-tokens@4.0.0: {}
 
   js-yaml@4.1.0:
@@ -10043,6 +10126,12 @@ snapshots:
 
   negotiator@1.0.0: {}
 
+  next-auth@5.0.0-beta.29(next@15.5.3(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1):
+    dependencies:
+      "@auth/core": 0.40.0
+      next: 15.5.3(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      react: 19.1.1
+
   next-intl@4.3.8(next@15.5.3(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)(typescript@5.9.2):
     dependencies:
       "@formatjs/intl-localematcher": 0.5.10
@@ -10087,6 +10176,8 @@ snapshots:
   normalize-range@0.1.2: {}
 
   npm-to-yarn@3.0.1: {}
+
+  oauth4webapi@3.8.1: {}
 
   object-assign@4.1.1: {}
 
@@ -10217,6 +10308,12 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  preact-render-to-string@6.5.11(preact@10.24.3):
+    dependencies:
+      preact: 10.24.3
+
+  preact@10.24.3: {}
 
   prelude-ls@1.2.1: {}
 
