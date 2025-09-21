@@ -3,8 +3,12 @@ import { Button } from "../../components/ui/button";
 import { MessageCircle } from "lucide-react";
 import { Github as GithubIcon } from "./icons/Github";
 import { SignInButton } from "./SignInButton";
+import { auth } from "@/auth";
+import { UserMenu } from "./UserMenu";
 
-export function Header() {
+export async function Header() {
+  const session = await auth();
+  const user = session?.user;
   return (
     <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -63,7 +67,7 @@ export function Header() {
             </a>
           </Button>
           <ThemeToggle />
-          <SignInButton />
+          {user ? <UserMenu user={user} /> : <SignInButton />}
         </div>
       </div>
     </header>
