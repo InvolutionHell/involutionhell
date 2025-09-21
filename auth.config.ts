@@ -17,6 +17,18 @@ export const authConfig = {
 
       return true;
     },
+    async signIn({ user, account, profile }) {
+      console.log("[auth] signIn payload", { user, account, profile });
+      return true;
+    },
+    async session({ session, token }) {
+      console.log("[auth] session payload", { session, token });
+      return session;
+    },
+    async jwt({ token, user, account, profile }) {
+      console.log("[auth] jwt payload", { token, user, account, profile });
+      return token;
+    },
   },
   providers: [
     GitHub({
