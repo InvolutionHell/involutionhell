@@ -2,6 +2,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "../../components/ui/button";
 import { MessageCircle } from "lucide-react";
 import { Github as GithubIcon } from "./icons/Github";
+import { SignInButton } from "./SignInButton";
 
 export function Header() {
   return (
@@ -62,6 +63,7 @@ export function Header() {
             </a>
           </Button>
           <ThemeToggle />
+          <SignInButton />
         </div>
       </div>
     </header>
