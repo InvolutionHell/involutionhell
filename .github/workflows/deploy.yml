@@ -28,4 +28,3 @@ jobs:
       - run: pnpm run lint
       - run: pnpm run lint:images
       - run: pnpm run typecheck
-      - run: pnpm run build

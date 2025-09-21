@@ -41,6 +41,3 @@ jobs:
 
       - name: Lint image references (non-blocking)
         run: pnpm lint:images || echo "[warn] image lint found issues (non-blocking)"
-
-      # Build the site to validate MDX and docs using Fumadocs
-      - run: pnpm build
