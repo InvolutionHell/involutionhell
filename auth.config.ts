@@ -53,7 +53,7 @@ export const authConfig = {
     GitHub({
       profile(profile) {
         return {
-          id: `github-${profile.id}`,
+          id: profile.id.toString(),
           name: profile.name ?? profile.login,
           email: profile.email,
           image: profile.avatar_url,

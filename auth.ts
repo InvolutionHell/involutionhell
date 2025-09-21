@@ -27,7 +27,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
       GitHub({
         profile(profile) {
           return {
-            id: `github-${profile.id}`, // 让 User.id 直接对应 GitHub ID
+            id: profile.id.toString(), // 与数据库的整数主键兼容
             name: profile.name ?? profile.login,
             email: profile.email,
             image: profile.avatar_url,
