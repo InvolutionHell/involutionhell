@@ -1,0 +1,92 @@
+---
+title: 'swanlab快速上手指南'
+description: ""
+date: "2025-09-23"
+tags:
+  - tag-one
+---
+
+最近在做实验，发现实验次数多了之后特别容易乱，而且实验结果也很难记录，甚至我都准备用最麻烦的excel来记录。
+突然想起了9444的大佬组员纳神之前有讲过，可以用swanlab进行实验结果的记录和可视化，于是马上整理了一份swanlab操作指南，也算是我后面实验pipeline的一环了。
+其他科研大佬有更好的实验记录方法也欢迎分享。
+那么话不多说，今天先看swanlab。下面是使用 SwanLab 做实验追踪的快速上手流程。
+
+## 1. 注册账号 & 获取 API Key
+
+首先打开 SwanLab 官网：[https://swanlab.cn/](https://swanlab.cn/)  
+如果还没有账号，需要先在官网注册。  
+
+完成注册并登录后，新建项目，然后就能看到快速开始，照着指南一步一步走就可以，你的api key都会在里面！为了方便我把指南的内容都搬到这了
+
+## 2. 安装 SwanLab 库
+
+在有 Python3 的环境中，通过 pip 安装 SwanLab 客户端库：
+
+```bash
+pip install swanlab
+````
+
+## 3. 登录 SwanLab
+
+在命令行执行以下命令进行登录：
+
+```bash
+swanlab login
+```
+
+系统会提示：
+
+```
+swanlab: Logging into swanlab cloud.
+swanlab: You can find your API key at: https://swanlab.cn/settings
+swanlab: Paste an API key from your profile and hit enter, or press 'CTRL-C' to quit:
+```
+
+将你从官网用户设置页面复制的 API Key 粘贴进去即可完成登录。([docs.swanlab.cn](https://docs.swanlab.cn/en/guide_cloud/general/quick-start.html))
+
+
+## 4. 提交实验
+
+```python
+import swanlab
+import random
+
+# 初始化一个新的swanlab run类来跟踪这个脚本
+swanlab.init(
+  # 设置将记录此次运行的项目信息
+  project="mteb-ailastatue",
+  workspace="mira",
+  # 跟踪超参数和运行元数据
+  config={
+    "learning_rate": 0.02,
+    "architecture": "CNN",
+    "dataset": "CIFAR-100",
+    "epochs": 10
+  }
+)
+
+# 模拟训练
+epochs = 10
+offset = random.random() / 5
+for epoch in range(2, epochs):
+  acc = 1 - 2 ** -epoch - random.random() / epoch - offset
+  loss = 2 ** -epoch + random.random() / epoch + offset
+
+  # 向swanlab上传训练指标
+  swanlab.log({"acc": acc, "loss": loss})
+
+# [可选] 完成训练，这在notebook环境中是必要的
+swanlab.finish()
+
+
+```
+
+---
+
+## 5. 查看结果！
+   运行了代码之后，可以导航到新创建的项目，比较不同的实验和它们的指标。
+
+
+## 参考文献
+官方文档：[Quick Start 指南](https://docs.swanlab.cn/en/guide_cloud/general/quick-start.html)
+
