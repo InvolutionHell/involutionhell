@@ -11,9 +11,10 @@ interface UserMenuProps {
     email?: string | null;
     image?: string | null;
   };
+  provider?: string;
 }
 
-export function UserMenu({ user }: UserMenuProps) {
+export function UserMenu({ user, provider }: UserMenuProps) {
   const initials = user.name?.[0] ?? user.email?.[0] ?? "?";
 
   return (
@@ -42,6 +43,17 @@ export function UserMenu({ user }: UserMenuProps) {
             </p>
           ) : null}
         </div>
+
+        {provider === "github" ? (
+          <a
+            href="https://github.com/logout"
+            target="_blank"
+            rel="noreferrer"
+            className="block px-4 py-2 text-sm text-foreground transition hover:bg-muted"
+          >
+            切换 GitHub 账号（将在新标签页登出 GitHub）
+          </a>
+        ) : null}
 
         <form
           action={async () => {

@@ -9,6 +9,11 @@ import { UserMenu } from "./UserMenu";
 export async function Header() {
   const session = await auth();
   const user = session?.user;
+  const provider =
+    session && "provider" in session
+      ? (session.provider as string | undefined)
+      : undefined;
+  console.log("session", session);
   return (
     <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -67,7 +72,11 @@ export async function Header() {
             </a>
           </Button>
           <ThemeToggle />
-          {user ? <UserMenu user={user} /> : <SignInButton />}
+          {user ? (
+            <UserMenu user={user} provider={provider} />
+          ) : (
+            <SignInButton />
+          )}
         </div>
       </div>
     </header>

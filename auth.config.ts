@@ -39,11 +39,24 @@ export const authConfig = {
     async signIn() {
       return true;
     },
-    async session({ session }) {
-      return session;
+    async session({ session, token }) {
+      // 将登录使用的 provider 挂到 session 上，方便前端组件根据登录方式展示提示或操作（例如切换 GitHub 账号）。
+      const extendedSession = session as typeof session & { provider?: string };
+      const extendedToken = token as
+        | (typeof token & { provider?: string })
+        | undefined;
+      if (extendedToken?.provider) {
+        extendedSession.provider = extendedToken.provider;
+      }
+      return extendedSession;
     },
-    async jwt({ token }) {
-      return token;
+    async jwt({ token, account }) {
+      // 在用户完成 OAuth 回调时记录 provider；后续 session 回调会把它带给客户端。
+      const extendedToken = token as typeof token & { provider?: string };
+      if (account?.provider) {
+        extendedToken.provider = account.provider;
+      }
+      return extendedToken;
     },
   },
   providers: [
