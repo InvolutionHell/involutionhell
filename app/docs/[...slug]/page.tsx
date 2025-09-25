@@ -68,7 +68,7 @@ export default async function DocPage({ params }: Param) {
     <>
       <DocsPage toc={page.data.toc}>
         <DocsBody>
-          <div className="mb-6 flex flex-col gap-3 border-b border-border pb-6 md:mb-8 md:flex-row md:items-center md:justify-between">
+          <div className="mb-6 flex flex-col gap-3 border-b border-border pb-6 md:mb-8 md:flex-row md:items-start md:justify-between">
             <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
               {page.data.title}
             </h1>
