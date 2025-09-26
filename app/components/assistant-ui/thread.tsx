@@ -268,9 +268,19 @@ const Composer: FC<ComposerProps> = ({
   onClearError,
 }) => {
   const { provider, openaiApiKey, geminiApiKey } = useAssistantSettings();
-  const activeKey = provider === "openai" ? openaiApiKey : geminiApiKey;
-  const hasActiveKey = activeKey.trim().length > 0;
-  const providerLabel = provider === "gemini" ? "Google Gemini" : "OpenAI";
+  const activeKey =
+    provider === "openai"
+      ? openaiApiKey
+      : provider === "gemini"
+        ? geminiApiKey
+        : "";
+  const hasActiveKey = provider === "intern" || activeKey.trim().length > 0;
+  const providerLabel =
+    provider === "gemini"
+      ? "Google Gemini"
+      : provider === "intern"
+        ? "Intern-AI"
+        : "OpenAI";
 
   const handleOpenSettings = useCallback(() => {
     onClearError?.();
