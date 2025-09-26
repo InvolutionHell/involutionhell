@@ -125,3 +125,16 @@ pnpm migrate:images   # 迁移图片
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=InvolutionHell/involutionhell.github.io&type=Date)](https://star-history.com/#InvolutionHell/involutionhell.github.io&Date)
+
+---
+
+## 📜 协议与版权
+
+本项目代码遵循 [MIT License](LICENSE) 开源。
+
+请注意：
+
+- **MIT 协议仅适用于代码部分**。
+- 本仓库中分享的文章、文档等内容版权归原作者所有。
+- 我们无法认证分享者是否为该文章的创作者。
+- 若您的版权受到侵害，请随时联系我们，我们将及时处理。
