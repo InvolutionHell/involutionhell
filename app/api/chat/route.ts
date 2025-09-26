@@ -1,5 +1,6 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { streamText, UIMessage, convertToModelMessages } from "ai";
 
 // Allow streaming responses up to 30 seconds
@@ -22,12 +23,12 @@ export async function POST(req: Request) {
       content?: string;
       slug?: string;
     };
-    provider?: "openai" | "gemini";
+    provider?: "openai" | "gemini" | "intern";
     apiKey?: string;
   } = await req.json();
 
-  // Check if API key is provided
-  if (!apiKey || apiKey.trim() === "") {
+  // Check if API key is provided (not required for intern provider)
+  if (provider !== "intern" && (!apiKey || apiKey.trim() === "")) {
     return Response.json(
       {
         error:
@@ -68,6 +69,13 @@ export async function POST(req: Request) {
         apiKey: apiKey,
       });
       model = customGoogle("models/gemini-2.0-flash");
+    } else if (provider === "intern") {
+      const intern = createOpenAICompatible({
+        name: "intern",
+        baseURL: "https://chat.intern-ai.org.cn/api/v1/",
+        apiKey: process.env.INTERN_KEY,
+      });
+      model = intern("intern-s1");
     } else {
       // Default to OpenAI
       const customOpenAI = createOpenAI({
