@@ -114,7 +114,7 @@ cd involutionhell.github.io
 ### 2. 安装依赖
 
 ```bash
-npm install
+pnpm install    # 推荐；如需可改用 npm install
 ```
 
 ### 3. 本地开发
@@ -122,12 +122,29 @@ npm install
 运行开发服务器：
 
 ```bash
-npm dev
+pnpm dev
 ```
 
 打开浏览器访问 [http://localhost:3000](http://localhost:3000)。
 
 修改 `docs/` 下的 `.md` 或 `.mdx` 文件，会自动热更新。
+
+---
+
+## 🛠️ 可用脚本
+
+常用脚本集中在 `package.json` 中，以下是最常用的命令：
+
+```bash
+pnpm dev             # 启动开发服务器
+pnpm build           # 构建生产版本
+pnpm start           # 启动生产服务器
+pnpm lint:images     # 检查图片是否符合规范
+pnpm migrate:images  # 自动迁移图片到对应 assets 目录
+pnpm postinstall     # 同步必要的 Husky/Fumadocs 配置
+```
+
+> Windows + VSCode(Cursor) 用户：如遇 Husky 在 VSCode 内置终端阻止提交，请使用外部命令行执行 `git commit`。
 
 ---
 
