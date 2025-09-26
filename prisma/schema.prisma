@@ -59,3 +59,14 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model Doc {
+  cuid        String   @id
+  path        String   @unique
+  title       String?
+  description String?
+  date        DateTime?
+  tags        String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
