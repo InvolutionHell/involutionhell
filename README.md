@@ -121,3 +121,7 @@ pnpm migrate:images   # 迁移图片
 - [InternS1 项目地址](https://github.com/InternLM/Intern-S1/tree/main)
 - [InternStudio 算力平台](https://studio.intern-ai.org.cn/console/dashboard)
 - [书生浦语 API 文档](https://internlm.intern-ai.org.cn/api/document)
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=InvolutionHell/involutionhell.github.io&type=Date)](https://star-history.com/#InvolutionHell/involutionhell.github.io&Date)
