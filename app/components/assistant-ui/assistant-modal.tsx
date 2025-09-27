@@ -21,7 +21,7 @@ export const AssistantModal: FC<AssistantModalProps> = ({
 }) => {
   return (
     <AssistantModalPrimitive.Root>
-      <AssistantModalPrimitive.Anchor className="aui-root aui-modal-anchor fixed right-4 bottom-4 size-11">
+      <AssistantModalPrimitive.Anchor className="aui-root aui-modal-anchor fixed right-4 bottom-4 size-14">
         <AssistantModalPrimitive.Trigger asChild>
           <AssistantModalButton />
         </AssistantModalPrimitive.Trigger>
@@ -59,12 +59,12 @@ const AssistantModalButton = forwardRef<
     >
       <BotIcon
         data-state={state}
-        className="aui-modal-button-closed-icon absolute size-6 transition-all data-[state=closed]:scale-100 data-[state=closed]:rotate-0 data-[state=open]:scale-0 data-[state=open]:rotate-90"
+        className="aui-modal-button-closed-icon absolute !size-7 transition-all data-[state=closed]:scale-100 data-[state=closed]:rotate-0 data-[state=open]:scale-0 data-[state=open]:rotate-90"
       />
 
       <ChevronDownIcon
         data-state={state}
-        className="aui-modal-button-open-icon absolute size-6 transition-all data-[state=closed]:scale-0 data-[state=closed]:-rotate-90 data-[state=open]:scale-100 data-[state=open]:rotate-0"
+        className="aui-modal-button-open-icon absolute !size-7 transition-all data-[state=closed]:scale-0 data-[state=closed]:-rotate-90 data-[state=open]:scale-100 data-[state=open]:rotate-0"
       />
       <span className="aui-sr-only sr-only">{tooltip}</span>
     </TooltipIconButton>
