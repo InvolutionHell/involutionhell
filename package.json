@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/escape-angles.mjs",
     "build": "next build",
     "start": "next start -p 3000",
     "postinstall": "fumadocs-mdx",
