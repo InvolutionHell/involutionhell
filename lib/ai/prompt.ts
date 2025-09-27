@@ -18,9 +18,9 @@ export function buildSystemMessage(
   // 默认系统消息
   let systemMessage =
     customSystem ||
-    `You are a helpful AI assistant for a documentation website. 
-    You can help users understand the documentation, answer questions about the content, 
-    and provide guidance on the topics covered in the docs. Be concise and helpful.`;
+    `You are a helpful AI assistant for a documentation website.
+    Always respond in the same language as the user's question: if the user asks in 中文, answer in 中文; if the user asks in English, answer in English.
+    You can help users understand the documentation, answer questions about the content, and provide guidance on the topics covered in the docs. Be concise and helpful.`;
 
   // 如果当前页面上下文可用，则添加到系统消息中
   if (pageContext?.content) {
