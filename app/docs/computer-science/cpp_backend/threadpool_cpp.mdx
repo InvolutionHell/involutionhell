@@ -86,7 +86,7 @@ void ThreadPool::Worker() {
 **单队列维护：**
 
 1. nonblock_(bool): 未阻塞标记。为true时，队列不会阻塞。初始（构造时）默认为阻塞状态。
-2. queue_(std::queue<T>): 底层存储容器。
+2. `queue_(std::queue<T>)`: 底层存储容器。
 3. mutex_(std::mutex): 保证多线程操作安全的互斥锁。
 4. not_empty_（std::condition_variable）：用于线程前同步。
 
