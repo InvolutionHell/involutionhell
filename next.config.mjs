@@ -1,4 +1,4 @@
-// next.config.mjs
+﻿// next.config.mjs
 import { createMDX } from "fumadocs-mdx/next";
 import createNextIntlPlugin from "next-intl/plugin";
 
@@ -26,6 +26,11 @@ const config = {
       {
         protocol: "https",
         hostname: "*.r2.dev",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.nlark.com",
         pathname: "/**",
       },
     ],
