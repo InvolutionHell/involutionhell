@@ -15,15 +15,18 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "avatars.githubusercontent.com",
+        hostname: "*.githubusercontent.com",
+        pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: "pub-85d4dcece16844bf8290aa4b33608ccd.r2.dev",
+        hostname: "*.github.io",
+        pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: "ravencaffeine.github.io",
+        hostname: "*.r2.dev",
+        pathname: "/**",
       },
     ],
   },
