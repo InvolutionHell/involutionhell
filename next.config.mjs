@@ -17,6 +17,14 @@ const config = {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
       },
+      {
+        protocol: "https",
+        hostname: "pub-85d4dcece16844bf8290aa4b33608ccd.r2.dev",
+      },
+      {
+        protocol: "https",
+        hostname: "ravencaffeine.github.io",
+      },
     ],
   },
 };
