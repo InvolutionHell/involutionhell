@@ -23,7 +23,7 @@ const config = {
       },
       {
         protocol: "https",
-        hostname: "ravencaffeine.github.io",
+        hostname: "*.github.io",
       },
     ],
   },
