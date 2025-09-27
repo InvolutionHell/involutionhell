@@ -10,6 +10,7 @@
  *   - 同步数据库：`pnpm docs:sync-cuid -- --sync-db`
  * @author Siz Long
  * @date 2025-09-27
+ * @location scripts/uuid.mjs
  */
 import fs from "node:fs/promises";
 import path from "node:path";

@@ -1,0 +1,66 @@
+name: Sync docId after merge
+
+on:
+  push:
+    branches: [main]
+    # 只在相关目录或脚本有变化时跑，避免无谓执行
+    paths:
+      - "app/docs/**"
+      - "scripts/uuid.mjs"
+      - "package.json"
+      - "pnpm-lock.yaml"
+
+permissions:
+  contents: write # 关键：允许提交代码
+  # 如果脚本里需要读写 workflow 或发 PR，再加上其他权限
+
+concurrency:
+  group: sync-docid-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync-docid:
+    if: github.actor != 'github-actions[bot]' # 防止递归触发（我们会在提交信息中加 [skip ci]，双保险）
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 需要完整历史以便提交
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Run docId sync script
+        env:
+          DOCS_DIR: app/docs
+          DATABASE_URL: ${{ secrets.DATABASE_URL }} # 有就同步DB，没有就只改文件
+        run: |
+          if [ -n "${DATABASE_URL}" ]; then
+            pnpm docs:sync-cuid -- --sync-db
+          else
+            pnpm docs:sync-cuid
+          fi
+
+      - name: Commit & push if changed
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore(docs): sync docId after merge [skip ci]"
+            git push
+          else
+            echo "No changes to commit."
+          fi
