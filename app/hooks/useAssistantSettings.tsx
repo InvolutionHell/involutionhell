@@ -10,7 +10,7 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 
-type Provider = "openai" | "gemini";
+type Provider = "openai" | "gemini" | "intern";
 
 interface AssistantSettingsState {
   provider: Provider;
@@ -45,7 +45,12 @@ const parseStoredSettings = (raw: string | null): AssistantSettingsState => {
   try {
     const parsed = JSON.parse(raw) as Partial<AssistantSettingsState>;
     return {
-      provider: parsed.provider === "gemini" ? "gemini" : "openai",
+      provider:
+        parsed.provider === "gemini"
+          ? "gemini"
+          : parsed.provider === "intern"
+            ? "intern"
+            : "openai",
       openaiApiKey:
         typeof parsed.openaiApiKey === "string" ? parsed.openaiApiKey : "",
       geminiApiKey:

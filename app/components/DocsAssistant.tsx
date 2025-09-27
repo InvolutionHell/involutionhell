@@ -53,7 +53,9 @@ function DocsAssistantInner({ pageContext }: DocsAssistantProps) {
         const currentApiKey =
           currentProvider === "openai"
             ? openaiApiKeyRef.current
-            : geminiApiKeyRef.current;
+            : currentProvider === "gemini"
+              ? geminiApiKeyRef.current
+              : ""; // intern provider doesn't need API key
 
         console.log("[DocsAssistant] useChat body function called with:", {
           provider: currentProvider,
@@ -118,9 +120,14 @@ interface AssistantErrorState {
 
 function deriveAssistantError(
   err: unknown,
-  provider: "openai" | "gemini",
+  provider: "openai" | "gemini" | "intern",
 ): AssistantErrorState {
-  const providerLabel = provider === "gemini" ? "Google Gemini" : "OpenAI";
+  const providerLabel =
+    provider === "gemini"
+      ? "Google Gemini"
+      : provider === "intern"
+        ? "Intern-AI"
+        : "OpenAI";
   const fallback: AssistantErrorState = {
     message:
       "The assistant couldn't complete that request. Please try again later.",
@@ -176,14 +183,16 @@ function deriveAssistantError(
 
   let showSettingsCTA = false;
 
+  // For intern provider, don't show settings CTA for API key related errors
   if (
-    statusCode === 400 ||
-    statusCode === 401 ||
-    statusCode === 403 ||
-    normalized.includes("api key") ||
-    normalized.includes("apikey") ||
-    normalized.includes("missing key") ||
-    normalized.includes("unauthorized")
+    provider !== "intern" &&
+    (statusCode === 400 ||
+      statusCode === 401 ||
+      statusCode === 403 ||
+      normalized.includes("api key") ||
+      normalized.includes("apikey") ||
+      normalized.includes("missing key") ||
+      normalized.includes("unauthorized"))
   ) {
     showSettingsCTA = true;
   }
