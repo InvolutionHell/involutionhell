@@ -6,23 +6,23 @@ interface PageContext {
 }
 
 /**
- * Build system message with page context for AI assistant
- * @param customSystem - Custom system message (optional)
- * @param pageContext - Current page context (optional)
- * @returns Complete system message string
+ * 构建系统消息，包含页面上下文
+ * @param customSystem - 自定义系统消息 (可选)
+ * @param pageContext - 当前页面上下文 (可选)
+ * @returns 完整的系统消息字符串
  */
 export function buildSystemMessage(
   customSystem?: string,
   pageContext?: PageContext,
 ): string {
-  // Default system message for documentation assistant
+  // 默认系统消息
   let systemMessage =
     customSystem ||
     `You are a helpful AI assistant for a documentation website. 
     You can help users understand the documentation, answer questions about the content, 
     and provide guidance on the topics covered in the docs. Be concise and helpful.`;
 
-  // Add current page context if available
+  // 如果当前页面上下文可用，则添加到系统消息中
   if (pageContext?.content) {
     systemMessage += `\n\n--- CURRENT PAGE CONTEXT ---\n`;
 

@@ -2,13 +2,13 @@ import { streamText, UIMessage, convertToModelMessages } from "ai";
 import { getModel, requiresApiKey, type AIProvider } from "@/lib/ai/models";
 import { buildSystemMessage } from "@/lib/ai/prompt";
 
-// Allow streaming responses up to 30 seconds
+// 流式响应最长30秒
 export const maxDuration = 30;
 
 interface ChatRequest {
   messages: UIMessage[];
-  system?: string; // System message forwarded from AssistantChatTransport
-  tools?: unknown; // Frontend tools forwarded from AssistantChatTransport
+  system?: string;
+  tools?: unknown;
   pageContext?: {
     title?: string;
     description?: string;
@@ -25,11 +25,11 @@ export async function POST(req: Request) {
       messages,
       system,
       pageContext,
-      provider = "openai", // Default to OpenAI
+      provider = "intern", // 默认使用书生模型
       apiKey,
     }: ChatRequest = await req.json();
 
-    // Validate API key for providers that require it
+    // 对指定Provider验证key是否存在
     if (requiresApiKey(provider) && (!apiKey || apiKey.trim() === "")) {
       return Response.json(
         {
@@ -40,13 +40,13 @@ export async function POST(req: Request) {
       );
     }
 
-    // Build system message with page context
+    // 构建系统消息，包含页面上下文
     const systemMessage = buildSystemMessage(system, pageContext);
 
-    // Get AI model instance based on provider
+    // 根据Provider获取 AI 模型实例
     const model = getModel(provider, apiKey);
 
-    // Generate streaming response
+    // 生成流式响应
     const result = streamText({
       model: model,
       system: systemMessage,
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Chat API error:", error);
 
-    // Handle specific model creation errors
+    // 处理特定模型创建错误
     if (error instanceof Error && error.message.includes("API key")) {
       return Response.json({ error: error.message }, { status: 400 });
     }
