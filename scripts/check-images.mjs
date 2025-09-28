@@ -3,7 +3,7 @@
  * MDX 图片路径校验脚本
  *
  * 功能
- * - 扫描 `app/docs/??/?.mdx`（含 .md）
+ * - 扫描 `app/docs/??/?.md`（含 .mdx）
  * - 识别 Markdown `![]()` 与内联 `<img src="…" />` 的图片引用
  * - 强制使用“就近图片”：推荐相对路径（如 `./images/…`）
  * - 仅对站点级共享资源允许绝对路径：`/images/site/*`、`/images/components/*`
@@ -38,7 +38,7 @@ const IMAGE_FILE_EXTS = new Set([
   ".webp",
   ".svg",
 ]);
-const exts = new Set([".mdx", ".md"]);
+const exts = new Set([".md", ".mdx"]);
 
 /** Recursively list files */
 function* walk(dir) {
@@ -60,7 +60,7 @@ function toRoutePath(file) {
   const rel = path.relative(DOCS_DIR, file).split(path.sep).join("/");
   const base = path.basename(rel);
   const dir = path.dirname(rel);
-  if (base.toLowerCase() === "index.mdx") return dir === "." ? "" : dir;
+  if (base.toLowerCase() === "index.md") return dir === "." ? "" : dir;
   const name = base.replace(/\.[^.]+$/, "");
   return dir === "." ? name : `${dir}/${name}`;
 }
@@ -207,7 +207,7 @@ function main() {
     console.log(`\nFound ${bad}/${total} files with image issues.`);
     process.exit(1);
   } else {
-    console.log(`Checked ${total} MDX files: no issues.`);
+    console.log(`Checked ${total} MD files: no issues.`);
   }
 }
 
