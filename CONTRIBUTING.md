@@ -127,7 +127,7 @@ pnpm dev
 
 打开浏览器访问 [http://localhost:3000](http://localhost:3000)。
 
-修改 `docs/` 下的 `.md` 或 `.mdx` 文件，会自动热更新。
+修改 `docs/` 下的 `.md` 文件，会自动热更新。
 
 ---
 
@@ -155,7 +155,7 @@ pnpm postinstall     # 同步必要的 Husky/Fumadocs 配置
 docxA 引用了 imgA 图片, 那么他们的文档结构应该是 `docxA.assets/imgA`:
 
 ```md
-docsA.mdx
+docsA.md
 docsA.assets/
 imgA
 ```
@@ -199,35 +199,35 @@ tags:
 ```
 📂 docs/
 ├── 📂 computer-science/           # 计算机科学
-│   ├── 📄 index.mdx               # 概述
+│   ├── 📄 index.md               # 概述
 │   └── 📂 data-structures/        # 数据结构
-│       ├── 📄 index.mdx           # 概述
+│       ├── 📄 index.md           # 概述
 │       ├── 📂 array/              # 数组
-│       │   ├── 📄 index.mdx       # 概述
-│       │   ├── 📄 01-static-array.mdx    # 静态数组
-│       │   └── 📄 02-dynamic-array.mdx   # 动态数组
+│       │   ├── 📄 index.md       # 概述
+│       │   ├── 📄 01-static-array.md    # 静态数组
+│       │   └── 📄 02-dynamic-array.md   # 动态数组
 │       └── 📂 linked-list/        # 链表
-│           ├── 📄 index.mdx       # 概述
-│           └── 📄 01-singly-linked-list.mdx  # 单向链表
+│           ├── 📄 index.md       # 概述
+│           └── 📄 01-singly-linked-list.md  # 单向链表
 ```
 
 ### URL 生成
 
 文件结构会自动生成简洁的 URL：
 
-- `docs/computer-science/index.mdx` → `/computer-science`
-- `docs/computer-science/data-structures/array/01-static-array.mdx` → `/computer-science/data-structures/array/static-array`
+- `docs/computer-science/index.md` → `/computer-science`
+- `docs/computer-science/data-structures/array/01-static-array.md` → `/computer-science/data-structures/array/static-array`
 
 ### 命名约定
 
 **文件夹:**
 
 - 使用 `kebab-case` 命名: `computer-science`, `data-structures`
-- 每个主题文件夹应该有一个 `index.mdx` 文件作为概述
+- 每个主题文件夹应该有一个 `index.md` 文件作为概述
 
 **文件:**
 
-- 使用 `kebab-case` 命名: `static-array.mdx`
+- 使用 `kebab-case` 命名: `static-array.md`
 - 使用数字前缀排序: `01-`, `02-`
 - 前缀会自动从最终 URL 中移除
 

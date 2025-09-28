@@ -27,7 +27,7 @@ const FILENAME_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]+$/;
 
 // 统一调用工具函数生成 GitHub 新建链接，路径规则与 Edit 按钮一致
 function buildGithubNewUrl(dirPath: string, filename: string, title: string) {
-  const file = filename.endsWith(".mdx") ? filename : `${filename}.mdx`;
+  const file = filename.endsWith(".md") ? filename : `${filename}.md`;
   const frontMatter = `---
 title: '${title || "New Article"}'
 description: ""
