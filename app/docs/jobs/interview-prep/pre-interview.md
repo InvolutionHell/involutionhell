@@ -41,4 +41,3 @@ tags:
 ## 参考文献  
 - [如何在面试前做公司调研（Jianli.com）](https://www.jianli.com/article/gvvjqb.html)  
 - [高赞面试经验分享（简书）](https://www.jianshu.com/p/ea07ec667730)  
-- [知乎：面试前需要准备什么？](https://www.zhihu.com/question/19681820)  
