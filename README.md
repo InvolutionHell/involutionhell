@@ -8,7 +8,7 @@
   </a>
 </p>
 
-<h1 align="center">内卷地狱知识库</h1>
+<p align="center"><a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com/?font=Noto+Sans+SC&weight=700&size=32&pause=1000&color=f6671b&center=true&vCenter=true&width=420&lines=%E5%86%85%E5%8D%B7%E5%9C%B0%E7%8B%B1%E7%9F%A5%E8%AF%86%E5%BA%93&duration=3000" alt="Typing SVG" /></a></p>
 
 <p align="center">
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
@@ -19,8 +19,6 @@
     <img alt="License" src="https://img.shields.io/github/license/InvolutionHell/involutionhell.github.io?style=for-the-badge&color=blue">
   </a>
 </p>
-
-
 
 ## 📋 关于
 
