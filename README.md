@@ -2,7 +2,25 @@
   <a href="./README.md">简体中文</a> | <a href="./README.en.md">English</a>
 </p>
 
-# 内卷地狱知识库
+<p align="center">
+  <a href="https://involutionhell.github.io">
+    <img src="./public/mascot.svg" width="150">
+  </a>
+</p>
+
+<h1 align="center">内卷地狱知识库</h1>
+
+<p align="center">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" />
+  <a href="https://github.com/InvolutionHell/involutionhell.github.io/blob/main/LICENSE">
+    <img alt="License" src="https://img.shields.io/github/license/InvolutionHell/involutionhell.github.io?style=for-the-badge&color=blue">
+  </a>
+</p>
+
+
 
 ## 📋 关于
 
@@ -73,6 +91,8 @@ pnpm dev
 - 文档与流程完善
 
 完整流程、PR 检查与 UI 协作约定请参考 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+[![Contributors](https://contrib.rocks/image?repo=InvolutionHell/involutionhell.github.io)](https://github.com/InvolutionHell/involutionhell.github.io/graphs/contributors)
 
 ## 🖼️ 文档与资产
 
