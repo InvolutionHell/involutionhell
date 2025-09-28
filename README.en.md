@@ -2,7 +2,24 @@
   <a href="./README.md">简体中文</a> | <a href="./README.en.md">English</a>
 </p>
 
-# Involution Hell Knowledge Base
+<p align="center">
+  <a href="https://involutionhell.github.io">
+    <img src="./public/mascot.svg" width="150">
+  </a>
+</p>
+<p align="center"><a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com/?font=Fira+Code&weight=700&size=32&pause=1000&color=f6671b&center=true&vCenter=true&width=280&lines=Involution+Hell&duration=3000" alt="Typing SVG" /></a></p>
+
+<p align="center">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" />
+  <a href="https://github.com/InvolutionHell/involutionhell.github.io/blob/main/LICENSE">
+    <img alt="License" src="https://img.shields.io/github/license/InvolutionHell/involutionhell.github.io?style=for-the-badge&color=blue">
+  </a>
+</p>
+
+
 
 ## 📋 About
 
@@ -63,6 +80,8 @@ Community contributions are always welcome:
 - Documentation and workflow enhancements
 
 For the full workflow, PR checklist, and UI collaboration guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+[![Contributors](https://contrib.rocks/image?repo=InvolutionHell/involutionhell.github.io)](https://github.com/InvolutionHell/involutionhell.github.io/graphs/contributors)
 
 ## 🖼️ Documentation & Assets
 
