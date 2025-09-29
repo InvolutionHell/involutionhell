@@ -1,12 +1,24 @@
 ---
 title: '手写线程池'
 description: ""
-date: "2025-09-27"
+date: "2025-09-29"
 tags:
   - tag-one
 ---
 
+
 # 线程池
+
+> 以下是调用单队列BlockingQueue的代码，使用双队列时将所有BlockingQueue改为BlockingQueuePro
+>
+
+## 接口
+构造：用智能指针 unique_ptr 初始化阻塞队列，创建threads_num个线程并给每个绑定Worker函数开始执行task。（此时全部Worker阻塞在Pop()里）
+
+Post: 发布任务到线程池。
+
+析构：通知唤醒所有消费者，没有任务就自己下班。与生产者没关系。
+
 ```cpp
 #pragma once
 
@@ -38,8 +50,6 @@ private:
 };
 ```
 
-
-
 ```cpp
 #include "blockingqueue.h"
 #include <memory>
@@ -55,6 +65,7 @@ ThreadPool::ThreadPool(int threads_num) {
 }
 
 // 停止线程池
+// 取消队列并唤醒所有阻塞线程
 ThreadPool::~ThreadPool() {
     task_queue_->Cancel();
     for(auto &worker : workers_) {
@@ -72,6 +83,7 @@ void ThreadPool::Post(std::function<void()> task) {
 void ThreadPool::Worker() {
     while (true) {
         std::function<void()> task;
+        // 阻塞在Pop里实现
         if (!task_queue_->Pop(task)) {
             break;
         }
@@ -86,7 +98,7 @@ void ThreadPool::Worker() {
 **单队列维护：**
 
 1. nonblock_(bool): 未阻塞标记。为true时，队列不会阻塞。初始（构造时）默认为阻塞状态。
-2. `queue_(std::queue<T>)`: 底层存储容器。
+2. queue_(std::queue<T>): 底层存储容器。
 3. mutex_(std::mutex): 保证多线程操作安全的互斥锁。
 4. not_empty_（std::condition_variable）：用于线程前同步。
 
@@ -147,6 +159,8 @@ private:
 ```
 
 # 阻塞队列（双队列版）
+![画板](https://cdn.nlark.com/yuque/0/2025/jpeg/43055607/1759131100901-946e59ae-cd19-4546-aa9d-a9ee658f0b5a.jpeg)
+
 单队列中， 生产者和消费者都要竞争同一把锁。  
 
 双队列：
@@ -210,6 +224,8 @@ private:
     std::condition_variable not_empty_;
 };
 ```
+
+
 
 # Test
 理论上双队列比单队列快，因为锁的竞争/碰撞少了。下面的实验结果也是如此：
@@ -397,5 +413,4 @@ private:
     std::unique_ptr<BlockingQueuePro<std::function<void()>>> task_queue_;
 };
 ```
-
 
