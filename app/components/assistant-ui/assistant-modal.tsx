@@ -79,7 +79,7 @@ export const AssistantModal: FC<AssistantModalProps> = ({
         )}
 
         <AssistantModalPrimitive.Trigger asChild>
-          <AssistantModalButton />
+          <AssistantModalButton onCloseBubble={handleCloseBubble} />
         </AssistantModalPrimitive.Trigger>
       </AssistantModalPrimitive.Anchor>
       <AssistantModalPrimitive.Content
@@ -96,13 +96,28 @@ export const AssistantModal: FC<AssistantModalProps> = ({
   );
 };
 
-type AssistantModalButtonProps = { "data-state"?: "open" | "closed" };
+type AssistantModalButtonProps = {
+  "data-state"?: "open" | "closed";
+  onCloseBubble?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
+};
 
 const AssistantModalButton = forwardRef<
   HTMLButtonElement,
   AssistantModalButtonProps
->(({ "data-state": state, ...rest }, ref) => {
+>(({ "data-state": state, onCloseBubble, ...rest }, ref) => {
   const tooltip = state === "open" ? "Close Assistant" : "Open Assistant";
+
+  const handleClick = (e: React.MouseEvent) => {
+    // 当点击open按钮时，关闭气泡对话
+    if (onCloseBubble) {
+      onCloseBubble();
+    }
+    // 继续执行原有的点击事件
+    if (rest.onClick) {
+      rest.onClick(e);
+    }
+  };
 
   return (
     <TooltipIconButton
@@ -110,6 +125,7 @@ const AssistantModalButton = forwardRef<
       tooltip={tooltip}
       side="left"
       {...rest}
+      onClick={handleClick}
       className="aui-modal-button size-full rounded-full shadow transition-transform hover:scale-110 active:scale-90 cursor-pointer"
       ref={ref}
     >
