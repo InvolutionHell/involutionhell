@@ -33,6 +33,11 @@ const config = {
         hostname: "cdn.nlark.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "*.amazonaws.com",
+        pathname: "/**",
+      },
     ],
   },
 };
