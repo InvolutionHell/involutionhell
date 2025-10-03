@@ -8,8 +8,6 @@ tags:
 
 # PPO
 
-[toc]
-
 ## 1.完整链路
 prompt batch -> actor.forward -> reward model -> critic.forward
 
