@@ -38,6 +38,11 @@ const config = {
         hostname: "*.amazonaws.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "*.coly.cc",
+        pathname: "/**",
+      },
     ],
   },
 };
