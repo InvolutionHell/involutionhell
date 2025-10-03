@@ -26,10 +26,6 @@ model accounts {
 model doc_contributors {
   doc_id              String
   github_id           BigInt
-  login               String
-  display_name        String?
-  avatar_url          String
-  html_url            String
   contributions       Int      @default(1)
   last_contributed_at DateTime @default(now())
   created_at          DateTime @default(now())
@@ -42,12 +38,14 @@ model doc_contributors {
 }
 
 model docs {
-  id               String             @id
-  path_current     String?
-  title            String?
-  created_at       DateTime           @default(now())
-  updated_at       DateTime
-  doc_contributors doc_contributors[]
+  id                String             @id
+  path_current      String?
+  title             String?
+  created_at        DateTime           @default(now())
+  updated_at        DateTime
+  doc_contributors  doc_contributors[]
+  // 存储贡献者贡献数的哈希表，格式: {"github_id": contributions_count}
+  contributor_stats Json?              @default("{}")
 }
 
 model sessions {
