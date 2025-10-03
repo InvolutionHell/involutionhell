@@ -56,8 +56,7 @@ Claude code 4 的实践：每当上下文到一定的数量，就执行auto- com
 
 Anthropic的实践：
 
-<img width="1220" height="824" alt="image" src="https://github.com/user-attachments/assets/1b74dea7-0a62-4700-a8b4-6c5138be9ec4" />
-
+![Anthropic的实践](https://github.com/user-attachments/assets/1b74dea7-0a62-4700-a8b4-6c5138be9ec4) 
 
 不同agent有自己独立的工具，独立的运行历史，独立的记忆体系。
 
