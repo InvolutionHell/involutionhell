@@ -22,6 +22,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import "dotenv/config";
+import { PrismaClient } from "../generated/prisma/index.js";
 
 import fg from "fast-glob";
 import matter from "gray-matter";
@@ -102,6 +103,14 @@ function parseDocFrontmatter(content) {
     title: title || null,
     frontmatter: data,
   };
+}
+
+// 合并统计数据
+function mergeStatsInPlace(base, extra) {
+  for (const [k, v] of Object.entries(extra || {})) {
+    base[k] = (base[k] ?? 0) + (typeof v === "number" ? v : 0);
+  }
+  return base;
 }
 
 async function fetchCommitsForFile(repoRelativePath) {
@@ -301,6 +310,57 @@ async function main() {
   log(
     `Done. Wrote ${results.length} doc entries to ${path.relative(REPO_ROOT, outputAbs)}`,
   );
+
+  // —— 追加开始：按 docId 聚合，并可选同步到数据库 ——
+  // 先把同一 docId 的多个 filePath 合并（因为移动/重命名会导致同一 doc 分散在不同路径）
+  const byDocId = new Map(); // Map<string, Record<string, number>>
+  for (const r of results) {
+    if (!r.docId) continue; // 没有 docId 的跳过（避免用 filePath 当主键）
+    const acc = byDocId.get(r.docId) ?? {};
+    mergeStatsInPlace(acc, r.contributorStats || {});
+    byDocId.set(r.docId, acc);
+  }
+
+  // 同步到数据库（幂等）：旧值 + 新汇总 逐项累加，然后整体覆盖写回
+  const prisma = new PrismaClient();
+  try {
+    let updated = 0,
+      created = 0;
+
+    for (const [docId, aggregatedStats] of byDocId) {
+      // 读旧值（如果不存在就 create）
+      const existing = await prisma.docs.findUnique({
+        where: { id: docId },
+        select: { id: true, contributor_stats: true },
+      });
+
+      const merged = mergeStatsInPlace(
+        { ...(existing?.contributor_stats ?? {}) },
+        aggregatedStats,
+      );
+
+      if (!existing) {
+        await prisma.docs.create({
+          data: {
+            id: docId,
+            contributor_stats: merged,
+          },
+        });
+        created++;
+      } else {
+        await prisma.docs.update({
+          where: { id: docId },
+          data: { contributor_stats: merged },
+        });
+        updated++;
+      }
+    }
+
+    log(`DB sync done. Created: ${created}, Updated: ${updated}`);
+  } finally {
+    await prisma.$disconnect();
+  }
+  // —— 追加结束 ——
 }
 
 // Step 3: 捕获未处理异常，避免脚本静默崩溃

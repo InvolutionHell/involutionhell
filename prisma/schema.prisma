@@ -27,25 +27,29 @@ model doc_contributors {
   doc_id              String
   github_id           BigInt
   contributions       Int      @default(1)
-  last_contributed_at DateTime @default(now())
-  created_at          DateTime @default(now())
-  updated_at          DateTime
-  docs                docs     @relation(fields: [doc_id], references: [id])
+  last_contributed_at DateTime @default(now()) @db.Timestamptz(6)
+  created_at          DateTime @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime @updatedAt @db.Timestamptz(6)
+
+  docs docs @relation(fields: [doc_id], references: [id], onDelete: Cascade)
 
   @@id([doc_id, github_id])
   @@index([doc_id])
-  @@index([github_id])
+  @@index([github_id]) // 便于反查某用户在哪些文档有贡献
 }
 
 model docs {
-  id                String             @id
-  path_current      String?
-  title             String?
-  created_at        DateTime           @default(now())
-  updated_at        DateTime
-  doc_contributors  doc_contributors[]
-  // 存储贡献者贡献数的哈希表，格式: {"github_id": contributions_count}
-  contributor_stats Json?              @default("{}")
+  id           String   @id
+  path_current String?
+  title        String?
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @updatedAt @db.Timestamptz(6)
+
+  doc_contributors doc_contributors[]
+
+  /// 作为聚合缓存使用：{"github_id": contributions}
+  /// 兼容性最好用 dbgenerated 设置 PG 端默认 '{}'
+  contributor_stats Json? @default(dbgenerated("'{}'::jsonb")) @db.JsonB
 }
 
 model sessions {
