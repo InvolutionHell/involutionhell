@@ -231,11 +231,6 @@ function toSafeNumber(value) {
   return Math.round(value);
 }
 
-function toSafeNumber(value) {
-  if (typeof value !== "number" || !Number.isFinite(value)) return 0;
-  return Math.round(value);
-}
-
 function mergeStatsInto(targetStats, extraStats) {
   for (const [k, v] of Object.entries(extraStats || {})) {
     targetStats[k] = (targetStats[k] ?? 0) + toSafeNumber(v);
@@ -246,6 +241,63 @@ function maxDate(a, b) {
   if (!a) return b || null;
   if (!b) return a || null;
   return new Date(a) > new Date(b) ? a : b;
+}
+
+// 1) 新增：去重合并多路径的 commits
+async function fetchCommitsForPaths(allPaths) {
+  const bySha = new Map(); // sha -> commitObject
+  for (const p of allPaths) {
+    const commits = await fetchCommitsForFile(p);
+    for (const c of commits) {
+      const sha = c?.sha;
+      if (sha && !bySha.has(sha)) bySha.set(sha, c);
+    }
+  }
+  return Array.from(bySha.values());
+}
+
+// 2) 新增：把当前扫描到的路径写入 doc_paths
+async function upsertDocPath(docId, repoRelativePath, title = null) {
+  if (!prisma) return;
+
+  await prisma.$transaction(async (tx) => {
+    // 1) 先确保父表 docs 存在（最小创建）
+    await tx.docs.upsert({
+      where: { id: docId },
+      create: {
+        id: docId,
+        path_current: repoRelativePath ?? null,
+        title: title ?? null,
+      },
+      update: {
+        // 有就不强行覆盖 title；只在你想覆盖时再加
+        path_current: repoRelativePath ?? undefined,
+      },
+    });
+
+    // 2) 再写子表 doc_paths（复合主键 upsert）
+    await tx.doc_paths.upsert({
+      where: { doc_id_path: { doc_id: docId, path: repoRelativePath } },
+      create: { doc_id: docId, path: repoRelativePath },
+      update: {},
+    });
+  });
+}
+
+// 3) 新增：批量取出一组 docId 的历史路径
+async function getAllPathsForDocIds(docIds) {
+  if (!prisma || docIds.length === 0) return new Map();
+  const rows = await prisma.doc_paths.findMany({
+    where: { doc_id: { in: docIds } },
+    select: { doc_id: true, path: true },
+  });
+  const map = new Map(); // docId -> Set(paths)
+  for (const r of rows) {
+    const s = map.get(r.doc_id) ?? new Set();
+    s.add(r.path);
+    map.set(r.doc_id, s);
+  }
+  return map;
 }
 
 async function syncResultsToDatabase(results) {
@@ -327,6 +379,9 @@ async function syncResultsToDatabase(results) {
         },
       });
       contributorsUpserted += 1;
+      log(
+        `  ↳ upsert ${docId} / user=${gidStr} → count=${count}, last=${last.toISOString()}`,
+      );
     }
 
     docsProcessed += 1;
@@ -338,7 +393,7 @@ async function syncResultsToDatabase(results) {
 }
 
 async function main() {
-  // Step 1: 扫描文档列表，若为空直接终止
+  // 1) 扫描仓库，收集当前 docId → 路径集合 & 标题
   log(`Scanning docs from ${path.relative(REPO_ROOT, docsDirAbs)}`);
   const docFiles = await listDocFiles();
   if (docFiles.length === 0) {
@@ -346,69 +401,114 @@ async function main() {
     return;
   }
 
-  const results = [];
+  /** Map<string, Set<string>>: docId -> 当前扫描到的路径集合 */
+  const currentDocIdPaths = new Map();
+  /** Map<string, string|null>: docId -> 标题（任取一个文件里的 title） */
+  const titleByDocId = new Map();
 
-  for (let index = 0; index < docFiles.length; index += 1) {
-    const file = docFiles[index];
-    const displayIndex = index + 1;
-    // 将绝对路径转换为仓库相对路径，同时统一为 POSIX 风格
+  for (let i = 0; i < docFiles.length; i += 1) {
+    const file = docFiles[i];
     const repoRelative = path
       .relative(REPO_ROOT, file.absolute)
       .replace(/\\/g, "/");
 
-    log(
-      `(${displayIndex}/${docFiles.length}) Fetching commits for ${repoRelative}`,
-    );
-
     const raw = await fs.readFile(file.absolute, "utf8");
     const meta = parseDocFrontmatter(raw);
 
+    if (!meta.docId) {
+      log(`  ⚠️ 跳过 ${repoRelative}：缺少 docId`);
+      continue;
+    }
+
+    // 收集路径
+    const set = currentDocIdPaths.get(meta.docId) ?? new Set();
+    set.add(repoRelative);
+    currentDocIdPaths.set(meta.docId, set);
+
+    // 收集一个标题（可选）
+    if (!titleByDocId.has(meta.docId) && meta.title) {
+      titleByDocId.set(meta.docId, meta.title);
+    }
+
+    // 把当前路径记入 doc_paths（DB 中维护历史路径）
+    await upsertDocPath(meta.docId, repoRelative);
+  }
+
+  // 没有任何含 docId 的文件，直接结束
+  const docIds = Array.from(currentDocIdPaths.keys());
+  if (docIds.length === 0) {
+    log("No docs with docId were found. Abort.");
+    return;
+  }
+
+  // 2) 从数据库取每个 docId 的历史路径，并与当前路径做并集
+  const historical = await getAllPathsForDocIds(docIds);
+
+  // 3) 对每个 docId：对“所有（历史+当前）路径”抓 commits（按 sha 去重），再聚合作者统计
+  const results = [];
+
+  for (const docId of docIds) {
+    const currentSet = currentDocIdPaths.get(docId) ?? new Set();
+    const histSet = historical.get(docId) ?? new Set();
+    const unionPaths = new Set([...histSet, ...currentSet]);
+
+    // 没路径就跳过
+    if (unionPaths.size === 0) {
+      log(`  ⚠️ docId=${docId} 无路径记录，跳过`);
+      continue;
+    }
+
+    // 选一个代表性的路径放到 result.filePath（用于审计/回显）
+    const representativePath =
+      currentSet.values().next().value ?? histSet.values().next().value ?? null;
+    const title = titleByDocId.get(docId) ?? null;
+
     let commits = [];
     try {
-      commits = await fetchCommitsForFile(repoRelative);
+      // 👇 关键：对“所有路径”抓取并按 SHA 去重，避免重命名造成双计
+      commits = await fetchCommitsForPaths(Array.from(unionPaths));
     } catch (err) {
-      // 失败时记录错误信息，后续手动排查
-      log(`  ✖ Failed to pull commits: ${err.message}`);
+      log(`  ✖ 拉取 commits 失败 (docId=${docId}): ${err.message}`);
       results.push({
-        docId: meta.docId,
-        title: meta.title,
-        filePath: repoRelative,
+        docId,
+        title,
+        filePath: representativePath,
+        allPaths: Array.from(unionPaths),
         error: err.message,
       });
       continue;
     }
 
+    // 复用你原有的作者聚合逻辑
     const { contributors, skipped } = aggregateContributors(commits);
+
     const stats = Object.fromEntries(
-      contributors.map((item) => [String(item.githubId), item.contributions]),
+      (contributors || []).map((c) => [String(c.githubId), c.contributions]),
     );
 
     const commitTimestamps = commits
-      .map(
-        (commit) =>
-          commit?.commit?.author?.date || commit?.commit?.committer?.date,
-      )
+      .map((c) => c?.commit?.author?.date || c?.commit?.committer?.date)
       .filter(Boolean)
-      .map((value) => Date.parse(value))
+      .map((v) => Date.parse(v))
       .filter(Number.isFinite)
       .sort((a, b) => b - a);
 
     results.push({
-      docId: meta.docId,
-      title: meta.title,
-      filePath: repoRelative,
+      docId,
+      title,
+      filePath: representativePath,
+      allPaths: Array.from(unionPaths), // 便于审计/排查
       totalCommits: commits.length,
       skippedCommits: skipped,
       contributors,
-      contributorStats: stats,
-      lastCommitAt:
-        commitTimestamps.length > 0
-          ? new Date(commitTimestamps[0]).toISOString()
-          : null,
+      contributorStats: stats, // {"githubId": count}
+      lastCommitAt: commitTimestamps.length
+        ? new Date(commitTimestamps[0]).toISOString()
+        : null,
     });
   }
 
-  // Step 2: 写入 JSON 文件（包含基础元数据与逐文档统计）
+  // 4) 写 JSON 快照（抓取层的结果；与 DB 同步后的状态应一致）
   await ensureParentDir(outputAbs);
   await fs.writeFile(
     outputAbs,
@@ -424,11 +524,11 @@ async function main() {
       2,
     ),
   );
-
   log(
     `Done. Wrote ${results.length} doc entries to ${path.relative(REPO_ROOT, outputAbs)}`,
   );
 
+  // 5) 幂等落库：docs.contributor_stats 覆盖快照；doc_contributors 明细 upsert（计数=合并后的总数，时间=最大）
   await syncResultsToDatabase(results);
 }
 

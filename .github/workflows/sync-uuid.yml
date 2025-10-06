@@ -1,66 +1,63 @@
-name: Sync docId after merge
+name: Docs Backfill (on docs changes)
 
 on:
   push:
     branches: [main]
-    # 只在相关目录或脚本有变化时跑，避免无谓执行
     paths:
-      - "app/docs/**"
-      - "scripts/uuid.mjs"
+      - "app/docs/**" # 只有 app/docs 下有改动才触发
+      - "scripts/uuid.mjs" # 脚本自身改动也触发
+      - "scripts/backfill-contributors.mjs"
       - "package.json"
       - "pnpm-lock.yaml"
-
-permissions:
-  contents: write # 关键：允许提交代码
-  # 如果脚本里需要读写 workflow 或发 PR，再加上其他权限
-
-concurrency:
-  group: sync-docid-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_dispatch: {} # 手动触发备选
 
 jobs:
-  sync-docid:
-    if: github.actor != 'github-actions[bot]' # 防止递归触发（我们会在提交信息中加 [skip ci]，双保险）
+  backfill:
+    # 只在主仓库跑（避免 fork 的 PR 触发），且只跑 main 分支
+    if: github.repository == 'InvolutionHell/involutionhell.github.io' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # 允许 uuid.mjs 补写 docId 后自动提交
+    env:
+      # 从仓库 Secrets 注入，避免泄露
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      DOCS_DIR: app/docs
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # 需要完整历史以便提交
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
         with:
           version: 9
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
 
-      - name: Run docId sync script
-        env:
-          DOCS_DIR: app/docs
-          DATABASE_URL: ${{ secrets.DATABASE_URL }} # 有就同步DB，没有就只改文件
-        run: |
-          if [ -n "${DATABASE_URL}" ]; then
-            pnpm docs:sync-cuid -- --sync-db
-          else
-            pnpm docs:sync-cuid
-          fi
+      - name: Generate Prisma Client
+        run: pnpm prisma generate
 
-      - name: Commit & push if changed
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "chore(docs): sync docId after merge [skip ci]"
-            git push
-          else
-            echo "No changes to commit."
-          fi
+      # 1) 先补齐 frontmatter docId（uuid.mjs）
+      - name: Ensure docId frontmatter
+        run: pnpm exec node scripts/uuid.mjs
+
+      # 可选：若 uuid.mjs 写入了 docId，则自动提交（方便把 docId 持久化回仓库）
+      - name: Auto-commit added docIds (if any)
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(docs): add missing docId via uuid.mjs"
+          file_pattern: "app/docs/**/*.md app/docs/**/*.mdx app/docs/**/*.markdown"
+
+      # 2) 再回填贡献者并同步数据库（你的 backfill 脚本）
+      - name: Backfill contributors & sync DB
+        run: pnpm exec node scripts/backfill-contributors.mjs
+
+      # 可选：把生成的 JSON 保存成构件，便于下载核对
+      - name: Upload snapshot JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: doc-contributors-snapshot
+          path: tmp/doc-contributors.json
+          if-no-files-found: ignore
