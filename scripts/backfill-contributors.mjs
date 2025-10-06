@@ -2,7 +2,7 @@
 /**
  * @description 通过 GitHub commits API 拉取 app/docs 目录下每个文档的贡献者
  * 并将汇总结果写入 JSON 文件，以供人工审核
- * 然后再同步到数据库。
+ * 若检测到 DATABASE_URL（或显式传入 --sync-db=true），则会把统计结果同步到数据库。
  *
  * 环境变量/CLI 覆盖：
  * - GITHUB_TOKEN：可选，设置后会增加速率限制
@@ -10,6 +10,8 @@
  * - DOCS_DIR：相对于仓库的文档根目录（默认值：app/docs）
  * - OUTPUT：相对于仓库的输出 JSON 路径（默认值：tmp/doc-contributors.json）
  * - --output=path / --owner=name / --repo=name / --docs=dir：与环境变量覆盖相同
+ * - --sync-db=true|false：显式开启/关闭数据库同步（默认：存在 DATABASE_URL 时开启）
+ * - --skip-db：快捷方式，等价于 --sync-db=false
  *
  * 用法：
  * pnpm exec node scripts/backfill-contributors.mjs
@@ -55,10 +57,23 @@ const PER_PAGE = Math.min(
 );
 const TOKEN = process.env.GITHUB_TOKEN || "";
 
+// 数据库同步开关：默认在存在 DATABASE_URL 时启用，可用 --skip-db 禁止，或 --sync-db=true 强制启用
+const argSyncDb = args["sync-db"];
+const shouldSyncDb = (() => {
+  if (args["skip-db"] === "true") return false;
+  if (argSyncDb === "false") return false;
+  if (argSyncDb === "true") return true;
+  return Boolean(process.env.DATABASE_URL);
+})();
+
+let prisma = null;
+if (shouldSyncDb) {
+  prisma = new PrismaClient();
+}
+
 // 预先计算绝对路径与请求头，方便后续调用
 const docsDirAbs = path.resolve(REPO_ROOT, DOCS_DIR);
 const outputAbs = path.resolve(REPO_ROOT, OUTPUT);
-console.log("TOKEN", TOKEN);
 const headers = {
   "User-Agent": "involutionhell-contrib-backfill-script",
   Accept: "application/vnd.github+json",
@@ -103,14 +118,6 @@ function parseDocFrontmatter(content) {
     title: title || null,
     frontmatter: data,
   };
-}
-
-// 合并统计数据
-function mergeStatsInPlace(base, extra) {
-  for (const [k, v] of Object.entries(extra || {})) {
-    base[k] = (base[k] ?? 0) + (typeof v === "number" ? v : 0);
-  }
-  return base;
 }
 
 async function fetchCommitsForFile(repoRelativePath) {
@@ -219,6 +226,117 @@ function aggregateContributors(commits) {
   return { contributors: sorted, skipped };
 }
 
+function toSafeNumber(value) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 0;
+  return Math.round(value);
+}
+
+function toSafeNumber(value) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 0;
+  return Math.round(value);
+}
+
+function mergeStatsInto(targetStats, extraStats) {
+  for (const [k, v] of Object.entries(extraStats || {})) {
+    targetStats[k] = (targetStats[k] ?? 0) + toSafeNumber(v);
+  }
+}
+
+function maxDate(a, b) {
+  if (!a) return b || null;
+  if (!b) return a || null;
+  return new Date(a) > new Date(b) ? a : b;
+}
+
+async function syncResultsToDatabase(results) {
+  if (!prisma) {
+    log("Skipping database sync：未检测到 DATABASE_URL 或已显式禁用。");
+    return;
+  }
+  log("开始同步贡献者信息到数据库（幂等快照）……");
+
+  // 1) 先按 docId 聚合（把多个 filePath 的统计合并）
+  // byDocId = Map<docId, { stats: Record<gid, count>, lastByUser: Record<gid, isoString>, lastFilePath?: string, title?: string }>
+  const byDocId = new Map();
+
+  for (const r of results) {
+    if (r.error || !r.docId) continue;
+    const entry = byDocId.get(r.docId) ?? {
+      stats: {},
+      lastByUser: {},
+      lastFilePath: r.filePath,
+      title: r.title ?? null,
+    };
+    // 累加统计
+    mergeStatsInto(entry.stats, r.contributorStats || {});
+    // 记录每个用户的最大时间
+    for (const c of r.contributors || []) {
+      const k = String(c.githubId);
+      entry.lastByUser[k] = maxDate(entry.lastByUser[k], c.lastContributedAt);
+    }
+    // 以较新的路径作为当前 path（可选）
+    entry.lastFilePath = r.filePath || entry.lastFilePath;
+    if (r.title) entry.title = r.title;
+    byDocId.set(r.docId, entry);
+  }
+
+  // 2) 落库（幂等覆盖）
+  let docsProcessed = 0;
+  let contributorsUpserted = 0;
+
+  for (const [docId, payload] of byDocId) {
+    const { stats, lastByUser, lastFilePath, title } = payload;
+
+    // upsert 文档（不与旧值相加，直接覆盖 contributor_stats 为聚合快照）
+    await prisma.docs.upsert({
+      where: { id: docId },
+      create: {
+        id: docId,
+        path_current: lastFilePath ?? null,
+        title: title ?? null,
+        contributor_stats: stats, // ← 快照覆盖（幂等）
+      },
+      update: {
+        path_current: lastFilePath ?? undefined,
+        title: title ?? undefined,
+        contributor_stats: stats, // ← 快照覆盖（幂等）
+      },
+    });
+
+    // upsert 明细表：每个用户一条，数量 = 聚合总数，时间 = 各路径的最大时间（若无则用 now）
+    for (const [gidStr, count] of Object.entries(stats)) {
+      const last = lastByUser[gidStr]
+        ? new Date(lastByUser[gidStr])
+        : new Date();
+      await prisma.doc_contributors.upsert({
+        where: {
+          doc_id_github_id: {
+            doc_id: docId,
+            github_id: BigInt(gidStr),
+          },
+        },
+        create: {
+          doc_id: docId,
+          github_id: BigInt(gidStr),
+          contributions: toSafeNumber(count),
+          last_contributed_at: last,
+        },
+        update: {
+          contributions: toSafeNumber(count),
+          last_contributed_at: last,
+        },
+      });
+      contributorsUpserted += 1;
+    }
+
+    docsProcessed += 1;
+  }
+
+  log(
+    `数据库同步完成：处理 ${docsProcessed} 篇文档，贡献者 upsert ${contributorsUpserted} 条。`,
+  );
+}
+
 async function main() {
   // Step 1: 扫描文档列表，若为空直接终止
   log(`Scanning docs from ${path.relative(REPO_ROOT, docsDirAbs)}`);
@@ -311,60 +429,17 @@ async function main() {
     `Done. Wrote ${results.length} doc entries to ${path.relative(REPO_ROOT, outputAbs)}`,
   );
 
-  // —— 追加开始：按 docId 聚合，并可选同步到数据库 ——
-  // 先把同一 docId 的多个 filePath 合并（因为移动/重命名会导致同一 doc 分散在不同路径）
-  const byDocId = new Map(); // Map<string, Record<string, number>>
-  for (const r of results) {
-    if (!r.docId) continue; // 没有 docId 的跳过（避免用 filePath 当主键）
-    const acc = byDocId.get(r.docId) ?? {};
-    mergeStatsInPlace(acc, r.contributorStats || {});
-    byDocId.set(r.docId, acc);
-  }
-
-  // 同步到数据库（幂等）：旧值 + 新汇总 逐项累加，然后整体覆盖写回
-  const prisma = new PrismaClient();
-  try {
-    let updated = 0,
-      created = 0;
-
-    for (const [docId, aggregatedStats] of byDocId) {
-      // 读旧值（如果不存在就 create）
-      const existing = await prisma.docs.findUnique({
-        where: { id: docId },
-        select: { id: true, contributor_stats: true },
-      });
-
-      const merged = mergeStatsInPlace(
-        { ...(existing?.contributor_stats ?? {}) },
-        aggregatedStats,
-      );
-
-      if (!existing) {
-        await prisma.docs.create({
-          data: {
-            id: docId,
-            contributor_stats: merged,
-          },
-        });
-        created++;
-      } else {
-        await prisma.docs.update({
-          where: { id: docId },
-          data: { contributor_stats: merged },
-        });
-        updated++;
-      }
-    }
-
-    log(`DB sync done. Created: ${created}, Updated: ${updated}`);
-  } finally {
-    await prisma.$disconnect();
-  }
-  // —— 追加结束 ——
+  await syncResultsToDatabase(results);
 }
 
 // Step 3: 捕获未处理异常，避免脚本静默崩溃
-main().catch((error) => {
-  console.error("[backfill-contributors] Unexpected error", error);
-  process.exit(1);
-});
+main()
+  .catch((error) => {
+    console.error("[backfill-contributors] Unexpected error", error);
+    process.exit(1);
+  })
+  .finally(async () => {
+    if (prisma) {
+      await prisma.$disconnect();
+    }
+  });
