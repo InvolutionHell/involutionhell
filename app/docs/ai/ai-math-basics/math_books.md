@@ -112,6 +112,4 @@ tags:
 - [从数学到哲学](https://book.douban.com/subject/36532721/) — 王浩 (Hao Wang)  
   探讨形式逻辑、哥德尔不完备性、数学基础与哲学命题的关系。  
 
----
 
-<img width="415" height="688" alt="image" src="https://github.com/user-attachments/assets/5cfcebae-453c-4709-bc26-0d9b65582c01" />
