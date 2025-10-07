@@ -61,7 +61,10 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(docs): sync doc metadata [skip ci]" # ← 防循环
-          file_pattern: "app/docs/**/*.md app/docs/**/*.mdx app/docs/**/*.markdown generated/doc-contributors.json"
+          file_pattern: |
+            app/docs/**/*.md
+            app/docs/**/*.mdx
+            generated/doc-contributors.json
 
       - name: Upload snapshot JSON
         uses: actions/upload-artifact@v4
