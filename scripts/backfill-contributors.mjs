@@ -6,6 +6,23 @@
  *  1) 累计写回 doc_contributors（只增不减，不删除不出现的旧贡献者）
  *  2) 从明细聚合回 docs.contributor_stats
  *  3) JSON 输出使用聚合后的“累计最终值”，而非本轮快照
+ *  4) 生成 contributors.json，结构为：
+ *     {
+ *       repo,
+ *       generatedAt,
+ *       docsDir,
+ *       totalDocs,
+ *       results: [
+ *         {
+ *           docId,
+ *           path,
+ *           contributorStats: { githubId: contributions, ... },
+ *           contributors: [
+ *             { githubId, contributions, lastContributedAt }
+ *           ]
+ *         }
+ *       ]
+ *     }
  *
  * 功能要点：
  * - 多路径合并：当前扫描路径 + 历史路径（doc_paths）取并集
@@ -17,7 +34,7 @@
  * - GITHUB_TOKEN：可选，设置后可提高速率限制
  * - GITHUB_OWNER / GITHUB_REPO：覆盖默认仓库 (InvolutionHell/involutionhell.github.io)
  * - DOCS_DIR：相对于仓库根的文档目录（默认值：app/docs）
- * - OUTPUT：输出 JSON 路径（默认：tmp/doc-contributors.json）
+ * - OUTPUT：输出 JSON 路径（默认：generated/doc-contributors.json）
  * - GITHUB_PER_PAGE：每页 commits 数，1..100，默认 100
  * - --owner= / --repo= / --docs= / --output=
  * - --sync-db=true|false（默认：存在 DATABASE_URL 时启用）
@@ -69,7 +86,8 @@ const args = Object.fromEntries(
 const OWNER = args.owner || process.env.GITHUB_OWNER || "InvolutionHell";
 const REPO = args.repo || process.env.GITHUB_REPO || "involutionhell.github.io";
 const DOCS_DIR = args.docs || process.env.DOCS_DIR || "app/docs";
-const OUTPUT = args.output || process.env.OUTPUT || "tmp/doc-contributors.json";
+const OUTPUT =
+  args.output || process.env.OUTPUT || "generated/doc-contributors.json";
 const PER_PAGE = Math.min(
   Math.max(Number(process.env.GITHUB_PER_PAGE) || 100, 1),
   100,
@@ -102,6 +120,19 @@ const headers = {
 // 统一日志
 function log(...args) {
   console.log("[backfill-contributors]", ...args);
+}
+
+// 规范化成我想让前端读取的模样
+function normalizeContributorStats(stats) {
+  if (!stats || typeof stats !== "object" || Array.isArray(stats)) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(stats).map(([key, value]) => [
+      String(key),
+      Number(value) || 0,
+    ]),
+  );
 }
 
 // 确保目录
@@ -523,6 +554,7 @@ async function main() {
         ? new Date(commitTimestamps[0]).toISOString()
         : null,
       _commits: commits, // 用于增量（后续不写入 JSON）
+      contributorsRaw: contributors,
     });
   }
 
@@ -541,28 +573,134 @@ async function main() {
     if (!r.docId) continue;
 
     if (shouldSyncDb) {
+      const rawMetaById = new Map(
+        (r.contributorsRaw ?? [])
+          .map((meta) => {
+            const githubId =
+              meta?.githubId !== undefined && meta?.githubId !== null
+                ? String(meta.githubId)
+                : meta?.github_id !== undefined && meta?.github_id !== null
+                  ? String(meta.github_id)
+                  : null;
+            if (!githubId) return null;
+            return [
+              githubId,
+              {
+                login: meta?.login ?? null,
+                avatarUrl: meta?.avatarUrl ?? null,
+                htmlUrl: meta?.htmlUrl ?? null,
+                lastContributedAt:
+                  typeof meta?.lastContributedAt === "string"
+                    ? meta.lastContributedAt
+                    : meta?.last_contributed_at instanceof Date
+                      ? meta.last_contributed_at.toISOString()
+                      : null,
+              },
+            ];
+          })
+          .filter(Boolean),
+      );
+
       const row = await prisma.docs.findUnique({
         where: { id: r.docId },
-        select: { contributor_stats: true, path_current: true, title: true },
+        select: {
+          contributor_stats: true,
+          path_current: true,
+          doc_contributors: {
+            select: {
+              github_id: true,
+              contributions: true,
+              last_contributed_at: true,
+            },
+            orderBy: [
+              { contributions: "desc" },
+              { last_contributed_at: "desc" },
+            ],
+          },
+        },
       });
+
+      const contributorsFromDb = (row?.doc_contributors ?? [])
+        .map((contrib) => ({
+          githubId:
+            contrib.github_id !== null && contrib.github_id !== undefined
+              ? contrib.github_id.toString()
+              : null,
+          contributions: Number(contrib.contributions ?? 0),
+          lastContributedAt: contrib.last_contributed_at
+            ? new Date(contrib.last_contributed_at).toISOString()
+            : null,
+        }))
+        .filter((item) => item.githubId !== null)
+        .map((item) => {
+          const meta = rawMetaById.get(item.githubId);
+          const fallbackAvatar = item.githubId
+            ? `https://avatars.githubusercontent.com/u/${item.githubId}`
+            : null;
+          const fallbackHtmlUrl = meta?.login
+            ? `https://github.com/${meta.login}`
+            : null;
+          return {
+            ...item,
+            login: meta?.login ?? null,
+            avatarUrl: meta?.avatarUrl ?? fallbackAvatar,
+            htmlUrl: meta?.htmlUrl ?? fallbackHtmlUrl,
+          };
+        });
+
       finalJsonResults.push({
         docId: r.docId,
-        title: row?.title ?? r.title ?? null,
-        filePath: row?.path_current ?? r.filePath ?? null,
-        contributorStats: row?.contributor_stats ?? {}, // ✅ 累计后的最终值
-        allPaths: r.allPaths,
-        lastCommitAt: r.lastCommitAt,
+        path: row?.path_current ?? r.filePath ?? null,
+        contributorStats: normalizeContributorStats(row?.contributor_stats),
+        contributors: contributorsFromDb,
       });
     } else {
-      // 无 DB 时退化（仅供本地调试）
+      const fallbackContributors = (r.contributorsRaw ?? [])
+        .map((contrib) => ({
+          githubId:
+            contrib?.githubId !== undefined && contrib?.githubId !== null
+              ? String(contrib.githubId)
+              : contrib?.github_id !== undefined && contrib?.github_id !== null
+                ? String(contrib.github_id)
+                : null,
+          contributions: Number(contrib?.contributions ?? 0),
+          lastContributedAt:
+            typeof contrib?.lastContributedAt === "string"
+              ? contrib.lastContributedAt
+              : contrib?.last_contributed_at instanceof Date
+                ? contrib.last_contributed_at.toISOString()
+                : null,
+          login: contrib?.login ?? null,
+          avatarUrl:
+            contrib?.avatarUrl ??
+            (contrib?.githubId
+              ? `https://avatars.githubusercontent.com/u/${contrib.githubId}`
+              : null),
+          htmlUrl:
+            contrib?.htmlUrl ??
+            (contrib?.login ? `https://github.com/${contrib.login}` : null),
+        }))
+        .filter((item) => item.githubId !== null)
+        .sort((a, b) => {
+          if (b.contributions !== a.contributions) {
+            return b.contributions - a.contributions;
+          }
+          const timeA = a.lastContributedAt
+            ? Date.parse(a.lastContributedAt)
+            : 0;
+          const timeB = b.lastContributedAt
+            ? Date.parse(b.lastContributedAt)
+            : 0;
+          return timeB - timeA;
+        });
+
       finalJsonResults.push({
         docId: r.docId,
-        title: r.title ?? null,
-        filePath: r.filePath ?? null,
-        contributorStats: r.contributorStatsThisRound ?? {}, // 仅本轮
-        allPaths: r.allPaths,
-        lastCommitAt: r.lastCommitAt,
-        note: "DB sync disabled; contributorStats is per-run snapshot, not cumulative.",
+        path: r.filePath ?? null,
+        contributorStats: normalizeContributorStats(
+          r.contributorStatsThisRound ?? {},
+        ),
+        contributors: fallbackContributors,
       });
     }
   }

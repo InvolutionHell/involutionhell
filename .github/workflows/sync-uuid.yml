@@ -12,6 +12,7 @@ on:
       - "package.json"
       - "pnpm-lock.yaml"
       - ".github/workflows/sync-uuid.yml"
+      - "generated/doc-contributors.json"
   workflow_dispatch: {}
 
 concurrency:
@@ -56,8 +57,8 @@ jobs:
       - name: Auto-commit added docIds (if any)
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore(docs): add missing docId via uuid.mjs [skip ci]" # ← 防循环
-          file_pattern: "app/docs/**/*.md app/docs/**/*.mdx app/docs/**/*.markdown"
+          commit_message: "chore(docs): sync doc metadata [skip ci]" # ← 防循环
+          file_pattern: "app/docs/**/*.md app/docs/**/*.mdx app/docs/**/*.markdown generated/doc-contributors.json"
 
       - name: Backfill contributors & sync DB
         run: pnpm exec node scripts/backfill-contributors.mjs
@@ -66,5 +67,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: doc-contributors-snapshot
-          path: tmp/doc-contributors.json
+          path: generated/doc-contributors.json
           if-no-files-found: ignore
