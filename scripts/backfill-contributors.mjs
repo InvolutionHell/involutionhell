@@ -1,39 +1,58 @@
 #!/usr/bin/env node
 /**
- * @description 通过 GitHub commits API 拉取 app/docs 目录下每个文档的贡献者
- * 并将汇总结果写入 JSON 文件，以供人工审核
- * 若检测到 DATABASE_URL（或显式传入 --sync-db=true），则会把统计结果同步到数据库。
+ * @description 通过 GitHub commits API 拉取 app/docs 目录下每个文档的贡献者，
+ * 基于数据库已有明细（doc_contributors.last_contributed_at）做【增量累计】，
+ * 最终：
+ *  1) 累计写回 doc_contributors（只增不减，不删除不出现的旧贡献者）
+ *  2) 从明细聚合回 docs.contributor_stats
+ *  3) JSON 输出使用聚合后的“累计最终值”，而非本轮快照
+ *
+ * 功能要点：
+ * - 多路径合并：当前扫描路径 + 历史路径（doc_paths）取并集
+ * - 跨路径去重：按 commit.sha 去重，避免重命名/移动导致的重复统计
+ * - 增量原则：仅统计“本轮提交时间 > 该作者的 last_contributed_at”的提交数
+ * - 只使用 GitHub API，无需本地 git
  *
  * 环境变量/CLI 覆盖：
- * - GITHUB_TOKEN：可选，设置后会增加速率限制
+ * - GITHUB_TOKEN：可选，设置后可提高速率限制
  * - GITHUB_OWNER / GITHUB_REPO：覆盖默认仓库 (InvolutionHell/involutionhell.github.io)
- * - DOCS_DIR：相对于仓库的文档根目录（默认值：app/docs）
- * - OUTPUT：相对于仓库的输出 JSON 路径（默认值：tmp/doc-contributors.json）
- * - --output=path / --owner=name / --repo=name / --docs=dir：与环境变量覆盖相同
- * - --sync-db=true|false：显式开启/关闭数据库同步（默认：存在 DATABASE_URL 时开启）
- * - --skip-db：快捷方式，等价于 --sync-db=false
+ * - DOCS_DIR：相对于仓库根的文档目录（默认值：app/docs）
+ * - OUTPUT：输出 JSON 路径（默认：tmp/doc-contributors.json）
+ * - GITHUB_PER_PAGE：每页 commits 数，1..100，默认 100
+ * - --owner= / --repo= / --docs= / --output=
+ * - --sync-db=true|false（默认：存在 DATABASE_URL 时启用）
+ * - --skip-db 等价于 --sync-db=false
  *
  * 用法：
- * pnpm exec node scripts/backfill-contributors.mjs
+ *   pnpm exec node scripts/backfill-contributors.mjs
+ *
+ * 依赖：
+ *   pnpm add -D fast-glob gray-matter dotenv
+ *   以及生成的 Prisma Client（import 路径见下）
+ *
  * @author Siz Long
- * @date 2025-09-27
+ * @date 2025-10-07
  * @location scripts/backfill-contributors.mjs
  */
+
 import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import "dotenv/config";
-import { PrismaClient } from "../generated/prisma/index.js";
-
 import fg from "fast-glob";
 import matter from "gray-matter";
+// 注意：按你的项目结构，这里是 "../generated/prisma/index.js"
+import { PrismaClient } from "../generated/prisma/index.js";
+
+// Node >=18 在 Actions 下自带 fetch；若需兼容性可加 undici，但默认不必。
+// import fetch from "node-fetch";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, "..");
 
-// 解析形如 --key=value 的命令行参数，并归一化为小写 key
+// 解析 --key=value 参数（统一小写 key）
 const args = Object.fromEntries(
   process.argv
     .slice(2)
@@ -46,7 +65,7 @@ const args = Object.fromEntries(
     }),
 );
 
-// 基础配置：仓库路径、文档目录、输出文件以及单页 commit 数量
+// 基础配置
 const OWNER = args.owner || process.env.GITHUB_OWNER || "InvolutionHell";
 const REPO = args.repo || process.env.GITHUB_REPO || "involutionhell.github.io";
 const DOCS_DIR = args.docs || process.env.DOCS_DIR || "app/docs";
@@ -57,7 +76,7 @@ const PER_PAGE = Math.min(
 );
 const TOKEN = process.env.GITHUB_TOKEN || "";
 
-// 数据库同步开关：默认在存在 DATABASE_URL 时启用，可用 --skip-db 禁止，或 --sync-db=true 强制启用
+// 同步 DB 开关：默认有 DATABASE_URL 即启用；--skip-db/--sync-db 控制
 const argSyncDb = args["sync-db"];
 const shouldSyncDb = (() => {
   if (args["skip-db"] === "true") return false;
@@ -71,7 +90,7 @@ if (shouldSyncDb) {
   prisma = new PrismaClient();
 }
 
-// 预先计算绝对路径与请求头，方便后续调用
+// 预设
 const docsDirAbs = path.resolve(REPO_ROOT, DOCS_DIR);
 const outputAbs = path.resolve(REPO_ROOT, OUTPUT);
 const headers = {
@@ -80,19 +99,19 @@ const headers = {
   ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}),
 };
 
-// 统一日志输出前缀，方便定位脚本执行信息
+// 统一日志
 function log(...args) {
   console.log("[backfill-contributors]", ...args);
 }
 
+// 确保目录
 async function ensureParentDir(filePath) {
-  // 保证输出文件所在目录存在，避免写入失败
   const dir = path.dirname(filePath);
   await fs.mkdir(dir, { recursive: true });
 }
 
+// 列出 docs 里所有 Markdown/MDX 文件
 async function listDocFiles() {
-  // 使用 glob 匹配 docs 目录下的所有 Markdown/MDX 文件
   const patterns = ["**/*.{md,mdx,markdown}"];
   const files = await fg(patterns, {
     cwd: docsDirAbs,
@@ -107,8 +126,8 @@ async function listDocFiles() {
     .sort((a, b) => a.relative.localeCompare(b.relative));
 }
 
+// 解析 frontmatter，取 docId / title
 function parseDocFrontmatter(content) {
-  // 解析 frontmatter，提取 docId 与标题等关键信息
   const parsed = matter(content);
   const data = parsed.data || {};
   const docId = typeof data.docId === "string" ? data.docId.trim() : "";
@@ -120,8 +139,8 @@ function parseDocFrontmatter(content) {
   };
 }
 
+// 拉取某个“路径”的 commit（分页+rate limit + 错误处理）
 async function fetchCommitsForFile(repoRelativePath) {
-  // 循环分页请求 GitHub commits API，直到没有下一页
   const commits = [];
   let page = 1;
 
@@ -133,12 +152,9 @@ async function fetchCommitsForFile(repoRelativePath) {
     url.searchParams.set("per_page", String(PER_PAGE));
     url.searchParams.set("page", String(page));
 
-    const res = await fetch(url, {
-      headers,
-    });
+    const res = await fetch(url, { headers });
 
     if (res.status === 403) {
-      // 命中速率限制时抛出详细报错，便于提示等待时间
       const reset = res.headers.get("x-ratelimit-reset");
       const resetDate = reset
         ? new Date(Number(reset) * 1000).toISOString()
@@ -147,7 +163,6 @@ async function fetchCommitsForFile(repoRelativePath) {
         `GitHub API rate limit reached (path: ${repoRelativePath}). Resets at ${resetDate}.`,
       );
     }
-
     if (!res.ok) {
       const text = await res.text();
       throw new Error(
@@ -156,35 +171,43 @@ async function fetchCommitsForFile(repoRelativePath) {
     }
 
     const data = await res.json();
-    if (!Array.isArray(data) || data.length === 0) {
-      break;
-    }
+    if (!Array.isArray(data) || data.length === 0) break;
 
     commits.push(...data);
 
     const link = res.headers.get("link") || "";
     const hasNext = link.split(",").some((part) => part.includes('rel="next"'));
-    if (!hasNext) {
-      break;
-    }
+    if (!hasNext) break;
     page += 1;
   }
 
   return commits;
 }
 
+// 多路径抓取并按 sha 去重
+async function fetchCommitsForPaths(allPaths) {
+  const bySha = new Map(); // sha -> commitObject
+  for (const p of allPaths) {
+    const commits = await fetchCommitsForFile(p);
+    for (const c of commits) {
+      const sha = c?.sha;
+      if (sha && !bySha.has(sha)) bySha.set(sha, c);
+    }
+  }
+  return Array.from(bySha.values());
+}
+
+// 仅用于统计跳过情况（author=null）等
 function aggregateContributors(commits) {
-  // 汇总贡献者信息并按贡献次数排序，同时记录匿名提交数量
   const contributors = new Map();
   let skipped = 0;
 
   for (const commit of commits) {
-    const author = commit?.author;
+    const author = commit?.author; // 这里是 GitHub 账号对象（可能为 null）
     if (!author || typeof author.id !== "number") {
       skipped += 1;
       continue;
     }
-
     const commitMeta = commit?.commit || {};
     const rawDate = commitMeta?.author?.date || commitMeta?.committer?.date;
     const commitDate = rawDate ? new Date(rawDate) : null;
@@ -198,26 +221,23 @@ function aggregateContributors(commits) {
         contributions: 1,
         lastContributedAt: commitDate ? commitDate.toISOString() : null,
       });
-      continue;
-    }
-
-    const existing = contributors.get(author.id);
-    existing.contributions += 1;
-    if (commitDate) {
-      // 仅在发现更晚的提交时间时更新 lastContributedAt
-      const previous = existing.lastContributedAt
-        ? new Date(existing.lastContributedAt)
-        : null;
-      if (!previous || commitDate > previous) {
-        existing.lastContributedAt = commitDate.toISOString();
+    } else {
+      const existing = contributors.get(author.id);
+      existing.contributions += 1;
+      if (commitDate) {
+        const previous = existing.lastContributedAt
+          ? new Date(existing.lastContributedAt)
+          : null;
+        if (!previous || commitDate > previous) {
+          existing.lastContributedAt = commitDate.toISOString();
+        }
       }
     }
   }
 
   const sorted = Array.from(contributors.values()).sort((a, b) => {
-    if (b.contributions !== a.contributions) {
+    if (b.contributions !== a.contributions)
       return b.contributions - a.contributions;
-    }
     const dateA = a.lastContributedAt ? Date.parse(a.lastContributedAt) : 0;
     const dateB = b.lastContributedAt ? Date.parse(b.lastContributedAt) : 0;
     return dateB - dateA;
@@ -226,42 +246,10 @@ function aggregateContributors(commits) {
   return { contributors: sorted, skipped };
 }
 
-function toSafeNumber(value) {
-  if (typeof value !== "number" || !Number.isFinite(value)) return 0;
-  return Math.round(value);
-}
-
-function mergeStatsInto(targetStats, extraStats) {
-  for (const [k, v] of Object.entries(extraStats || {})) {
-    targetStats[k] = (targetStats[k] ?? 0) + toSafeNumber(v);
-  }
-}
-
-function maxDate(a, b) {
-  if (!a) return b || null;
-  if (!b) return a || null;
-  return new Date(a) > new Date(b) ? a : b;
-}
-
-// 1) 新增：去重合并多路径的 commits
-async function fetchCommitsForPaths(allPaths) {
-  const bySha = new Map(); // sha -> commitObject
-  for (const p of allPaths) {
-    const commits = await fetchCommitsForFile(p);
-    for (const c of commits) {
-      const sha = c?.sha;
-      if (sha && !bySha.has(sha)) bySha.set(sha, c);
-    }
-  }
-  return Array.from(bySha.values());
-}
-
-// 2) 新增：把当前扫描到的路径写入 doc_paths
+// 写 doc_paths（维护历史路径）
 async function upsertDocPath(docId, repoRelativePath, title = null) {
   if (!prisma) return;
-
   await prisma.$transaction(async (tx) => {
-    // 1) 先确保父表 docs 存在（最小创建）
     await tx.docs.upsert({
       where: { id: docId },
       create: {
@@ -270,12 +258,10 @@ async function upsertDocPath(docId, repoRelativePath, title = null) {
         title: title ?? null,
       },
       update: {
-        // 有就不强行覆盖 title；只在你想覆盖时再加
         path_current: repoRelativePath ?? undefined,
+        // title 可按需覆盖，这里默认不强制覆盖
       },
     });
-
-    // 2) 再写子表 doc_paths（复合主键 upsert）
     await tx.doc_paths.upsert({
       where: { doc_id_path: { doc_id: docId, path: repoRelativePath } },
       create: { doc_id: docId, path: repoRelativePath },
@@ -284,7 +270,7 @@ async function upsertDocPath(docId, repoRelativePath, title = null) {
   });
 }
 
-// 3) 新增：批量取出一组 docId 的历史路径
+// 取一组 docId 的历史路径
 async function getAllPathsForDocIds(docIds) {
   if (!prisma || docIds.length === 0) return new Map();
   const rows = await prisma.doc_paths.findMany({
@@ -300,66 +286,100 @@ async function getAllPathsForDocIds(docIds) {
   return map;
 }
 
-async function syncResultsToDatabase(results) {
+// 增量累计同步（核心）
+async function syncResultsToDatabaseIncremental(results) {
   if (!prisma) {
-    log("Skipping database sync：未检测到 DATABASE_URL 或已显式禁用。");
+    log("Skipping DB sync：未检测到 DATABASE_URL 或已禁用。");
     return;
   }
-  log("开始同步贡献者信息到数据库（幂等快照）……");
+  log("开始增量累计同步到数据库……");
 
-  // 1) 先按 docId 聚合（把多个 filePath 的统计合并）
-  // byDocId = Map<docId, { stats: Record<gid, count>, lastByUser: Record<gid, isoString>, lastFilePath?: string, title?: string }>
+  // 按 docId 聚合“本轮的提交时间列表（按用户）”
   const byDocId = new Map();
-
   for (const r of results) {
     if (r.error || !r.docId) continue;
-    const entry = byDocId.get(r.docId) ?? {
-      stats: {},
-      lastByUser: {},
-      lastFilePath: r.filePath,
-      title: r.title ?? null,
-    };
-    // 累加统计
-    mergeStatsInto(entry.stats, r.contributorStats || {});
-    // 记录每个用户的最大时间
-    for (const c of r.contributors || []) {
-      const k = String(c.githubId);
-      entry.lastByUser[k] = maxDate(entry.lastByUser[k], c.lastContributedAt);
+    const commits = Array.isArray(r._commits) ? r._commits : [];
+
+    const commitsByUser = new Map(); // gidStr -> Date[]
+    for (const c of commits) {
+      const gid = c?.author?.id;
+      if (!Number.isFinite(gid)) continue; // 跳过匿名/未绑定账号
+      const iso = c?.commit?.author?.date || c?.commit?.committer?.date;
+      if (!iso) continue;
+      const arr = commitsByUser.get(String(gid)) ?? [];
+      arr.push(new Date(iso));
+      commitsByUser.set(String(gid), arr);
     }
-    // 以较新的路径作为当前 path（可选）
-    entry.lastFilePath = r.filePath || entry.lastFilePath;
-    if (r.title) entry.title = r.title;
+    for (const arr of commitsByUser.values()) arr.sort((a, b) => a - b);
+
+    const entry = byDocId.get(r.docId) ?? {
+      representativePath: r.filePath ?? null,
+      title: r.title ?? null,
+      commitsByUser: new Map(),
+    };
+    // 合并（保持有序）
+    for (const [gid, arr] of commitsByUser) {
+      const old = entry.commitsByUser.get(gid) ?? [];
+      const merged = old.concat(arr).sort((a, b) => a - b);
+      entry.commitsByUser.set(gid, merged);
+    }
+    if (!entry.title && r.title) entry.title = r.title;
+    if (r.filePath) entry.representativePath = r.filePath;
+
     byDocId.set(r.docId, entry);
   }
 
-  // 2) 落库（幂等覆盖）
-  let docsProcessed = 0;
-  let contributorsUpserted = 0;
-
+  // 对每个 docId：读历史明细 -> 只累计“新于 last”的提交 -> 回写明细 -> 聚合回主表
   for (const [docId, payload] of byDocId) {
-    const { stats, lastByUser, lastFilePath, title } = payload;
+    const { commitsByUser, representativePath, title } = payload;
 
-    // upsert 文档（不与旧值相加，直接覆盖 contributor_stats 为聚合快照）
+    // 确保 docs 行存在（可更新 path/title）
     await prisma.docs.upsert({
       where: { id: docId },
       create: {
         id: docId,
-        path_current: lastFilePath ?? null,
+        path_current: representativePath ?? null,
         title: title ?? null,
-        contributor_stats: stats, // ← 快照覆盖（幂等）
       },
       update: {
-        path_current: lastFilePath ?? undefined,
+        path_current: representativePath ?? undefined,
         title: title ?? undefined,
-        contributor_stats: stats, // ← 快照覆盖（幂等）
       },
     });
 
-    // upsert 明细表：每个用户一条，数量 = 聚合总数，时间 = 各路径的最大时间（若无则用 now）
-    for (const [gidStr, count] of Object.entries(stats)) {
-      const last = lastByUser[gidStr]
-        ? new Date(lastByUser[gidStr])
-        : new Date();
+    // 读历史明细
+    const existing = await prisma.doc_contributors.findMany({
+      where: { doc_id: docId },
+      select: {
+        github_id: true,
+        contributions: true,
+        last_contributed_at: true,
+      },
+    });
+    const prevMap = new Map(); // gidStr -> { count, last: Date|null }
+    for (const row of existing) {
+      prevMap.set(String(row.github_id), {
+        count: Number(row.contributions) || 0,
+        last: row.last_contributed_at
+          ? new Date(row.last_contributed_at)
+          : null,
+      });
+    }
+
+    // 对“本轮出现的用户”做增量
+    for (const [gidStr, timesAsc] of commitsByUser) {
+      const prev = prevMap.get(gidStr) ?? { count: 0, last: null };
+      // 只计 prev.last 之后的提交
+      const delta = timesAsc.filter((t) => !prev.last || t > prev.last).length;
+      const newCount = prev.count + delta;
+      const newestThisRound = timesAsc.length
+        ? timesAsc[timesAsc.length - 1]
+        : null;
+      const newLast =
+        newestThisRound && (!prev.last || newestThisRound > prev.last)
+          ? newestThisRound
+          : prev.last;
+
       await prisma.doc_contributors.upsert({
         where: {
           doc_id_github_id: {
@@ -370,48 +390,55 @@ async function syncResultsToDatabase(results) {
         create: {
           doc_id: docId,
           github_id: BigInt(gidStr),
-          contributions: toSafeNumber(count),
-          last_contributed_at: last,
+          contributions: newCount,
+          last_contributed_at: newLast ?? new Date(),
         },
         update: {
-          contributions: toSafeNumber(count),
-          last_contributed_at: last,
+          contributions: newCount,
+          last_contributed_at: newLast ?? new Date(),
         },
       });
-      contributorsUpserted += 1;
-      log(
-        `  ↳ upsert ${docId} / user=${gidStr} → count=${count}, last=${last.toISOString()}`,
-      );
+
+      prevMap.set(gidStr, { count: newCount, last: newLast ?? prev.last });
     }
 
-    docsProcessed += 1;
+    // 没在本轮出现的既有作者：保持不动（不删），满足“累计保留历史”的语义
+
+    // 聚合回 docs.contributor_stats（仅保留 count>0）
+    const finalStats = Object.fromEntries(
+      Array.from(prevMap.entries())
+        .filter(([, v]) => (v?.count ?? 0) > 0)
+        .map(([gid, v]) => [gid, v.count]),
+    );
+
+    await prisma.docs.update({
+      where: { id: docId },
+      data: { contributor_stats: finalStats },
+    });
+
+    log(`  ✔ docId=${docId} 累计完成：${JSON.stringify(finalStats)}`);
   }
 
-  log(
-    `数据库同步完成：处理 ${docsProcessed} 篇文档，贡献者 upsert ${contributorsUpserted} 条。`,
-  );
+  log("数据库增量累计已完成。");
 }
 
+// 主流程
 async function main() {
-  // 1) 扫描仓库，收集当前 docId → 路径集合 & 标题
-  log(`Scanning docs from ${path.relative(REPO_ROOT, docsDirAbs)}`);
+  log(`Scanning docs under: ${path.relative(REPO_ROOT, docsDirAbs)}`);
   const docFiles = await listDocFiles();
   if (docFiles.length === 0) {
     log("No doc files found. Abort.");
     return;
   }
 
-  /** Map<string, Set<string>>: docId -> 当前扫描到的路径集合 */
-  const currentDocIdPaths = new Map();
-  /** Map<string, string|null>: docId -> 标题（任取一个文件里的 title） */
+  // 扫描当前文件：收集 docId -> 当前路径集合、以及 docId->title
+  const currentDocIdPaths = new Map(); // docId -> Set(paths)
   const titleByDocId = new Map();
 
-  for (let i = 0; i < docFiles.length; i += 1) {
-    const file = docFiles[i];
+  for (const file of docFiles) {
     const repoRelative = path
       .relative(REPO_ROOT, file.absolute)
       .replace(/\\/g, "/");
-
     const raw = await fs.readFile(file.absolute, "utf8");
     const meta = parseDocFrontmatter(raw);
 
@@ -419,53 +446,45 @@ async function main() {
       log(`  ⚠️ 跳过 ${repoRelative}：缺少 docId`);
       continue;
     }
-
-    // 收集路径
     const set = currentDocIdPaths.get(meta.docId) ?? new Set();
     set.add(repoRelative);
     currentDocIdPaths.set(meta.docId, set);
 
-    // 收集一个标题（可选）
     if (!titleByDocId.has(meta.docId) && meta.title) {
       titleByDocId.set(meta.docId, meta.title);
     }
 
-    // 把当前路径记入 doc_paths（DB 中维护历史路径）
+    // 记入 doc_paths（DB 中维护历史路径）
     await upsertDocPath(meta.docId, repoRelative);
   }
 
-  // 没有任何含 docId 的文件，直接结束
   const docIds = Array.from(currentDocIdPaths.keys());
   if (docIds.length === 0) {
-    log("No docs with docId were found. Abort.");
+    log("No docs with docId found. Abort.");
     return;
   }
 
-  // 2) 从数据库取每个 docId 的历史路径，并与当前路径做并集
+  // 历史路径合并
   const historical = await getAllPathsForDocIds(docIds);
 
-  // 3) 对每个 docId：对“所有（历史+当前）路径”抓 commits（按 sha 去重），再聚合作者统计
+  // 按每个 docId 抓取（合并路径+去重）并计算基础统计
   const results = [];
-
   for (const docId of docIds) {
     const currentSet = currentDocIdPaths.get(docId) ?? new Set();
     const histSet = historical.get(docId) ?? new Set();
     const unionPaths = new Set([...histSet, ...currentSet]);
 
-    // 没路径就跳过
     if (unionPaths.size === 0) {
       log(`  ⚠️ docId=${docId} 无路径记录，跳过`);
       continue;
     }
 
-    // 选一个代表性的路径放到 result.filePath（用于审计/回显）
     const representativePath =
       currentSet.values().next().value ?? histSet.values().next().value ?? null;
     const title = titleByDocId.get(docId) ?? null;
 
     let commits = [];
     try {
-      // 👇 关键：对“所有路径”抓取并按 SHA 去重，避免重命名造成双计
       commits = await fetchCommitsForPaths(Array.from(unionPaths));
     } catch (err) {
       log(`  ✖ 拉取 commits 失败 (docId=${docId}): ${err.message}`);
@@ -479,10 +498,8 @@ async function main() {
       continue;
     }
 
-    // 复用你原有的作者聚合逻辑
     const { contributors, skipped } = aggregateContributors(commits);
-
-    const stats = Object.fromEntries(
+    const statsThisRound = Object.fromEntries(
       (contributors || []).map((c) => [String(c.githubId), c.contributions]),
     );
 
@@ -493,22 +510,63 @@ async function main() {
       .filter(Number.isFinite)
       .sort((a, b) => b - a);
 
+    // 注意：为了增量计算，携带 _commits 原始数据（仅进程内使用，不写到 JSON）
     results.push({
       docId,
       title,
       filePath: representativePath,
-      allPaths: Array.from(unionPaths), // 便于审计/排查
+      allPaths: Array.from(unionPaths),
       totalCommits: commits.length,
       skippedCommits: skipped,
-      contributors,
-      contributorStats: stats, // {"githubId": count}
+      contributorStatsThisRound: statsThisRound, // 仅用于日志
       lastCommitAt: commitTimestamps.length
         ? new Date(commitTimestamps[0]).toISOString()
         : null,
+      _commits: commits, // 用于增量（后续不写入 JSON）
     });
   }
 
-  // 4) 写 JSON 快照（抓取层的结果；与 DB 同步后的状态应一致）
+  // 先做增量写入 DB（如启用）
+  if (shouldSyncDb) {
+    await syncResultsToDatabaseIncremental(results);
+  } else {
+    log("未启用数据库同步（无 DATABASE_URL 或已显式禁用）。");
+  }
+
+  // 生成最终 JSON：若启用 DB，同步后从 DB 读回累计后的 contributor_stats；
+  // 若未启用 DB，则 JSON 退化为“本轮快照 + 基础信息”（无法拿到累计值）。
+  const finalJsonResults = [];
+
+  for (const r of results) {
+    if (!r.docId) continue;
+
+    if (shouldSyncDb) {
+      const row = await prisma.docs.findUnique({
+        where: { id: r.docId },
+        select: { contributor_stats: true, path_current: true, title: true },
+      });
+      finalJsonResults.push({
+        docId: r.docId,
+        title: row?.title ?? r.title ?? null,
+        filePath: row?.path_current ?? r.filePath ?? null,
+        contributorStats: row?.contributor_stats ?? {}, // ✅ 累计后的最终值
+        allPaths: r.allPaths,
+        lastCommitAt: r.lastCommitAt,
+      });
+    } else {
+      // 无 DB 时退化（仅供本地调试）
+      finalJsonResults.push({
+        docId: r.docId,
+        title: r.title ?? null,
+        filePath: r.filePath ?? null,
+        contributorStats: r.contributorStatsThisRound ?? {}, // 仅本轮
+        allPaths: r.allPaths,
+        lastCommitAt: r.lastCommitAt,
+        note: "DB sync disabled; contributorStats is per-run snapshot, not cumulative.",
+      });
+    }
+  }
+
   await ensureParentDir(outputAbs);
   await fs.writeFile(
     outputAbs,
@@ -517,22 +575,23 @@ async function main() {
         repo: `${OWNER}/${REPO}`,
         generatedAt: new Date().toISOString(),
         docsDir: path.relative(REPO_ROOT, docsDirAbs),
-        totalDocs: results.length,
-        results,
+        totalDocs: finalJsonResults.length,
+        results: finalJsonResults,
       },
       null,
       2,
     ),
   );
-  log(
-    `Done. Wrote ${results.length} doc entries to ${path.relative(REPO_ROOT, outputAbs)}`,
-  );
 
-  // 5) 幂等落库：docs.contributor_stats 覆盖快照；doc_contributors 明细 upsert（计数=合并后的总数，时间=最大）
-  await syncResultsToDatabase(results);
+  log(
+    `Done. Wrote ${finalJsonResults.length} entries to ${path.relative(
+      REPO_ROOT,
+      outputAbs,
+    )} (JSON 使用累计后的最终值${shouldSyncDb ? "" : "（DB 未启用时退化为本轮快照）"}).`,
+  );
 }
 
-// Step 3: 捕获未处理异常，避免脚本静默崩溃
+// 兜底
 main()
   .catch((error) => {
     console.error("[backfill-contributors] Unexpected error", error);
