@@ -24,7 +24,7 @@ export interface ContributorsDataset {
   results: DocContributorsRecord[];
 }
 
-const contributorsDataset = dataset as ContributorsDataset;
+const contributorsDataset = dataset as unknown as ContributorsDataset;
 
 function normalizeRelativePath(relativePath: string): string {
   const cleaned = relativePath.replace(/^\/+/, "").replace(/\\/g, "/");
