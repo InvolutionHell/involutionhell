@@ -2,34 +2,39 @@ name: Docs Backfill (on docs changes)
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - feat/contributor
     paths:
-      - "app/docs/**" # 只有 app/docs 下有改动才触发
-      - "scripts/uuid.mjs" # 脚本自身改动也触发
+      - "app/docs/**"
+      - "scripts/uuid.mjs"
       - "scripts/backfill-contributors.mjs"
       - "package.json"
       - "pnpm-lock.yaml"
-  workflow_dispatch: {} # 手动触发备选
+  workflow_dispatch: {}
+
+concurrency:
+  group: backfill-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   backfill:
-    # 只在主仓库跑（避免 fork 的 PR 触发），且只跑 main 分支
-    if: github.repository == 'InvolutionHell/involutionhell.github.io' && github.ref == 'refs/heads/main'
+    # 防止 fork、限定 main、并避免机器人循环
+    if: github.repository == 'InvolutionHell/involutionhell.github.io' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feat/contributor') &&
+      github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
-      contents: write # 允许 uuid.mjs 补写 docId 后自动提交
+      contents: write
     env:
-      # 从仓库 Secrets 注入，避免泄露
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 供脚本调用 GitHub API 提升速率
       DOCS_DIR: app/docs
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: 9
 
@@ -39,22 +44,18 @@ jobs:
       - name: Generate Prisma Client
         run: pnpm prisma generate
 
-      # 1) 先补齐 frontmatter docId（uuid.mjs）
       - name: Ensure docId frontmatter
         run: pnpm exec node scripts/uuid.mjs
 
-      # 可选：若 uuid.mjs 写入了 docId，则自动提交（方便把 docId 持久化回仓库）
       - name: Auto-commit added docIds (if any)
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore(docs): add missing docId via uuid.mjs"
+          commit_message: "chore(docs): add missing docId via uuid.mjs [skip ci]" # ← 防循环
           file_pattern: "app/docs/**/*.md app/docs/**/*.mdx app/docs/**/*.markdown"
 
-      # 2) 再回填贡献者并同步数据库（你的 backfill 脚本）
       - name: Backfill contributors & sync DB
         run: pnpm exec node scripts/backfill-contributors.mjs
 
-      # 可选：把生成的 JSON 保存成构件，便于下载核对
       - name: Upload snapshot JSON
         uses: actions/upload-artifact@v4
         with:
