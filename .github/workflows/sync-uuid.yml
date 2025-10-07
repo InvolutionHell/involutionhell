@@ -11,6 +11,7 @@ on:
       - "scripts/backfill-contributors.mjs"
       - "package.json"
       - "pnpm-lock.yaml"
+      - ".github/workflows/sync-uuid.yml"
   workflow_dispatch: {}
 
 concurrency:
