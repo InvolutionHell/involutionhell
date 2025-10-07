@@ -54,14 +54,14 @@ jobs:
       - name: Ensure docId frontmatter
         run: pnpm exec node scripts/uuid.mjs
 
-      - name: Auto-commit added docIds (if any)
+      - name: Backfill contributors & sync DB
+        run: pnpm exec node scripts/backfill-contributors.mjs
+
+      - name: Auto-commit doc metadata (if any)
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(docs): sync doc metadata [skip ci]" # ← 防循环
           file_pattern: "app/docs/**/*.md app/docs/**/*.mdx app/docs/**/*.markdown generated/doc-contributors.json"
-
-      - name: Backfill contributors & sync DB
-        run: pnpm exec node scripts/backfill-contributors.mjs
 
       - name: Upload snapshot JSON
         uses: actions/upload-artifact@v4
