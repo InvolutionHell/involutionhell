@@ -1,11 +1,12 @@
 ---
-title: "学生邮箱能免费领的AI提效工具系列"
+title: 学生邮箱能免费领的AI提效工具系列
 description: ""
 date: "2025-10-03"
 tags:
   - edu-email
   - ai-tools
   - productivity
+docId: mgb41edhi9cz1kxzae074an0
 ---
 
 学生邮箱能免费领取很多AI产品，

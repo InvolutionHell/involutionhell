@@ -1,16 +1,18 @@
 ---
-title: '基础gcc/g++'
+title: 基础gcc/g++
 description: ""
 date: "2025-09-29"
 tags:
   - tag-one
+docId: kyu85av71b4n07hbdycbhvj9
 ---
 
 # 基础gcc/g++
 
-
 ## g++启蒙
+
 ### 下载gcc/g++（Linux平台）
+
 利用主流发行版的包管理器安装。
 
 ```cpp
@@ -29,13 +31,14 @@ sudo dnf groupinstall "Development Tools" -y
 ```
 
 ### 下载gcc/g++（windows平台）
+
 下载（以下是几个网址）并写入环境变量（以便在任何工作目录下都可以使用gcc/g++命令（.exe可执行文件））
 
 1. minGW
 
 [https://osdn.net/projects/mingw/downloads/68260/mingw-get-setup.exe/](https://www.mingw-w64.org/downloads/)
 
-[https://www.mingw-w64.org/downloads/](https://www.mingw-w64.org/downloads/)   （推荐）
+[https://www.mingw-w64.org/downloads/](https://www.mingw-w64.org/downloads/) （推荐）
 
 **MinGW关于thread内置库踩了个坑：**
 
@@ -61,6 +64,7 @@ sudo dnf groupinstall "Development Tools" -y
 而且纯MinGW在使用MinGW Installer（mingw-get.exe）时还要下载mingw32-make
 
 ### g++ 基本使用example
+
 创建一个文本文件（test.txt），改后缀为cpp（表明是一个cpp源文件），用记事本/VS code（等文本编辑器）打开，写入：
 
 ```cpp
@@ -101,31 +105,30 @@ g++ test.cpp -o b
 
 预处理（Preprocessing）→ 编译（Compilation）→ 汇编（Assembly）→ 链接（Linking）
 
-| 阶段 | 输入文件 | 输出文件及扩展名 | 命令参数（缩写含义） |
-| --- | --- | --- | --- |
-| 预处理 | .cpp/.h | 预处理文件.i (Intermediate或Include) | -E (Expansion) |
-| 编译 | .i | 汇编代码.s | -S (Source) |
-| 汇编 | .s | 目标文件.o | -c (Compile) |
-| 链接 | .o | 可执行文件.exe或无扩展 | 单g++ |
+| 阶段   | 输入文件 | 输出文件及扩展名                     | 命令参数（缩写含义） |
+| ------ | -------- | ------------------------------------ | -------------------- |
+| 预处理 | .cpp/.h  | 预处理文件.i (Intermediate或Include) | -E (Expansion)       |
+| 编译   | .i       | 汇编代码.s                           | -S (Source)          |
+| 汇编   | .s       | 目标文件.o                           | -c (Compile)         |
+| 链接   | .o       | 可执行文件.exe或无扩展               | 单g++                |
 
-
-_**预处理阶段：  .cpp → .i**_  
-处理头文件包含（`#include`）、宏展开（`#define`）、条件编译（`#ifdef` 等）等指令  
+_**预处理阶段： .cpp → .i**_  
+处理头文件包含（`#include`）、宏展开（`#define`）、条件编译（`#ifdef` 等）等指令
 
 ```bash
 g++ -E test.cpp  // 预处理后的代码（包含展开的宏和包含的头文件内容）直接显示在终端。
 g++ -E test.cpp -o preprocess.i  // 生成b.i输出文件
 ```
 
-_**编译阶段：   .i → .s**_
+_**编译阶段： .i → .s**_
 
-预处理后的代码 → 汇编代码   
+预处理后的代码 → 汇编代码
 
 ```bash
 g++ -S preprocess.i -o assemble.s
 ```
 
-_**汇编阶段：    .s → .o**_
+_**汇编阶段： .s → .o**_
 
 将汇编代码 → 机器代码，生成目标文件（通常不可直接执行）。
 
@@ -134,7 +137,7 @@ g++ -c assemble.s -o machine.o
 g++ -c test.cpp // 也可以直接放入.cpp生成同名.o机器代码
 ```
 
-_**链接阶段：     .o → .exe**_
+_**链接阶段： .o → .exe**_
 
 将一个或多个目标文件与库文件链接 → 可执行文件。
 
@@ -147,6 +150,3 @@ _**生成调试信息：**_
 ```bash
 g++ -g test.cpp -o test  // 比直接g++ test.cpp -o test 多生成调试信息
 ```
-
-
-

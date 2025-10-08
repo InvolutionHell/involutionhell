@@ -1,11 +1,12 @@
 ---
-title: "Perplexity Comet 浏览器：能当私人管家的自动化浏览器"
+title: Perplexity Comet 浏览器：能当私人管家的自动化浏览器
 description: ""
 date: "2025-10-03"
 tags:
   - perlexity
   - comet
   - productivity
+docId: eej2awin6irhbdgcy8vvs3xb
 ---
 
 ## 关键信息

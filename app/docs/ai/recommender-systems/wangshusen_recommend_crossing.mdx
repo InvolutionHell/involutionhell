@@ -1,12 +1,13 @@
 ---
-title: '王树森推荐系统学习笔记_特征交叉'
+title: 王树森推荐系统学习笔记_特征交叉
 description: ""
 date: "2025-09-27"
 tags:
   - tag-one
+docId: hajz43iblku13mmevia8zrhv
 ---
 
-# 王树森推荐系统学习笔记_特征交叉
+# 王树森推荐系统学习笔记\_特征交叉
 
 ## 特征交叉
 
@@ -24,7 +25,7 @@ tags:
 
 - **模型有 $d + 1$ 个参数**：$ \mathbf{w} = [w_1, \cdots, w_d] $ 和 $b$。
 
-- **预测是特征的加权和**。（*只有加，没有乘。*）
+- **预测是特征的加权和**。（_只有加，没有乘。_）
 
 #### 二阶交叉特征
 
@@ -38,9 +39,8 @@ tags:
 
 - **模型有 $O(d^2)$ 个参数**。
 
-
-
 **线性模型 + 二阶交叉特征**：
+
 $$
 p = b + \sum_{i=1}^{d} w_i x_i + \sum_{i=1}^{d} \sum_{j=i+1}^{d} u_{ij} x_i x_j。
 $$
@@ -65,9 +65,7 @@ $$
 
 - FM 是线性模型的替代品，能用线性回归、逻辑回归的场景，都可以用 FM。
 - FM 使用二阶交叉特征，表达能力比线性模型更强。
-- 通过做近似 $ u_{ij} \approx \mathbf{v}_i^T \mathbf{v}_j $，FM 把二阶交叉权重的数量从 $ O(d^2) $ 降低到 $ O(kd) $**。**
-
-
+- 通过做近似 $ u\_{ij} \approx \mathbf{v}\_i^T \mathbf{v}\_j $，FM 把二阶交叉权重的数量从 $ O(d^2) $ 降低到 $ O(kd) $**。**
 
 ### 深度交叉网络（DCN）
 
@@ -104,8 +102,6 @@ DCN 的实际效果优于全连接，可以用于双塔模型中的用户塔和�
 神经网络中的结构为[多个全连接层] ➝ [Sigmoid 乘以 2]，这样神经网络的输出向量中都是 0 到 2 之间的数。
 
 ![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-3-2.png)
-
-
 
 ### SENet & Bilinear Cross
 
@@ -152,15 +148,13 @@ $x^T_i$ 和 $x_j$ 都是特征的 embedding 向量，$f_{ij}$ 是一个向量，
 
 ![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-4-7.png)
 
-
-
 ## 行为序列
 
 ### 用户行为序列建模
 
 ![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/5-1-1.png)
 
- **LastN 特征**
+**LastN 特征**
 
 - **LastN**：用户最近的 $n$ 次交互（点击、点赞等）的物品 ID。
 - 对 **LastN** 物品 ID 做 embedding，得到 $n$ 个向量。
@@ -189,9 +183,9 @@ $x^T_i$ 和 $x_j$ 都是特征的 embedding 向量，$f_{ij}$ 是一个向量，
 
 **简单平均 v.s 注意力机制**
 
-- *简单平均* 和 注意力机制 都适用于精排模型。
-- *简单平均* 适用于双塔模型、三塔模型。
-  - *简单平均* 只需要用到 **LastN**，属于用户自身的特征。
+- _简单平均_ 和 注意力机制 都适用于精排模型。
+- _简单平均_ 适用于双塔模型、三塔模型。
+  - _简单平均_ 只需要用到 **LastN**，属于用户自身的特征。
   - 把 LastN 向量的平均作为用户塔的输入。
 - 注意力机制 不适用于双塔模型、三塔模型。
   - 注意力机制 需要用到 **LastN** + **候选物品**。
@@ -237,8 +231,6 @@ $x^T_i$ 和 $x_j$ 都是特征的 embedding 向量，$f_{ij}$ 是一个向量，
   - 把候选物品向量作为 **query**，做 $k$ 近邻查找，保留 **LastN** 物品中最近的 $k$ 个。
   - 效果更好，编程实现更复杂。
 
-
-
 **第二步：注意力机制**
 
 **使用时间信息**
@@ -263,5 +255,3 @@ $x^T_i$ 和 $x_j$ 都是特征的 embedding 向量，$f_{ij}$ 是一个向量，
 - 注意力机制 优于 简单平均。
 - **Soft search** 还是 **Hard search**？取决于工程基建。
 - 使用时间信息有提升。
-
-

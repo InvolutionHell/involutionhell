@@ -1,29 +1,33 @@
 ---
-title: 'PPO'
+title: PPO
 description: ""
 date: "2025-10-03"
 tags:
   - tag-one
+docId: zf8zk108oqbsg56xjyqb5txk
 ---
 
 # PPO
 
 ## 1.完整链路
+
 prompt batch -> actor.forward -> reward model -> critic.forward
 
 ## 2.算法实现方式：
+
 1. 重要性采样：使用一次采样，进行多次更新，在尽可能高效率使用样本的前提下，尽可能的修正老策略与新策略的偏差
 2. 裁剪(常用)，KL约束：现在新旧策略的偏移，防止梯度爆炸或者坍塌
 
 ### 1.公式
+
 1. 概率比
-$$r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)}$$
+   $$r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)}$$
 
 $\pi:策略$  
 $\theta:参数$  
 $a:动作$  
 $s:状态$  
-$t:时间$  
+$t:时间$
 
 个人理解：新旧策略在同一状态下决策的相对差异
 
@@ -52,7 +56,7 @@ $l:延迟的步数$
 $\lambda :控制TD的偏差与方差$  
 $\lambda = 1:相当于蒙特卡洛回报,即保留了每一个时间步的TD$  
 $\lambda = 0:相当于单步TD$  
-$0<\lambda<1:保留了每一个时间步的TD，但是每一个TD有着不同的权重$ 
+$0<\lambda<1:保留了每一个时间步的TD，但是每一个TD有着不同的权重$
 
 4. 值函数回归
 
@@ -61,7 +65,7 @@ $$L^{value} = \frac{1}{2}(V_{\theta}(s_t)-\hat{R}_t)^2$$
 $V_{\theta}(s_t)$：t时状态为时的价值函数，由一个mlp拟合
 
 5. 熵正则化(鼓励探索)
-$$H(\pi_{\theta})=\mathbb{E_t}[-\sum_{\alpha}\pi_{\theta}(\alpha|s_t)log\pi_\theta(\alpha|s_t)]$$
+   $$H(\pi_{\theta})=\mathbb{E_t}[-\sum_{\alpha}\pi_{\theta}(\alpha|s_t)log\pi_\theta(\alpha|s_t)]$$
 
 注：说白了就是求信息熵取平均值
 
@@ -72,17 +76,20 @@ $$L^{PPO} = L^{CLIP}(\theta)-c_1L_{value}+c_2H(\pi_{\theta})$$
 ## 2.流程详解
 
 ### 1.初始阶段
+
 #### 1.prompt batch:
+
 就是一批数据
 
 #### 2.actor.forward:
+
 - 使用主干网络对每一条数据生成回复，并逐步保存每一个token的logits作为$log\pi_{old}$
 
-#### 3.reward 
+#### 3.reward
 
 - **model**
 
-作用：用于打分获取奖励值，分数用于上述公式构造损失函数，将奖励值r存入bufferi以供后续训练使用  
+作用：用于打分获取奖励值，分数用于上述公式构造损失函数，将奖励值r存入bufferi以供后续训练使用
 
 构造：一个mlp
 
@@ -108,17 +115,19 @@ $$L^{PPO} = L^{CLIP}(\theta)-c_1L_{value}+c_2H(\pi_{\theta})$$
 
 位置：接在骨干网络左右一层
 
-### 2.训练阶段 
+### 2.训练阶段
 
 使用buffer里面保存的数据反复训练模型，几轮后重新采样
 
 ### 3.网络结构
+
 ```mermaid
-graph TD 
+graph TD
     Inputs--> b[Backbone network]
     b --(optional)--> reward
     b --> crtirc
-``` 
+```
+
 ### 4.数据集构造
 
 - reward function

@@ -1,13 +1,13 @@
 ---
-title: 'vcpkg包管理器'
+title: vcpkg包管理器
 description: ""
 date: "2025-09-29"
 tags:
   - tag-one
+docId: gtqamuq3tftmvzstbunkgbo5
 ---
 
 # vcpkg包管理器
-
 
 vcpkg分经典Classic模式和清单Manifest模式
 
@@ -16,6 +16,7 @@ vcpkg分经典Classic模式和清单Manifest模式
 清单模式是编写vcpkg.json清单文件
 
 ## 配置
+
 下载并配置环境变量：
 
 ```bash
@@ -35,7 +36,7 @@ echo 'export VCPKG_ROOT="$HOME/vcpkg"' >> ~/.bashrc
 
 ```bash
 // 创建清单文件vcpkg.json和vcpkg-configuration.json并初始化
-vcpkg new --application 
+vcpkg new --application
 // 添加XXX库（比如fmt）依赖项,将在vcpkg.json中增加一个dependencies:fmt
 vcpkg add port fmt // 不会检查正确与否，只是单纯修改vcpkg.json, 与手动修改vcpkg.json一样
 ```
@@ -59,7 +60,7 @@ target_link_libraries(HelloWorld PRIVATE fmt::fmt)
   "configurePresets": [
     {
       "name": "vcpkg",
-      "generator": "Ninja", //(或"MinGW Makefiles")这里就是上述用的-G "" 
+      "generator": "Ninja", //(或"MinGW Makefiles")这里就是上述用的-G ""
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
@@ -73,20 +74,21 @@ target_link_libraries(HelloWorld PRIVATE fmt::fmt)
 
 ```json
 {
-    "version": 2,
-    "configurePresets": [
-      {
-        "name": "default",
-        "inherits": "vcpkg",
-        "environment": {
-          "VCPKG_ROOT": "<path to vcpkg>"
-        }
+  "version": 2,
+  "configurePresets": [
+    {
+      "name": "default",
+      "inherits": "vcpkg",
+      "environment": {
+        "VCPKG_ROOT": "<path to vcpkg>"
       }
-    ]
-  }
+    }
+  ]
+}
 ```
 
 ## 使用
+
 1. 打包自己的库并用vcpkg管理（注册进vcpkg）
 2. 下载使用vcpkg管理的库（三方库）
 
@@ -106,7 +108,7 @@ target_link_libraries(HelloWorld PRIVATE fmt::fmt)
 
 ```bash
 {
-  "default-registry": {  
+  "default-registry": {
     "kind": "git",
     "repository": "https://github.com/microsoft/vcpkg.git",
     "baseline": "234534dfvbsdvw43434f"
@@ -144,4 +146,3 @@ target_link_libraries(HelloWorld PRIVATE fmt::fmt)
   ]
 }
 ```
-
