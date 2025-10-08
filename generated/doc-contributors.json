@@ -1,6 +1,6 @@
 {
   "repo": "InvolutionHell/involutionhell.github.io",
-  "generatedAt": "2025-10-08T08:55:13.000Z",
+  "generatedAt": "2025-10-08T09:30:31.613Z",
   "docsDir": "app/docs",
   "totalDocs": 99,
   "results": [
@@ -2036,6 +2036,32 @@
       ]
     },
     {
+      "docId": "ksjj9shalh6hqezx6t6am5vw",
+      "path": "app/docs/computer-science/algorithms/index.mdx",
+      "contributorStats": {
+        "7187663": 2,
+        "114939201": 3
+      },
+      "contributors": [
+        {
+          "githubId": "114939201",
+          "contributions": 3,
+          "lastContributedAt": "2025-10-08T08:49:43.000Z",
+          "login": "longsizhuo",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
+          "htmlUrl": "https://github.com/longsizhuo"
+        },
+        {
+          "githubId": "7187663",
+          "contributions": 2,
+          "lastContributedAt": "2025-10-08T09:25:06.000Z",
+          "login": "Crokily",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/7187663?v=4",
+          "htmlUrl": "https://github.com/Crokily"
+        }
+      ]
+    },
+    {
       "docId": "totx4pej5lhyt1nl4anwhakj",
       "path": "app/docs/computer-science/cpp_backend/easy_compile/1_cpp_libs.md",
       "contributorStats": {
@@ -2394,32 +2420,6 @@
           "githubId": "114939201",
           "contributions": 2,
           "lastContributedAt": "2025-09-26T19:56:04.000Z",
-          "login": "longsizhuo",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
-          "htmlUrl": "https://github.com/longsizhuo"
-        },
-        {
-          "githubId": "7187663",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-12T08:15:57.000Z",
-          "login": "Crokily",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/7187663?v=4",
-          "htmlUrl": "https://github.com/Crokily"
-        }
-      ]
-    },
-    {
-      "docId": "ksjj9shalh6hqezx6t6am5vw",
-      "path": "app/docs/computer-science/index.mdx",
-      "contributorStats": {
-        "7187663": 1,
-        "114939201": 3
-      },
-      "contributors": [
-        {
-          "githubId": "114939201",
-          "contributions": 3,
-          "lastContributedAt": "2025-10-08T08:49:43.000Z",
           "login": "longsizhuo",
           "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
           "htmlUrl": "https://github.com/longsizhuo"
