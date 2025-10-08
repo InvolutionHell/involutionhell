@@ -57,7 +57,6 @@ export default async function DocPage({ params }: Param) {
   const contributorsEntry =
     getDocContributorsByPath(page.file.path) ||
     getDocContributorsByDocId(docIdFromPage);
-  const discussionTitle = page.data.title ?? docIdFromPage ?? page.path;
   const Mdx = page.data.body;
 
   // Prepare page content for AI assistant
@@ -87,10 +86,7 @@ export default async function DocPage({ params }: Param) {
           <Mdx components={getMDXComponents()} />
           <Contributors entry={contributorsEntry} />
           <section className="mt-16">
-            <GiscusComments
-              docId={docIdFromPage ?? null}
-              title={discussionTitle}
-            />
+            <GiscusComments docId={docIdFromPage ?? null} />
           </section>
         </DocsBody>
       </DocsPage>
