@@ -86,7 +86,7 @@ export default async function DocPage({ params }: Param) {
           <Mdx components={getMDXComponents()} />
           <Contributors entry={contributorsEntry} />
           <section className="mt-16">
-            <GiscusComments />
+            <GiscusComments docId={docIdFromPage ?? null} />
           </section>
         </DocsBody>
       </DocsPage>
