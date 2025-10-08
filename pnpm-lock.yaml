@@ -167,9 +167,6 @@ importers:
       eslint-config-next:
         specifier: ^15.5.3
         version: 15.5.3(eslint@9.36.0(jiti@2.5.1))(typescript@5.9.2)
-      fast-glob:
-        specifier: ^3.3.3
-        version: 3.3.3
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
