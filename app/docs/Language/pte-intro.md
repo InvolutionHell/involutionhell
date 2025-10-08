@@ -1,9 +1,10 @@
 ---
-title: "PTE-Academic题型与题量介绍"
-description: "PTE-Academic题型与题量介绍"
+title: PTE-Academic题型与题量介绍
+description: PTE-Academic题型与题量介绍
 date: "2025-09-19"
 tags:
   - pte
+docId: m37j6a24hb9mlrm0g6jfcxop
 ---
 
 很多同学可能因为信息差，所以并不太了解PTE考试。实际上对于想要拿到语言成绩或者希望移民的同学来说，考pte比考雅思托福要容易上分。因为PTE有无数考生贡献机经和总结高频题，所以如果运气好几乎是开卷考试。但是PTE和雅思托福不同，PTE-Academic题型种类非常多，而且技巧性非常强。能在雅思拿到高分的同学如果不重视刷题和做题技巧，pte可能也无法拿到满意成绩。今天就简单的先介绍一下各大题型和交叉评分，后续会逐步更新PTE技巧，大家有想听的内容也可以评论区留言。

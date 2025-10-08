@@ -1,7 +1,10 @@
 ---
-title: "MOE 浅谈"
+title: MOE 浅谈
 description: "混合专家（Mixture of Experts, MoE）架构的简要介绍"
-tags: ["MoE", "AI"]
+tags:
+  - MoE
+  - AI
+docId: qftv72k0kzwiz8ddksbcl2aw
 ---
 
 # 混合专家（Mixture of Experts, MoE）架构
