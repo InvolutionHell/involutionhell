@@ -5,10 +5,21 @@ import Giscus from "@giscus/react";
 interface GiscusCommentsProps {
   className?: string;
   docId?: string | null;
+  title?: string | null;
 }
 
-export function GiscusComments({ className, docId }: GiscusCommentsProps) {
-  const useDocId = typeof docId === "string" && docId.trim().length > 0;
+export function GiscusComments({
+  className,
+  docId,
+  title,
+}: GiscusCommentsProps) {
+  const normalizedDocId = typeof docId === "string" ? docId.trim() : "";
+  const normalizedTitle = typeof title === "string" ? title.trim() : "";
+
+  const useSpecificMapping = normalizedDocId.length > 0;
+  const termValue = useSpecificMapping
+    ? `${normalizedTitle || "Untitled"} | ${normalizedDocId}`
+    : undefined;
 
   return (
     <div className={className}>
@@ -17,8 +28,8 @@ export function GiscusComments({ className, docId }: GiscusCommentsProps) {
         repoId="R_kgDOPuD_8A"
         category="Comments"
         categoryId="DIC_kwDOPuD_8M4Cvip8"
-        mapping={useDocId ? "specific" : "pathname"}
-        term={useDocId ? docId : undefined}
+        mapping={useSpecificMapping ? "specific" : "pathname"}
+        term={termValue}
         strict="0"
         reactionsEnabled="1"
         emitMetadata="0"
