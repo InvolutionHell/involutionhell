@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 将 GitHub Discussions 标题补上 [docId: <id>]，用于从 pathname->docId 的 Giscus 迁移。
+ * 将 GitHub Discussions 标题统一重写为 docId，用于从 pathname->docId 的 Giscus 迁移。
  *
  * 两种输入来源：
  *  A) DB 模式（推荐）：读取 Postgres（docs/path_current + doc_paths）获得每个 docId 的所有历史路径
@@ -20,6 +20,12 @@
  *
  *  # 用映射文件（不连 DB）
  *  node scripts/migrate-giscus-add-docid.mjs --map=tmp/discussion-map.json --apply=true
+ *
+ *  # 仅处理部分 doc，支持多次传参或逗号/换行分隔
+ *  node scripts/migrate-giscus-add-docid.mjs --doc=abcd123 --doc=efg456 --apply=true
+ *  node scripts/migrate-giscus-add-docid.mjs --doc-path=app/docs/foo/bar.mdx --doc-path=docs/foo/bar --apply=true
+ *  node scripts/migrate-giscus-add-docid.mjs --doc-paths="app/docs/foo/bar.mdx,docs/foo/bar" --apply=true
+ *  GISCUS_DOC_PATHS="app/docs/foo/bar.mdx\napp/docs/baz.mdx" node scripts/migrate-giscus-add-docid.mjs --apply=true
  *
  * 映射文件格式（示例）：
  * {
@@ -52,6 +58,17 @@ const REPO =
 const MAP = getArg("map") || process.env.GISCUS_DISCUSSION_MAP || ""; // JSON 文件（映射文件模式）
 const APPLY = (getArg("apply") || "false").toLowerCase() === "true"; // 是否真的更新标题
 
+const DOC_FILTERS = getArgList("doc");
+const DOC_PATH_FILTERS = [
+  ...getArgList("doc-path"),
+  ...getArgList("doc-paths"),
+  ...(process.env.GISCUS_DOC_PATHS
+    ? process.env.GISCUS_DOC_PATHS.split(/[,\n]/)
+        .map((v) => v.trim())
+        .filter(Boolean)
+    : []),
+];
+
 if (!GH_TOKEN) {
   console.error("[migrate-giscus] Missing GH_TOKEN/GITHUB_TOKEN.");
   process.exit(1);
@@ -60,6 +77,21 @@ if (!GH_TOKEN) {
 function getArg(k) {
   const arg = process.argv.slice(2).find((s) => s.startsWith(`--${k}=`));
   return arg ? arg.split("=")[1] : null;
+}
+
+function getArgList(k) {
+  const matches = process.argv
+    .slice(2)
+    .filter((s) => s.startsWith(`--${k}=`))
+    .map((s) => s.split("=")[1]);
+  if (matches.length === 0) {
+    const single = getArg(k);
+    if (single) matches.push(single);
+  }
+  return matches
+    .flatMap((value) => (value ?? "").split(/[,\n]/))
+    .map((value) => value.trim())
+    .filter(Boolean);
 }
 
 const GQL = "https://api.github.com/graphql";
@@ -126,21 +158,21 @@ async function loadDocIdTerms() {
       select: {
         id: true,
         path_current: true,
+        title: true,
         doc_paths: { select: { path: true } },
       },
     });
-    const map = new Map(); // docId -> Set<term>
+    const map = new Map(); // docId -> { title: string|null, terms: Set }
     for (const d of docs) {
-      const set = map.get(d.id) ?? new Set();
-      if (d.path_current) set.add(d.path_current);
-      for (const p of d.doc_paths) if (p?.path) set.add(p.path);
-      // 兼容站点实际的 pathname（可选添加去掉扩展名、加前缀）
-      for (const p of Array.from(set)) {
-        const noExt = p.replace(/\.(md|mdx|markdown)$/i, "");
-        set.add(noExt);
-        set.add(`/${noExt}`); // 常见 pathname 形态
-      }
-      map.set(d.id, set);
+      const entry = map.get(d.id) ?? {
+        title: d.title ?? null,
+        terms: new Set(),
+      };
+      if (!entry.title && d.title) entry.title = d.title;
+      if (d.path_current) registerPathVariants(entry.terms, d.path_current);
+      for (const p of d.doc_paths)
+        if (p?.path) registerPathVariants(entry.terms, p.path);
+      map.set(d.id, entry);
     }
     return map;
   }
@@ -151,17 +183,26 @@ async function loadDocIdTerms() {
     const raw = await fs.readFile(abs, "utf8");
     const obj = JSON.parse(raw);
     const map = new Map();
-    for (const [docId, arr] of Object.entries(obj)) {
-      const set = new Set();
-      (arr || []).forEach((t) => {
-        if (typeof t === "string" && t.trim()) {
-          set.add(t.trim());
-          const noExt = t.replace(/\.(md|mdx|markdown)$/i, "");
-          set.add(noExt);
-          set.add(`/${noExt}`);
+    for (const [docId, rawValue] of Object.entries(obj)) {
+      const entry = { title: null, terms: new Set() };
+
+      if (Array.isArray(rawValue)) {
+        rawValue.forEach((t) => registerPathVariants(entry.terms, t));
+      } else if (rawValue && typeof rawValue === "object") {
+        if (typeof rawValue.title === "string" && rawValue.title.trim()) {
+          entry.title = rawValue.title.trim();
         }
-      });
-      map.set(docId, set);
+        const termsSource = Array.isArray(rawValue.terms)
+          ? rawValue.terms
+          : rawValue.paths;
+        if (Array.isArray(termsSource)) {
+          termsSource.forEach((t) => registerPathVariants(entry.terms, t));
+        }
+      } else if (typeof rawValue === "string") {
+        registerPathVariants(entry.terms, rawValue);
+      }
+
+      map.set(docId, entry);
     }
     return map;
   }
@@ -183,18 +224,90 @@ async function searchDiscussionByTerm(term) {
   );
 }
 
-// 如果标题中已经包含 [docId: xxx]，就跳过
-function alreadyHasDocIdTag(title, docId) {
-  const tag = `[docId:${docId}]`;
-  return title.includes(tag);
+function titleAlreadyNormalized(title, docId) {
+  const normalized = docId.trim();
+  if (!normalized) return false;
+  return title.trim() === normalized;
 }
 
-// 生成新标题（在末尾追加，如已含则不变）
-function appendDocIdTag(title, docId) {
-  const tag = `[docId:${docId}]`;
-  if (title.includes(tag)) return title;
-  // 避免标题太挤，加个空格
-  return `${title.trim()} ${tag}`;
+function normalizeTitleToDocId(currentTitle, docId) {
+  const normalized = docId.trim();
+  if (!normalized) return currentTitle.trim();
+  return normalized;
+}
+
+function registerPathVariants(targetSet, rawPath) {
+  if (typeof rawPath !== "string") return;
+  const trimmed = rawPath.trim();
+  if (!trimmed) return;
+
+  const variants = new Set();
+  const candidates = [trimmed];
+
+  const withoutExt = trimmed.replace(/\.(md|mdx|markdown)$/i, "");
+  candidates.push(withoutExt);
+
+  const leadingSlash = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  candidates.push(leadingSlash);
+
+  const withoutExtLeadingSlash = withoutExt.startsWith("/")
+    ? withoutExt
+    : `/${withoutExt}`;
+  candidates.push(withoutExtLeadingSlash);
+
+  const withoutApp = trimmed.replace(/^app\//i, "");
+  if (withoutApp && withoutApp !== trimmed) {
+    candidates.push(withoutApp);
+    const withoutAppNoExt = withoutApp.replace(/\.(md|mdx|markdown)$/i, "");
+    candidates.push(withoutAppNoExt);
+    candidates.push(withoutApp.startsWith("/") ? withoutApp : `/${withoutApp}`);
+    candidates.push(
+      withoutAppNoExt.startsWith("/") ? withoutAppNoExt : `/${withoutAppNoExt}`,
+    );
+  }
+
+  for (const candidate of candidates) {
+    const value = typeof candidate === "string" ? candidate.trim() : "";
+    if (value) variants.add(value);
+  }
+
+  for (const value of variants) targetSet.add(value);
+}
+
+function applyFilters(docIdMap) {
+  const docIdFilterSet = new Set(DOC_FILTERS);
+  const hasDocIdFilter = docIdFilterSet.size > 0;
+
+  const pathFilterVariants = new Set();
+  for (const path of DOC_PATH_FILTERS) {
+    registerPathVariants(pathFilterVariants, path);
+  }
+  const hasPathFilter = pathFilterVariants.size > 0;
+
+  if (!hasDocIdFilter && !hasPathFilter) {
+    return;
+  }
+
+  for (const [docId, info] of Array.from(docIdMap.entries())) {
+    let keep = true;
+
+    if (keep && hasDocIdFilter) {
+      keep = docIdFilterSet.has(docId);
+    }
+
+    if (keep && hasPathFilter) {
+      const terms = Array.from(info?.terms ?? []);
+      keep = terms.some((term) => pathFilterVariants.has(term));
+    }
+
+    if (!keep) {
+      docIdMap.delete(docId);
+    }
+  }
+
+  if (docIdMap.size === 0) {
+    log("⚠️  未找到符合过滤条件的 docId，本次执行不会更新任何讨论。");
+  }
 }
 
 async function main() {
@@ -203,13 +316,20 @@ async function main() {
   );
   const docIdToTerms = await loadDocIdTerms();
 
+  applyFilters(docIdToTerms);
+
+  if (docIdToTerms.size === 0) {
+    if (prisma) await prisma.$disconnect();
+    return;
+  }
+
   let updated = 0,
     skipped = 0,
     notFound = 0,
     examined = 0;
 
-  for (const [docId, termsSet] of docIdToTerms) {
-    const terms = Array.from(termsSet);
+  for (const [docId, info] of docIdToTerms) {
+    const terms = Array.from(info?.terms ?? []);
     let matched = null;
 
     // 尝试每个 term，直到命中一个讨论
@@ -235,13 +355,13 @@ async function main() {
     examined += 1;
 
     const oldTitle = matched.title;
-    if (alreadyHasDocIdTag(oldTitle, docId)) {
+    if (titleAlreadyNormalized(oldTitle, docId)) {
       skipped += 1;
       log(`⏭  #${matched.number} 已包含 docId：${matched.url}`);
       continue;
     }
 
-    const newTitle = appendDocIdTag(oldTitle, docId);
+    const newTitle = normalizeTitleToDocId(oldTitle, docId);
     log(
       `${APPLY ? "✏️ 更新" : "👀 预览"}  #${matched.number}  "${oldTitle}"  →  "${newTitle}"`,
     );
