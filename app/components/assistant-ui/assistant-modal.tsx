@@ -65,14 +65,14 @@ export const AssistantModal: FC<AssistantModalProps> = ({
             className="absolute bottom-17 right-0 z-40 animate-in fade-in-0 slide-in-from-bottom-2 duration-500"
             onClick={handleCloseBubble}
           >
-            <div className="relative bg-gray-100/70 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-black px-8 py-5 cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105">
-              <div className="text-base text-gray-800 font-medium whitespace-nowrap">
+            <div className="relative bg-gray-100/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-black dark:border-white px-8 py-5 cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105">
+              <div className="text-base text-gray-800 dark:text-gray-100 font-medium whitespace-nowrap">
                 有问题可以问我哦～
               </div>
               {/* 气泡尾巴箭头 - 指向下方按钮 */}
               <div className="absolute -bottom-2 right-8">
-                <div className="w-0 h-0 border-l-[8px] border-r-[8px] border-t-[8px] border-l-transparent border-r-transparent border-t-gray-100/70"></div>
-                <div className="absolute -top-[2px] -left-[2px] w-0 h-0 border-l-[10px] border-r-[10px] border-t-[10px] border-l-transparent border-r-transparent border-t-black"></div>
+                <div className="w-0 h-0 border-l-[8px] border-r-[8px] border-t-[8px] border-l-transparent border-r-transparent border-t-gray-100/70 dark:border-t-gray-800/70"></div>
+                <div className="absolute -top-[2px] -left-[2px] w-0 h-0 border-l-[10px] border-r-[10px] border-t-[10px] border-l-transparent border-r-transparent border-t-black dark:border-t-white"></div>
               </div>
             </div>
           </div>
