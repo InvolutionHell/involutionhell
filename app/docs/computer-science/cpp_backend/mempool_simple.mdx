@@ -1,20 +1,22 @@
 ---
-title: '手写内存池（简单定长）'
+title: 手写内存池（简单定长）
 description: ""
 date: "2025-09-27"
 tags:
   - tag-one
+docId: q8290wmhyofuiskzn1ph63ta
 ---
 
 # 手写内存池（简单定长）
 
 # 简单版（定长block）
+
 ## 设计图
+
 ![画板](https://cdn.nlark.com/yuque/0/2025/jpeg/43055607/1758718719250-e6f52459-0f73-493b-8294-7b8f931da054.jpeg)
 
-
-
 ## 代码结构
+
 ```c
 typedef struct mempool_s {
     int blocksize;  // 每个内存块的size
@@ -24,24 +26,22 @@ typedef struct mempool_s {
 } mempool_t;
 ```
 
-
-
 ```c
 int memp_create(mempool_t *m, int block_size) {
 
     if (!m) return -1;
-    
+
     // 1. 初始化这两个简单的int
     m->blocksize = block_size;
     m->freecount = MEM_PAGE_SIZE / block_size;
 
     // 2. 开整个内存池的空间，顺便初始化m->mem
-    m->mem = (char *)malloc(MEM_PAGE_SIZE); 
+    m->mem = (char *)malloc(MEM_PAGE_SIZE);
     if (!m->mem) {  // 开失败了（剩余空闲内存不够）
         return -2;
     }
     // 将这个空间初始化一下
-    memset(m->mem, 0, MEM_PAGE_SIZE); 
+    memset(m->mem, 0, MEM_PAGE_SIZE);
 
     // 3. 初始化free_ptr
     m->free_ptr = m->mem;
@@ -50,17 +50,15 @@ int memp_create(mempool_t *m, int block_size) {
     int i = 0;
     char *ptr = m->mem;
     for (i = 0;i < m->freecount;i ++) {
-        
+
         *(char **)ptr = ptr + block_size;
         ptr = ptr + block_size;
-    } 
+    }
     // 最后一个block的"next_ptr"指向NULL
     *(char **)ptr = NULL;
     return 0;
 }
 ```
-
-
 
 ```c
 void *memp_alloc(mempool_t *m) {
@@ -72,12 +70,10 @@ void *memp_alloc(mempool_t *m) {
     m->free_ptr = *(char **)ptr;
     // 3. 更新freecount
     m->freecount --;
-    
+
     return ptr;
 }
 ```
-
-
 
 ```c
 void memp_free(mempool_t *m, void *ptr) {
@@ -91,8 +87,6 @@ void memp_free(mempool_t *m, void *ptr) {
 }
 ```
 
-
-
 ```c
 void memp_destory(mempool_t *m) {
     if (!m) return ;
@@ -101,14 +95,13 @@ void memp_destory(mempool_t *m) {
 }
 ```
 
-
-
 ## 使用example
+
 ```c
 int main() {
     mempool_t m;
     memp_create(&m, 32);
-    
+
     void *p1 = memp_alloc(&m);
     printf("memp_alloc : %p\n", p1);
 
@@ -121,6 +114,3 @@ int main() {
     memp_free(&m, p2);
 }
 ```
-
-
-

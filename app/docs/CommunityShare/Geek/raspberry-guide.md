@@ -1,7 +1,8 @@
 ---
 title: 用闲置树莓派搭建一个Minecraft服务器
-date: 2025-08-05 18:53:40
-tags:
+date: 2025-08-05T18:53:40.000Z
+tags: null
+docId: i0xmpskau105p83vq35wnxls
 ---
 
 记录一下从0开始搭建一个树莓派minecraft服务器，并且使用FRP内网穿透到公网

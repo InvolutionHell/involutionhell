@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 /**
- * MD 图片就近迁移脚本（中文注释）
+ * @description MDX 图片就近迁移脚本（中文注释）
+ * @author Siz Long
+ * @date 2025-09-27
  *
  * 目标
  * - 扫描 `app/docs/??/?.md`（含 .mdx）里的图片引用
