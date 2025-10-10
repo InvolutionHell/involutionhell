@@ -17,11 +17,17 @@ import path from "path";
 
 // Extract clean text content from MDX
 function extractTextFromMDX(content: string): string {
-  return content
+  let text = content
     .replace(/^---[\s\S]*?---/m, "") // Remove frontmatter
     .replace(/```[\s\S]*?```/g, "") // Remove code blocks
-    .replace(/`([^`]+)`/g, "$1") // Remove inline code
-    .replace(/<[^>]+>/g, "") // Remove HTML/MDX tags
+    .replace(/`([^`]+)`/g, "$1"); // Remove inline code
+  // Remove HTML/MDX tags recursively to prevent incomplete multi-character sanitization
+  let prevText;
+  do {
+    prevText = text;
+    text = text.replace(/<[^>]+>/g, "");
+  } while (text !== prevText);
+  return text
     .replace(/\*\*([^*]+)\*\*/g, "$1") // Remove bold
     .replace(/\*([^*]+)\*/g, "$1") // Remove italic
     .replace(/#{1,6}\s+/g, "") // Remove headers
