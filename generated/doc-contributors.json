@@ -1,8 +1,8 @@
 {
   "repo": "InvolutionHell/involutionhell.github.io",
-  "generatedAt": "2025-10-08T16:13:53.556Z",
+  "generatedAt": "2025-10-10T04:01:02.983Z",
   "docsDir": "app/docs",
-  "totalDocs": 99,
+  "totalDocs": 100,
   "results": [
     {
       "docId": "ue27z7z95yzw3lhhfj7nit1c",
@@ -1171,6 +1171,23 @@
           "login": "longsizhuo",
           "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
           "htmlUrl": "https://github.com/longsizhuo"
+        }
+      ]
+    },
+    {
+      "docId": "k6cgwcc28l9iap5s5oyjbjwo",
+      "path": "app/docs/ai/multimodal/VAE/index.mdx",
+      "contributorStats": {
+        "188854497": 1
+      },
+      "contributors": [
+        {
+          "githubId": "188854497",
+          "contributions": 1,
+          "lastContributedAt": "2025-10-09T14:25:57.000Z",
+          "login": "0dysseus13",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/188854497?v=4",
+          "htmlUrl": "https://github.com/0dysseus13"
         }
       ]
     },

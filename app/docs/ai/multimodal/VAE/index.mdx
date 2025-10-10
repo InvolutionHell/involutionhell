@@ -1,7 +1,7 @@
 ---
 title: VAE学习笔记
 description: 学习VAE时的心得
-
+docId: k6cgwcc28l9iap5s5oyjbjwo
 ---
 
 ## VAE（变分自编码器）
@@ -28,8 +28,6 @@ VAE 的动机正是为了解决上述问题，将自编码器与概率图模型�
 
 ![](index.assets/v2-92a9061e7079089b75c37650943c6f25_1440w.png)
 
-
-
 在上面的示例中，我们使用单个值来描述输入图像在潜在特征上的表现。但在实际情况中，我们可能更多时候倾向于将每个潜在特征表示为可能值的范围。例如，如果输入蒙娜丽莎的照片，将微笑特征设定为特定的单值（相当于断定蒙娜丽莎笑了或者没笑）显然不如将微笑特征设定为某个取值范围（例如将微笑特征设定为x到y范围内的某个数，这个范围内既有数值可以表示蒙娜丽莎笑了又有数值可以表示蒙娜丽莎没笑）更合适。而变分自编码器便是用“取值的概率分布”代替原先的单值来描述对特征的观察的模型，如下图的右边部分所示，经过变分自编码器的编码，每张图片的微笑特征不再是自编码器中的单值而是一个概率分布。
 
 ![](index.assets/v2-61521005c5a8213b60bf362f9c25c22f_1440w.png)
@@ -37,8 +35,6 @@ VAE 的动机正是为了解决上述问题，将自编码器与概率图模型�
 通过这种方法，我们现在将给定输入的每个潜在特征表示为概率分布。当从潜在状态解码时，我们将从每个潜在状态分布中随机采样，生成一个向量作为解码器模型的输入。
 
 ![](index.assets/v2-643d5ffb4aa480808bc9c82a55450a80_r.png)
-
-
 
 通过上述的编解码过程，我们实质上实施了连续，平滑的潜在空间表示。对于潜在分布的所有采样，我们期望我们的解码器模型能够准确重构输入。因此，在潜在空间中彼此相邻的值重构出来的原始输入也应该很相似。
 
@@ -63,7 +59,7 @@ VAE 的模型结构包含编码器（Encoder）、解码器（Decoder）和隐�
 
 #### 隐变量（Latent Variable）
 
- $z$：隐变量位于潜在空间，代表数据生成的潜在因素。与传统自编码器的确定性编码不同，VAE 将隐变量视为随机变量。通常我们假设隐变量遵循一个简单的先验分布 $p(z)$（例如维度为 $d$ 的标准正态分布 $\mathcal{N}(0,1)$），这样编码器学习得到的是使后验接近先验的分布参数。引入随机隐变量使模型成为概率生成模型的一部分：不同的 $z$ 值对应于数据空间中的不同生成结果。隐变量的概率表示确保了潜在空间的连续性和结构性，从而支持从潜在空间采样生成新数据.
+$z$：隐变量位于潜在空间，代表数据生成的潜在因素。与传统自编码器的确定性编码不同，VAE 将隐变量视为随机变量。通常我们假设隐变量遵循一个简单的先验分布 $p(z)$（例如维度为 $d$ 的标准正态分布 $\mathcal{N}(0,1)$），这样编码器学习得到的是使后验接近先验的分布参数。引入随机隐变量使模型成为概率生成模型的一部分：不同的 $z$ 值对应于数据空间中的不同生成结果。隐变量的概率表示确保了潜在空间的连续性和结构性，从而支持从潜在空间采样生成新数据.
 
 #### 解码器（Decoder）
 
@@ -79,9 +75,11 @@ VAE 可以被视为一种带隐变量的概率图模型。从概率图的角度�
 - **条件生成分布**：$x \sim p_{\theta}(x|z)$，它刻画了给定潜在变量 $z$ 时生成观测数据 $x$ 的概率分布。通常我们根据数据类型选取适当的分布形式并由解码器网络参数化。例如，对于像素为0/1的二值图像，$p_{\theta}(x|z)$可假设为每个像素独立的Bernoulli 分布；对于连续图像，可假设为高斯分布（解码器输出像素强度的均值和方差）。解码器网络根据输入的隐变量 $z$ 输出分布的参数，从而确定 $x$ 的生成概率。直观来说，$p_{\theta}(x|z)$ 给出了“由 $z$ 生成 $x$”的机制。
 
 综上，VAE 定义了一个参数化的联合分布 $p_{\theta}(x, z) = p(z),p_{\theta}(x|z)$。生成过程就是按上述顺序从该联合分布采样得到 $(z, x)$ 对，从而得到新的数据点 $x$。VAE 的目标是在参数 $\theta$ 上最大化观测数据的边缘似然 $p_{\theta}(x)$。根据模型定义，观测数据的边缘概率为：
+
 $$
 p_\theta (x) = \int p_\theta (x,z)\ dz = \int p_\theta (x|z)p(z)\ dz
 $$
+
 即对所有可能的 $z$ 取积分（或求和）。这个积分高维情况下往往无法解析求解。因此，需要借助近似推断的方法来优化模型参数。这引出了 VAE 中最核心的思想——**变分推断**及**证据下界（ELBO）**的构建。
 
 ### 变分推断与变分下界（ELBO）
@@ -91,32 +89,42 @@ $$
 VAE 的巧妙之处在于，引入了一个由编码器定义的近似后验分布 $q_{\phi}(z|x)$，并通过最小化 $q_{\phi}(z|x)$ 与真实后验 $p_{\theta}(z|x)$ 之间的差异，间接地最大化了对数似然。我们选择用 $q_{\phi}(z|x)$ 去近似 $p_{\theta}(z|x)$，将求解后验难题转化为优化问题：让 $q_{\phi}(z|x)$ 尽可能贴近真实后验。
 
 为度量两个分布的差异，我们采用Kullback-Leibler 散度（KL散度）。对于任意分布 $q(z)$ 和 $p(z)$，KL散度定义为 $D_{\mathrm{KL}}(q|p) = \mathbb{E}_{q}[\log \frac{q(z)}{p(z)}]$。KL散度非负，且只有当 $q=p$ 时为0。我们利用KL散度来连接 $q_{\phi}(z|x)$ 与我们要求的量。例如，对真实后验和近似后验应用KL散度：
+
 $$
-D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p_{\theta}(z \mid x) \right) 
+D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p_{\theta}(z \mid x) \right)
 = \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log \frac{q_{\phi}(z \mid x)}{p_{\theta}(z \mid x)} \right] \geq 0
 $$
+
 经过推导（应用贝叶斯公式并整理），可以得到下式：
+
 $$
-\log p_{\theta}(x) = \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log p_{\theta}(x \mid z) \right] 
-- D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p(z) \right) 
+\log p_{\theta}(x) = \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log p_{\theta}(x \mid z) \right]
+- D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p(z) \right)
 + D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p_{\theta}(z \mid x) \right)
 $$
+
 将上述等式变形可知：
+
 $$
-\log p_{\theta}(x) 
-- D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p_{\theta}(z \mid x) \right) 
-= \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log p_{\theta}(x \mid z) \right] 
+\log p_{\theta}(x)
+- D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p_{\theta}(z \mid x) \right)
+= \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log p_{\theta}(x \mid z) \right]
 - D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p(z) \right)
 $$
+
 由于最后一项KL散度恒为非负，将其移至左侧得到：
+
 $$
 \log p_{\theta}(x) \ge \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log p_{\theta}(x \mid z) \right] - D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p(z) \right)
 $$
+
 左侧是我们关心的对数似然，右侧就是它的一个下界。这个不等式说明：对于任意的近似后验分布 $q_{\phi}(z|x)$，对数边缘似然都大于等于右边的表达式。我们称右边的量为变分下界（Evidence Lower Bound，简称 ELBO）最大化” 这一问题转化为了将变分下界最大化。)。ELBO 的形式为：
+
 $$
-\mathcal{L}(\theta, \phi; x) = \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log p_{\theta}(x \mid z) \right] 
+\mathcal{L}(\theta, \phi; x) = \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log p_{\theta}(x \mid z) \right]
 - D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p(z) \right)
 $$
+
 它对任意 $\theta, \phi$ 都是 $\log p_{\theta}(x)$ 的下界，有 $\log p_{\theta}(x) \ge \mathcal{L}(\theta,\phi; x)$。当且仅当近似后验完美等于真实后验时，两者相等。于是，我们将原本“最大化 $\log p_{\theta}(x)$”的问题转化为了“最大化 ELBO”的问题最大化” 这一问题转化为了 将变分下界最大化。)。通过最大化 ELBO，我们既在提高数据的对数似然，又在逼近真实的后验分布。
 
 ELBO 提供了一个可优化的目标，其差距正是 $q_{\phi}(z|x)$ 与 $p_{\theta}(z|x)$ 的 KL散度最大化” 这一问题转化为了 将变分下界最大化。因此，最大化 ELBO 等价于同时提高对数似然的期望项和降低近似后验与先验的KL散度项，这恰好对应了VAE中解码器和编码器需要优化的两个方面。下面我们进一步解析这两个项的含义。
@@ -129,17 +137,21 @@ ELBO 提供了一个可优化的目标，其差距正是 $q_{\phi}(z|x)$ 与 $p_
 2. **正则项（KL项）**：$\displaystyle -D_{\mathrm{KL}}(q_{\phi}(z|x)| p(z))$，即负的 KL散度，或等价地将其移到损失函数中作为 $D_{\mathrm{KL}}(q_{\phi}(z|x)| p(z))$ 惩罚项。最大化 ELBO 等价于最小化编码器产出的近似后验与先验分布 $p(z)$ 之间的 KL散度。因此，为了提高 ELBO，我们需要让 $q_{\phi}(z|x)$ 尽可能接近 $p(z)$。这意味着编码器输出的隐变量分布应接近于先验设定的标准正态。这一项可以看作对编码器的正则化：鼓励模型在隐空间不要记住特定数据，从而避免过拟合，而是学习一个对所有数据均适用的潜在分布结构。直观上，KL项限制了潜在空间的形状，使不同输入的隐表示不会彼此距离过远，并覆盖先验的空间。这保证了我们可以对潜在空间进行有意义的插值和随机采样。
 
 将两部分综合起来，VAE 的损失函数通常取负的 ELBO，使其形式为一个需要最小化的损失（因为优化中我们习惯于最小化损失）：
+
 $$
-L(\theta, \phi; x) = - \mathcal{L}(\theta, \phi; x) = - \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log p_{\theta}(x \mid z) \right] 
+L(\theta, \phi; x) = - \mathcal{L}(\theta, \phi; x) = - \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log p_{\theta}(x \mid z) \right]
 + D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p(z) \right),
 $$
+
 这个损失函数正好由“重构误差 + KL正则”两部分组成。第一项衡量重建数据与原数据之间的差异（它是一个期望值，在实践中通过采样近似，下文将讨论），第二项约束潜在变量的分布与先验的接近程度。通过最小化 $L$，我们等价地在最大化 ELBO，使模型同时学会重构输入和规范潜在空间。
 
 值得注意的是，如果我们选取高斯先验和高斯后验（即编码器输出均值和方差参数，假定 $q_{\phi}(z|x) = \mathcal{N}(z;\mu(x), \mathrm{diag}(\sigma^2(x)))$ 且 $p(z)=\mathcal{N}(0,I)$），KL散度项有解析解。对于单维，高斯分布的KL散度公式为：
+
 $$
-D_{\mathrm{KL}}\left( \mathcal{N}(\mu, \sigma^2) \,\|\, \mathcal{N}(0, 1) \right) 
+D_{\mathrm{KL}}\left( \mathcal{N}(\mu, \sigma^2) \,\|\, \mathcal{N}(0, 1) \right)
 = \frac{1}{2} \left( \mu^2 + \sigma^2 - 1 - \log \sigma^2 \right),
 $$
+
 多维情形下各维相加即可。实际实现时，我们经常直接利用这一定式计算 KL 散度损失。而重构项则根据输出分布形式采用相应的损失计算方式，例如对于伯努利分布假设采用交叉熵损失，对于高斯假设则可采用均方误差或负对数似然。在代码实现中，重构误差和 KL 散度损失往往分别计算再相加，形成最终的 VAE 损失。
 
 **VAE 的目标函数小结**：重构项驱动模型尽量还原数据细节，KL项则防止模型过度记忆个例，从而促使隐空间形成全局有用的结构。两者的平衡对于模型性能至关重要。如果KL权重过大，编码器可能过分趋向于先验，造成欠拟合；若KL权重过小（或不加入KL项，就变成普通AE），隐空间可能无约束，从而模型虽然重构误差低但失去生成新样本的能力。标准VAE将两者权衡在一起，造就了其既能重构又能生成的特性。
@@ -153,20 +165,26 @@ $$
 编码器输出的是隐变量的分布参数（例如 $\mu(x), \sigma(x)$），而我们需要从该分布中采样得到 $z$ 再传给解码器。如果直接从 $q_{\phi}(z|x)$ 中抽样，那么 $z$ 的值是随机的，梯度无法向后传播到 $\phi$。换句话说，编码器的参数 $\phi$ 不能直接通过采样操作进行优化。这时，**重参数化技巧**（Reparameterization Trick）应运而生。
 
 重参数化技巧的核心思想是将随机变量的采样过程与网络参数解耦，把随机性从网络结构中“抽离”出来，以便梯度能够传回。具体而言，对于高斯分布的情况，我们引入一个辅助的标准正态噪声 $\epsilon$，将 $z$ 的采样表示为：
+
 $$
 z = \mu(x) + \sigma(x) \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)_{\odot}
 $$
+
 这里 $\mu(x)$ 和 $\sigma(x)$ 是编码器网络输出的均值和标准差向量，$\epsilon$ 是与 $\phi$ 无关的随机噪声向量（各维独立标准正态），$\odot$ 表示按元素乘积。通过这种重新参数化，我们将 $z$ 表示成了确定性函数 $z=f_{\phi}(x,\epsilon)$：对给定的输入 $x$，不同的 $\epsilon$ 采样会得到不同的 $z$，但对于任一特定的 $\epsilon$，$z$ 相对于 $\mu,\sigma$ 是显函数。因此，期望 $\mathbb{E}_{q_{\phi}(z|x)}$ 可以转化为对 $\epsilon$ 的期望，从而交换积分和求导次序成为可能：
+
 $$
-\mathbb{E}_{q_{\phi}(z \mid x)} \left[ h(z) \right] 
+\mathbb{E}_{q_{\phi}(z \mid x)} \left[ h(z) \right]
 = \mathbb{E}_{\epsilon \sim \mathcal{N}(0, I)} \left[ h\left( \mu(x) + \sigma(x) \odot \epsilon \right) \right]
 $$
+
 现在，对于损失函数 $L(\theta,\phi; x)$，我们可以对 $\phi$ 求梯度：
+
 $$
-\nabla_{\phi} \mathcal{L} = \nabla_{\phi} \mathbb{E}_{\epsilon} 
-\left[ l\left( \mu(x) + \sigma(x) \odot \epsilon \right) \right] 
+\nabla_{\phi} \mathcal{L} = \nabla_{\phi} \mathbb{E}_{\epsilon}
+\left[ l\left( \mu(x) + \sigma(x) \odot \epsilon \right) \right]
 = \mathbb{E}_{\epsilon} \left[ \nabla_{\phi} l\left( \mu(x) + \sigma(x) \odot \epsilon \right) \right]
 $$
+
 其中 $l$ 表示单个样本的损失项。这一步交换导数和期望的合法性正是因为我们用了确定的可导变换来表示 $z$。简言之，重参数化技巧使得随机节点可微：我们把对 $z$ 的采样看作对独立噪声 $\epsilon$ 的采样，然后把噪声经过可导的变换得到 $z$。这样一来，$z$ 与 $\phi$ 之间的关系由 $\mu(x)$ 和 $\sigma(x)$ 显式表示，梯度可以通过 $\mu,\sigma$ 传递回编码器。这解决了 VAE 训练中最具挑战性的部分，让我们能够用标准的随机梯度下降来训练包含随机单元的网络。
 
 **直观解释**：编码器输出一个分布，重参数化相当于把「从这个分布采样」的过程，转化为「从标准分布采样再按该输出分布的均值和尺度进行线性变换」。由于从标准正态采样不依赖编码器参数，这一步不阻断梯度，而后续的线性变换是可导的，因此整体流程可梯度传递。最常见的重参数化是针对高斯分布的，如上所述。对于其他可微分布也有类似技巧，如 Gumbel-Softmax 技巧用于近似离散分布的采样可导化等。
@@ -181,42 +199,55 @@ $$
 - 对数方差 $\log\sigma^2=[-0.4,\;0.8]$
 
 由此
+
 $$
 \sigma=\exp\!\left(\tfrac{1}{2}\log\sigma^2\right)=\exp([{-0.2},\;0.4])\approx[0.8187,\;1.4918]
 $$
+
 **重参数化采样**
 
 采样标准正态噪声$\epsilon\sim\mathcal N(0,I)$，取一组具体样本$\epsilon=[0.7,\;-1.1]$
 
 重参数化：
+
 $$
 z=\mu+\sigma\odot \epsilon
 =[1.2,\;-0.3]+[0.8187\!\times\!0.7,\;1.4918\!\times\!(-1.1)]
 \approx [1.7731,\;-1.9410].
 $$
+
 这就把原本“不可微”的采样，写成了对 $\mu,\sigma$ 可微的确定性变换 $z(\mu,\sigma,\epsilon)$。
 
 **反向传播时的梯度**
 
 假设某个损失$L$对$z$的梯度是
+
 $$
 \frac{\partial L}{\partial z}=g=[0.2,\;-0.5]
 $$
+
 有
+
 $$
 \frac{\partial z}{\partial \mu}=1\;\Rightarrow\;\frac{\partial L}{\partial \mu}=g=[0.2,\;-0.5]
 $$
+
 又因 $z=\mu+\sigma\odot\epsilon$且 $\sigma=\exp(\tfrac{1}{2}\log\sigma^2$)，
+
 $$
 \frac{\partial \sigma}{\partial \log\sigma^2}=\tfrac{1}{2}\sigma,\quad
 \frac{\partial z}{\partial \log\sigma^2}=\left(\tfrac{1}{2}\sigma\odot\epsilon\right)
 $$
+
 于是
+
 $$
 \frac{\partial L}{\partial \log\sigma^2}
 = g \odot \left(\tfrac{1}{2}\sigma\odot\epsilon\right)
 $$
+
 代入数值：
+
 $$
 \tfrac{1}{2}\sigma\odot\epsilon\approx[0.5\!\times\!0.8187\!\times\!0.7,\;0.5\!\times\!1.4918\!\times\!(-1.1)]
 \approx[0.2865,\;-0.8205]
@@ -228,12 +259,12 @@ $$
 \approx[0.0573,\;0.4102]
 $$
 
-
 可以看到，梯度能直接传到$\mu$与$\log\sigma^2$，这就是重参数化 trick 的关键。
 
 **KL 散度的具体数值**
 
 对角高斯$q(z|x)=\mathcal N(\mu,\mathrm{diag}(\sigma^2))$与标准正态$p(z)=\mathcal N(0,I)$的 KL：
+
 $$
 \mathrm{KL}(q\|p)=
 -\tfrac{1}{2}\sum_i\left(1+\log\sigma_i^2-\mu_i^2-\exp(\log\sigma_i^2)\right)
@@ -244,7 +275,9 @@ $$
 $$
 \exp(\log\sigma^2)=[e^{-0.4},\;e^{0.8}]\approx[0.6703,\;2.2255]
 $$
+
 逐维计算并求和，得到
+
 $$
 \mathrm{KL}\approx 1.013
 $$
@@ -313,10 +346,12 @@ VAE 作为一种强大的生成模型和特征学习模型，在诸多领域有�
 #### β-VAE（Beta-VAE）
 
 β-VAE 是由 Higgins 等人在2017年提出的 VAE 扩展，用于学习更具解耦（disentangled）的潜在表示。其核心思想非常简单：在VAE的损失函数中引入一个权重因子 $\beta$ 来调整 KL 散度项的权重。具体来说，β-VAE 的目标函数可以写作：
+
 $$
-\mathcal{L}_{\beta-\text{VAE}} = \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log p_{\theta}(x \mid z) \right] 
+\mathcal{L}_{\beta-\text{VAE}} = \mathbb{E}_{q_{\phi}(z \mid x)} \left[ \log p_{\theta}(x \mid z) \right]
 - \beta \ D_{\mathrm{KL}}\left( q_{\phi}(z \mid x) \,\|\, p(z) \right)
 $$
+
 当 $\beta=1$ 时，恢复标准VAE。取 $\beta>1$ 则意味着我们在训练中更强调让编码器输出服从先验（增大KL罚则），相对降低重构项的权重。这看似会提高后验坍塌风险，但β-VAE的目标并非生成质量，而是获取更具语义解耦的潜在因子。
 
 通过让模型在更严苛的瓶颈下重构数据，β-VAE 鼓励模型只保留数据中最关键信息在 $z$ 中，以此希望 $z$ 的每个维度能够学习到独立的潜在因素。简单理解，$\beta$ 越大，隐空间被压缩得越厉害，模型为了尽量重构还原，又不得不学会将可分解的因素分离到不同维上编码。实验表明，在数据生成因子相对独立的情况下（例如几何形状数据里形状、大小、颜色等因素彼此独立），适当增大 $\beta$ 可以让模型学出的 $z$ 的不同坐标对应不同的语义因素，实现无监督的因子分解（disentanglement）。
@@ -344,4 +379,3 @@ VAE-GAN 的缺点主要是模型更复杂，训练需要同时考虑VAE和GAN两
 ### 总结
 
 变分自编码器（VAE）从提出至今，已经发展出丰富的理论和实践成果。从基础原理上，VAE 将概率图模型与深度学习结合，引入了变分推断求解后验近似，巧妙地通过重参数化实现了可微采样，从而能够使用梯度下降来训练包含随机单元的深度模型。它的损失由重构误差和KL散度构成，在学习数据分布的同时规范了潜在空间结构，使得生成成为可能。在应用方面，VAE 被广泛用于图像、文本等生成，以及特征学习和半监督等任务。在模型拓展上，人们提出了许多改进来增强VAE：应对后验坍塌以充分利用隐变量、通过β-VAE获取更解耦的表示、结合GAN提升生成质量、引入离散潜在的VQ-VAE等等。这些探索极大地丰富了 VAE 家族。虽然与其它新兴生成模型相比，VAE 存在生成样本模糊等局限，但其**高效的推断机制、稳定的训练过程和明确的概率解释**使其在深度生成模型领域依然扮演着重要角色。
-
