@@ -15,16 +15,16 @@ docId: db3qwg25h6l0bh8f2sdabdqc
 
 给定正的常数 $c_1, c_2$，我们定义：
 
-- $x = \Omega(y)$，如果 $x > c_2 |y|$；
-- $x = \Theta(y)$，如果 $c_1 |y| < x < c_2 |y|$；
-- $x = O(y)$，如果 $x < c_1 |y|$；
+- $x = \Omega(y)$，如果 $x > c_2 \lvert y \rvert$；
+- $x = \Theta(y)$，如果 $c_1 \lvert y \rvert < x < c_2 \lvert y \rvert$；
+- $x = O(y)$，如果 $x < c_1 \lvert y \rvert$；
 - $x = o(y)$，如果 $\frac{x}{y} \to 0$。
-- O(y)：上界，表示“不会比 y 增长得更快”。
-- Ω(y)：下界，表示“至少和 y 一样快”。
-- Θ(y)：上下界都在 y 的数量级内，表示“和 y 同阶”。
-- o(y)：严格比 y 小得多，最终会趋近于 0。
+- $O(y)$：上界，表示“不会比 y 增长得更快”。
+- $\Omega(y)$：下界，表示“至少和 y 一样快”。
+- $\Theta(y)$：上下界都在 y 的数量级内，表示“和 y 同阶”。
+- $o(y)$：严格比 y 小得多，最终会趋近于 0。
 
-## **重要假设**：
+## 重要假设：
 
 1. 这个文章只想给出闭式遗忘公式，所以直接简化成线性模型。$f(X)=X^⊤w,w∈R^d$
 2. 这个文章只讨论task-wised的路由方法，数据生成的时候每份数据只加入了一个信号数据，其余都是正态分布噪声。目的也是为了简化模型，然后在实际工程应用中，token会被隐式的送到各个experts，而不采用人为设定的方式。
@@ -199,23 +199,24 @@ $$
     - 在前章节使用的方法
     - 保证同一专家在相邻任务上的参数差异不要太大。
 
-
-- **表示相似性 (Representation Locality)**
-      - 可以直接对专家输出的表示（hidden states）施加约束。
+- **表示相似性 (Representation Locality)** - 可以直接对专家输出的表示（hidden states）施加约束。
 
       - 比如：
+
   $$
   L^{loc}_{repr} = \sum_{m \in [M]} \pi_m(X_t,\Theta_t)\,\|f_m(X_t) - f_m(X_{t-1})\|_2
   $$
+
       - 让相似输入在同一专家上输出保持稳定。
 
-- **路由概率连续性 (Routing Locality)**
-      - 约束 router 的分配概率不要随任务跳跃太大。
+- **路由概率连续性 (Routing Locality)** - 约束 router 的分配概率不要随任务跳跃太大。
 
       - 形式类似：
+
   $$
   L^{loc}_{route} = \sum_{m \in [M]} \|\pi_m(X_t,\Theta_t) - \pi_m(X_{t-1},\Theta_{t-1})\|_2
   $$
+
 - **语义/任务嵌入的相似性 (Task Embedding Locality)**
   - 如果能为任务构建一个 task embedding（比如通过元学习或对比学习），可以定义：
     - 相似任务 → 路由到同一专家
