@@ -1,11 +1,14 @@
 ﻿// next.config.mjs
 import { createMDX } from "fumadocs-mdx/next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { remarkImage } from "fumadocs-core/mdx-plugins";
 
 const withMDX = createMDX({
   configPath: "source.config.ts",
+  mdxOptions: {
+    remarkPlugins: [[remarkImage, { onError: "ignore", external: true }]],
+  },
 });
-
 const withNextIntl = createNextIntlPlugin("./i18n.ts");
 
 /** @type {import('next').NextConfig} */
@@ -33,6 +36,8 @@ const config = {
         hostname: "cdn.nlark.com",
         pathname: "/**",
       },
+      { protocol: "https", hostname: "img.coly.cc", pathname: "/**" },
+      { protocol: "https", hostname: "pub-*.r2.dev", pathname: "/**" },
     ],
   },
 };
