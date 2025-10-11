@@ -22,14 +22,18 @@ function MdxImage({ src, alt = "", width, height, ...rest }: MdxImageProps) {
       />
     );
   }
-
   const numericWidth = typeof width === "string" ? Number(width) : width;
   const numericHeight = typeof height === "string" ? Number(height) : height;
 
+  if (!Number.isFinite(numericWidth) || !Number.isFinite(numericHeight)) {
+    // fallback: 当 width/height 不是可解析数值时，直接使用原生 <img>
+    return <img src={src ?? ""} alt={alt ?? ""} {...rest} />;
+  }
+
   return (
     <Image
-      src={src}
-      alt={alt}
+      src={src ?? ""}
+      alt={alt ?? ""}
       width={numericWidth}
       height={numericHeight}
       {...rest}
