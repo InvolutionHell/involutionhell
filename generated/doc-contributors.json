@@ -1,6 +1,6 @@
 {
   "repo": "InvolutionHell/involutionhell.github.io",
-  "generatedAt": "2025-10-11T02:13:32.441Z",
+  "generatedAt": "2025-10-11T02:29:00.345Z",
   "docsDir": "app/docs",
   "totalDocs": 102,
   "results": [
@@ -1178,9 +1178,18 @@
       "docId": "pqplmwaj5o5aszydqo1drzrj",
       "path": "app/docs/ai/multimodal/RQVAE/index.mdx",
       "contributorStats": {
+        "163523387": 1,
         "188854497": 1
       },
       "contributors": [
+        {
+          "githubId": "163523387",
+          "contributions": 1,
+          "lastContributedAt": "2025-10-11T02:13:33.000Z",
+          "login": "Mira190",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
+          "htmlUrl": "https://github.com/Mira190"
+        },
         {
           "githubId": "188854497",
           "contributions": 1,
@@ -1273,9 +1282,18 @@
       "docId": "otfiks0uz3aue1bdvlyqmj3e",
       "path": "app/docs/ai/multimodal/VQVAE/index.mdx",
       "contributorStats": {
+        "163523387": 1,
         "188854497": 1
       },
       "contributors": [
+        {
+          "githubId": "163523387",
+          "contributions": 1,
+          "lastContributedAt": "2025-10-11T02:13:33.000Z",
+          "login": "Mira190",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
+          "htmlUrl": "https://github.com/Mira190"
+        },
         {
           "githubId": "188854497",
           "contributions": 1,
