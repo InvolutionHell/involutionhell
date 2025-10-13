@@ -1,6 +1,6 @@
 {
   "repo": "InvolutionHell/involutionhell.github.io",
-  "generatedAt": "2025-10-11T12:31:18.710Z",
+  "generatedAt": "2025-10-13T14:28:14.032Z",
   "docsDir": "app/docs",
   "totalDocs": 103,
   "results": [
@@ -1022,9 +1022,27 @@
       "docId": "db3qwg25h6l0bh8f2sdabdqc",
       "path": "app/docs/ai/MoE/moe-update.md",
       "contributorStats": {
-        "76551253": 1
+        "76551253": 1,
+        "114939201": 2,
+        "163523387": 1
       },
       "contributors": [
+        {
+          "githubId": "114939201",
+          "contributions": 2,
+          "lastContributedAt": "2025-10-13T14:23:25.000Z",
+          "login": "longsizhuo",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
+          "htmlUrl": "https://github.com/longsizhuo"
+        },
+        {
+          "githubId": "163523387",
+          "contributions": 1,
+          "lastContributedAt": "2025-10-11T12:31:19.000Z",
+          "login": "Mira190",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
+          "htmlUrl": "https://github.com/Mira190"
+        },
         {
           "githubId": "76551253",
           "contributions": 1,
