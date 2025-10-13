@@ -6,7 +6,7 @@ import "./globals.css";
 import "katex/dist/katex.min.css";
 import { ThemeProvider } from "@/app/components/ThemeProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { BRAND_NAME } from "@/lib/brand";
+import { BRAND_NAME } from "@/app/components/BrandMark";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

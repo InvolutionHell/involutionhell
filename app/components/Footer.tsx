@@ -1,5 +1,5 @@
 import { Github, MessageCircle, ExternalLink } from "lucide-react";
-import { BRAND_ICON_TEXT, BRAND_NAME } from "@/lib/brand";
+import { BrandMark, BRAND_NAME } from "./BrandMark";
 
 export function Footer() {
   return (
@@ -8,16 +8,10 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">
-                  {BRAND_ICON_TEXT}
-                </span>
-              </div>
-              <span className="font-bold text-xl bg-gradient-primary bg-clip-text text-transparent">
-                {BRAND_NAME}
-              </span>
-            </div>
+            <BrandMark
+              className="mb-4 gap-3"
+              textClassName="font-bold text-xl"
+            />
             <p className="text-muted-foreground mb-6 max-w-md">
               一个由开发者自发组织的、完全免费且开放的学习社区。让每个人都能在轻松氛围下成长。
             </p>

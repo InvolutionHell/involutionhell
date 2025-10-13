@@ -5,7 +5,7 @@ import { Github as GithubIcon } from "./icons/Github";
 import { SignInButton } from "./SignInButton";
 import { auth } from "@/auth";
 import { UserMenu } from "./UserMenu";
-import { BRAND_ICON_TEXT, BRAND_NAME } from "@/lib/brand";
+import { BrandMark } from "./BrandMark";
 
 export async function Header() {
   const session = await auth();
@@ -18,16 +18,7 @@ export async function Header() {
   return (
     <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {/* 简洁标识，无渐变、无圆角 */}
-          <div className="w-8 h-8 border border-gray-300 dark:border-gray-700 flex items-center justify-center text-sm font-semibold">
-            {BRAND_ICON_TEXT}
-          </div>
-          {/* 纯文本标题，无渐变 */}
-          <span className="font-semibold text-lg tracking-tight">
-            {BRAND_NAME}
-          </span>
-        </div>
+        <BrandMark priority />
 
         <nav className="hidden md:flex items-center gap-8">
           <a

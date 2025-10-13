@@ -1,6 +1,6 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import { SignInButton } from "@/app/components/SignInButton";
-import { BRAND_NAME } from "@/lib/brand";
+import { BRAND_NAME } from "@/app/components/BrandMark";
 
 export function baseOptions(): BaseLayoutProps {
   return {
