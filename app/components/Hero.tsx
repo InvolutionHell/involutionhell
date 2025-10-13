@@ -1,7 +1,4 @@
 import Link from "next/link";
-import { Button } from "../../components/ui/button";
-import { ExternalLink } from "lucide-react";
-import { Github as GithubIcon } from "./icons/Github";
 import { ZoteroFeed } from "@/app/components/ZoteroFeed";
 import { Contribute } from "@/app/components/Contribute";
 
@@ -55,23 +52,6 @@ export function Hero() {
           <p className="text-base md:text-lg text-muted-foreground">
             一个由开发者自发组织、免费开放的学习社区。降低门槛，避免无意义内卷，专注真实进步与乐趣。
           </p>
-
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button asChild className="rounded-none">
-              <a href="/docs/ai" target="_blank" rel="noopener noreferrer">
-                访问知识库 <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
-            <Button variant="outline" asChild className="rounded-none">
-              <a
-                href="https://github.com/involutionhell"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                GitHub 仓库 <GithubIcon className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
-          </div>
         </div>
         {/* 投稿按钮 */}
         <Contribute />
