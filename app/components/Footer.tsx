@@ -1,4 +1,5 @@
 import { Github, MessageCircle, ExternalLink } from "lucide-react";
+import { BRAND_ICON_TEXT, BRAND_NAME } from "@/lib/brand";
 
 export function Footer() {
   return (
@@ -10,11 +11,11 @@ export function Footer() {
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">
-                  IH
+                  {BRAND_ICON_TEXT}
                 </span>
               </div>
               <span className="font-bold text-xl bg-gradient-primary bg-clip-text text-transparent">
-                Involution Hell
+                {BRAND_NAME}
               </span>
             </div>
             <p className="text-muted-foreground mb-6 max-w-md">
@@ -118,8 +119,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="border-t border-border mt-12 pt-8 text-center text-muted-foreground">
           <p>
-            &copy; {new Date().getFullYear()} Involution Hell.
-            完全开源，永远免费。
+            &copy; {new Date().getFullYear()} {BRAND_NAME}. 完全开源，永远免费。
           </p>
         </div>
       </div>
