@@ -4,6 +4,7 @@ description: First page
 date: "2025-09-11"
 tags:
   - intro
+docId: u68pjetu592c9zvs3f5xa82j
 ---
 
 # 行为面试十题万能思路

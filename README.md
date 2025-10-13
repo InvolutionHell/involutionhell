@@ -2,7 +2,23 @@
   <a href="./README.md">简体中文</a> | <a href="./README.en.md">English</a>
 </p>
 
-# 内卷地狱知识库
+<p align="center">
+  <a href="https://involutionhell.github.io">
+    <img src="./public/mascot.svg" width="150">
+  </a>
+</p>
+
+<p align="center"><a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com/?font=Noto+Sans+SC&weight=700&size=32&pause=1000&color=f6671b&center=true&vCenter=true&width=420&lines=%E5%86%85%E5%8D%B7%E5%9C%B0%E7%8B%B1%E7%9F%A5%E8%AF%86%E5%BA%93&duration=3000" alt="Typing SVG" /></a></p>
+
+<p align="center">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" />
+  <a href="https://github.com/InvolutionHell/involutionhell.github.io/blob/main/LICENSE">
+    <img alt="License" src="https://img.shields.io/github/license/InvolutionHell/involutionhell.github.io?style=for-the-badge&color=blue">
+  </a>
+</p>
 
 ## 📋 关于
 
@@ -73,6 +89,8 @@ pnpm dev
 - 文档与流程完善
 
 完整流程、PR 检查与 UI 协作约定请参考 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+[![Contributors](https://contrib.rocks/image?repo=InvolutionHell/involutionhell.github.io)](https://github.com/InvolutionHell/involutionhell.github.io/graphs/contributors)
 
 ## 🖼️ 文档与资产
 

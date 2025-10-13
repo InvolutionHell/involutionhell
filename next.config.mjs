@@ -36,8 +36,16 @@ const config = {
         hostname: "cdn.nlark.com",
         pathname: "/**",
       },
-      { protocol: "https", hostname: "img.coly.cc", pathname: "/**" },
-      { protocol: "https", hostname: "pub-*.r2.dev", pathname: "/**" },
+      {
+        protocol: "https",
+        hostname: "*.amazonaws.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.coly.cc",
+        pathname: "/**",
+      },
     ],
   },
 };

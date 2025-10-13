@@ -1,9 +1,10 @@
 ---
-title: "算力需求指南"
-description: "如何计算训练大模型所需显存大小"
+title: 算力需求指南
+description: 如何计算训练大模型所需显存大小
 date: "2025-09-20"
 tags:
   - compute-platforms
+docId: ns7q5ehuje6oiua7as6rtnyf
 ---
 
 # 大模型多卡训练笔记

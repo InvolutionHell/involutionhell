@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 /**
- * MDX 图片就近迁移脚本（中文注释）
+ * @description MDX 图片就近迁移脚本（中文注释）
+ * @author Siz Long
+ * @date 2025-09-27
  *
  * 目标
- * - 扫描 `app/docs/??/?.mdx`（含 .md）里的图片引用
- * - 对于以 `/images/...` 绝对路径引用且仅被“单一文档”使用的图片：移动到对应 MDX 同目录下的 `images/` 子目录
+ * - 扫描 `app/docs/??/?.md`（含 .mdx）里的图片引用
+ * - 对于以 `/images/...` 绝对路径引用且仅被“单一文档”使用的图片：移动到对应 MD 同目录下的 `images/` 子目录
  * - 同时将文中的绝对路径替换为相对路径 `./images/<文件名>`（站点级资源除外）
  *
  * 为什么需要
@@ -34,7 +36,7 @@ const PUBLIC_DIR = path.join(ROOT, "public");
 const EXCLUDE_PREFIXES = ["/images/site/", "/images/components/"];
 
 // 需要处理的文档扩展名
-const exts = new Set([".mdx", ".md"]);
+const exts = new Set([".md", ".mdx"]);
 
 /** 递归遍历目录，产出文件路径 */
 function* walk(dir) {
@@ -222,7 +224,7 @@ function moveForFile(file, refs) {
   return { moved, updated: content !== raw };
 }
 
-/** 主流程：遍历所有 MDX，累计迁移数量并输出统计 */
+/** 主流程：遍历所有 MD，累计迁移数量并输出统计 */
 function main() {
   let totalFiles = 0;
   let totalMoved = 0;

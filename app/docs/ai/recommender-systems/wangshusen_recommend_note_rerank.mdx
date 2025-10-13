@@ -1,12 +1,13 @@
 ---
-title: '王树森推荐系统学习笔记_重排'
+title: 王树森推荐系统学习笔记_重排
 description: ""
 date: "2025-09-27"
 tags:
   - tag-one
+docId: ol03smbujgwztho45ycj52ah
 ---
 
-# 王树森推荐系统学习笔记_重排
+# 王树森推荐系统学习笔记\_重排
 
 ## 重排
 
@@ -20,13 +21,13 @@ tags:
   - 类目、品牌、关键词……
 
 - 基于物品向量表征。
-  - 用召回的双塔模型学到的物品向量 *（不好）*。
-  - 基于内容的向量表征 *（好）*。
+  - 用召回的双塔模型学到的物品向量 _（不好）_。
+  - 基于内容的向量表征 _（好）_。
 
 **基于物品属性标签**
 
 - 物品属性标签：类目、品牌、关键词……
-- 根据 *一级类目*、*二级类目*、*品牌* 计算相似度。
+- 根据 _一级类目_、_二级类目_、_品牌_ 计算相似度。
   - 物品 $i$：美妆、彩妆、香奈儿。
   - 物品 $j$：美妆、香水、香奈儿。
   - 相似度：$\text{sim}_1(i, j) = 1$，$\text{sim}_2(i, j) = 0$，$\text{sim}_3(i, j) = 1$。
@@ -40,7 +41,7 @@ tags:
 **如何训练 CNN 与 BERT？**
 
 - **CLIP** 是当前公认最有效的预训练方法。
-- **思想**：对于 *图片—文本* 二元组，预测图文是否匹配。
+- **思想**：对于 _图片—文本_ 二元组，预测图文是否匹配。
 - **优势**：无需人工标注。小红书的笔记天然包含图片 + 文字，大部分笔记图文相关。
 
 ![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/6-1-2.png)
@@ -75,6 +76,7 @@ tags:
 ![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/6-2-1.png)
 
 - 计算集合 $\mathcal{R}$ 中每个物品 $i$ 的 Marginal Relevance 分数：
+
   $$
   \text{MR}_i = \theta \cdot \text{reward}_i - (1 - \theta) \cdot \max\limits_{j \in \mathcal{S}} \text{sim}(i, j)
   $$
@@ -98,6 +100,7 @@ tags:
 #### **滑动窗口**
 
 - **MMR**：
+
   $$
   \arg\max\limits_{i \in \mathcal{R}} \left\{ \theta \cdot \text{reward}_i - (1 - \theta) \cdot \max\limits_{j \in \mathcal{S}} \text{sim}(i, j) \right\}
   $$
@@ -111,6 +114,7 @@ tags:
 ![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/6-2-2.png)
 
 - **标准 MMR**：
+
   $$
   \arg\max\limits_{i \in \mathcal{R}} \left\{ \theta \cdot \text{reward}_i - (1 - \theta) \cdot \max\limits_{j \in \mathcal{S}} \text{sim}(i, j) \right\}.
   $$
@@ -139,7 +143,7 @@ tags:
 **规则：前 $t$ 篇笔记最多出现 $k$ 篇某种笔记**
 
 - 排名前 $t$ 篇笔记最容易被看到，对用户体验最重要。  
-  (*小红书的 top 4 为首屏*)
+  (_小红书的 top 4 为首屏_)
 - 小红书推荐系统有带电商卡片的笔记，过多可能会影响体验。
 - 前 $t=1$ 篇笔记最多出现 $k=0$ 篇带电商卡片的笔记。
 - 前 $t=4$ 篇笔记最多出现 $k=1$ 篇带电商卡片的笔记。
@@ -147,6 +151,7 @@ tags:
 #### MMR + 重排规则
 
 - MMR 每一轮选出一个物品：
+
   $$
   \arg\max\limits_{i \in \mathcal{R}} \left\{ \theta \cdot \text{reward}_i - (1 - \theta) \cdot \max\limits_{j \in \mathcal{W}} \text{sim}(i, j) \right\}
   $$
@@ -197,11 +202,11 @@ tags:
 
 以 $\mathbf{v}_2$ 为底，如何计算高 $\mathbf{q}_1$？
 
-- 计算 $\mathbf{v}_1$ 在 $\mathbf{v}_2$ 上的投影：  
+- 计算 $\mathbf{v}_1$ 在 $\mathbf{v}_2$ 上的投影：
 
   $$\text{Proj}_{\mathbf{v}_2}(\mathbf{v}_1) = \frac{\mathbf{v}_1^T \mathbf{v}_2}{\|\mathbf{v}_2\|_2^2} \cdot \mathbf{v}_2.$$
 
-- 计算  
+- 计算
 
   $$\mathbf{q}_1 = \mathbf{v}_1 - \text{Proj}_{\mathbf{v}_2}(\mathbf{v}_1).$$
 
@@ -231,9 +236,9 @@ tags:
 
 - 用超平行体的体积衡量物品的多样性，体积介于 $0$ 和 $1$ 之间。
 
-- 如果 $\mathbf{v}_1, \cdots, \mathbf{v}_k$ 两两正交（*多样性好*），则体积最大化，$\text{vol} = 1$。
+- 如果 $\mathbf{v}_1, \cdots, \mathbf{v}_k$ 两两正交（_多样性好_），则体积最大化，$\text{vol} = 1$。
 
-- 如果 $\mathbf{v}_1, \cdots, \mathbf{v}_k$ 线性相关（*多样性差*），则体积最小化，$\text{vol} = 0$。
+- 如果 $\mathbf{v}_1, \cdots, \mathbf{v}_k$ 线性相关（_多样性差_），则体积最小化，$\text{vol} = 0$。
 
 ![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/6-4-5.png)
 
@@ -256,7 +261,6 @@ tags:
 - $n$ 个物品的向量表征：$\mathbf{v}_1, \cdots, \mathbf{v}_n \in \mathbb{R}^d$。
 
 - 从 $n$ 个物品中选出 $k$ 个物品，组成集合 $\mathcal{S}$。
-
   - **价值大**：分数之和 $\sum_{j \in \mathcal{S}} \text{reward}_j$ 越大越好。
   - **多样性好**：$\mathcal{S}$ 中 $k$ 个向量组成的超平行体 $P(\mathcal{S})$ 的体积越大越好。
 
@@ -284,9 +288,8 @@ tags:
   \arg\max_{\mathcal{S}: |\mathcal{S}|=k} \theta \cdot \left( \sum_{j \in \mathcal{S}} \text{reward}_j \right) + (1 - \theta) \cdot \log \det(\mathbf{V}_{\mathcal{S}}^T \mathbf{V}_{\mathcal{S}})
   $$
 
-
-
 - **DPP 应用在推荐系统**：
+
   $$
   \arg\max_{\mathcal{S}: |\mathcal{S}|=k} \theta \cdot \left( \sum_{j \in \mathcal{S}} \text{reward}_j \right) + (1 - \theta) \cdot \log \det(\mathbf{V}_{\mathcal{S}}^T \mathbf{V}_{\mathcal{S}})
   $$
@@ -297,9 +300,8 @@ tags:
 
 - $\mathbf{A}_{\mathcal{S}} = \mathbf{V}_{\mathcal{S}}^T \mathbf{V}_{\mathcal{S}}$ 为 $\mathbf{A}$ 的一个 $k \times k$ 子矩阵。如果 $i, j \in \mathcal{S}$，则 $a_{ij}$ 是 $\mathbf{A}_{\mathcal{S}}$ 的一个元素。
 
-
-
 - **DPP 应用在推荐系统**：
+
   $$
   \arg\max_{\mathcal{S}: |\mathcal{S}|=k} \theta \cdot \left( \sum_{j \in \mathcal{S}} \text{reward}_j \right) + (1 - \theta) \cdot \log \det(\mathbf{A}_{\mathcal{S}})
   $$
@@ -323,7 +325,6 @@ tags:
   $$
 
 - **计算复杂度分析**：
-
   - 对于单个 $i$，计算 $\mathbf{A}_{\mathcal{S} \cup \{i\}}$ 的行列式需要 $O(|\mathcal{S}|^3)$ 时间。
 
   - 对于所有的 $i \in \mathcal{R}$，计算行列式需要时间 $O(|\mathcal{S}|^3 \cdot |\mathcal{R}|)$。
@@ -333,8 +334,6 @@ tags:
     $$
     O(|\mathcal{S}|^3 \cdot |\mathcal{R}| \cdot k) = O(nk^4).
     $$
-
-  
 
 - **暴力算法的总时间复杂度为**：
   $$
@@ -352,7 +351,6 @@ tags:
 - **Cholesky 分解** $\mathbf{A}_{\mathcal{S}} = \mathbf{L} \mathbf{L}^T$，其中 $\mathbf{L}$ 是下三角矩阵（**对角线以上的元素全零**）。
 
 - **Cholesky 分解可供计算** $\mathbf{A}_{\mathcal{S}}$ **的行列式**：
-
   - 下三角矩阵 $\mathbf{L}$ 的行列式 $\det(\mathbf{L})$ 等于 $\mathbf{L}$ 对角线元素乘积。
 
   - $\mathbf{A}_{\mathcal{S}}$ 的行列式为：
@@ -372,7 +370,6 @@ tags:
 - **初始化**：$\mathcal{S}$ 中只有一个物品，$\mathbf{A}_{\mathcal{S}}$ 是 $1 \times 1$ 的矩阵。
 
 - **每一轮循环**：
-
   - 基于上一轮算出的 $\mathbf{A}_{\mathcal{S}} = \mathbf{L} \mathbf{L}^T$，快速求出 $\mathbf{A}_{\mathcal{S} \cup \{i\}}$ 的 Cholesky 分解（$\forall i \in \mathcal{R}$）。
   - 从而求出 $\log \det(\mathbf{A}_{\mathcal{S} \cup \{i\}})$。
 
@@ -404,7 +401,7 @@ tags:
   \arg\max\limits_{i \in \mathcal{R}} \theta \cdot \text{reward}_i + (1 - \theta) \cdot \log \det (\mathbf{A}_{\mathcal{W} \cup \{i\}})
   $$
 
-**规则约束**  
+**规则约束**
 
 - 贪心算法每轮从 $\mathcal{R}$ 中选出一个物品：
 
@@ -412,12 +409,10 @@ tags:
   \arg\max\limits_{i \in \mathcal{R}} \theta \cdot \text{reward}_i + (1 - \theta) \cdot \log \det (\mathbf{A}_{\mathcal{W} \cup \{i\}})
   $$
 
-- 有很多规则约束，例如最多连续出 5 篇视频笔记（*如果已经连续出了 5 篇视频笔记，下一篇必须是图文笔记*）。
+- 有很多规则约束，例如最多连续出 5 篇视频笔记（_如果已经连续出了 5 篇视频笔记，下一篇必须是图文笔记_）。
 
 - 用规则排除掉 $\mathcal{R}$ 中的部分物品，得到子集 $\mathcal{R'}$，然后求解：
 
   $$
   \arg\max\limits_{i \in \mathcal{R'}} \theta \cdot \text{reward}_i + (1 - \theta) \cdot \log \det (\mathbf{A}_{\mathcal{W} \cup \{i\}})
   $$
-
-

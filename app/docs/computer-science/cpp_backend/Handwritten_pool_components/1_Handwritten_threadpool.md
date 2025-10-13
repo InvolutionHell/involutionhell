@@ -1,12 +1,24 @@
 ---
-title: '手写线程池'
+title: 手写线程池
 description: ""
-date: "2025-09-27"
+date: "2025-09-29"
 tags:
   - tag-one
+docId: mnjkrtrs7xk3fq538eqreuge
 ---
 
 # 线程池
+
+> 以下是调用单队列BlockingQueue的代码，使用双队列时将所有BlockingQueue改为BlockingQueuePro
+
+## 接口
+
+构造：用智能指针 unique_ptr 初始化阻塞队列，创建threads_num个线程并给每个绑定Worker函数开始执行task。（此时全部Worker阻塞在Pop()里）
+
+Post: 发布任务到线程池。
+
+析构：通知唤醒所有消费者，没有任务就自己下班。与生产者没关系。
+
 ```cpp
 #pragma once
 
@@ -38,8 +50,6 @@ private:
 };
 ```
 
-
-
 ```cpp
 #include "blockingqueue.h"
 #include <memory>
@@ -49,12 +59,13 @@ private:
 ThreadPool::ThreadPool(int threads_num) {
     task_queue_ = std::make_unique<BlockingQueue<std::function<void()>>>();
     for (size_t i = 0; i < threads_num; ++i) {
-        workers_.emplace_back([this] {Worker();}); 
+        workers_.emplace_back([this] {Worker();});
 // 使用 lambda 捕获 this [this] { Worker(); }，所以每个线程都能调用当前对象的 Worker 函数。
     }
 }
 
 // 停止线程池
+// 取消队列并唤醒所有阻塞线程
 ThreadPool::~ThreadPool() {
     task_queue_->Cancel();
     for(auto &worker : workers_) {
@@ -72,6 +83,7 @@ void ThreadPool::Post(std::function<void()> task) {
 void ThreadPool::Worker() {
     while (true) {
         std::function<void()> task;
+        // 阻塞在Pop里实现
         if (!task_queue_->Pop(task)) {
             break;
         }
@@ -81,14 +93,15 @@ void ThreadPool::Worker() {
 ```
 
 # 阻塞队列（单队列版）
+
 ![画板](https://cdn.nlark.com/yuque/0/2025/jpeg/43055607/1758722093302-3845f815-ddbc-4bee-a789-de63daa92cd1.jpeg)
 
 **单队列维护：**
 
-1. nonblock_(bool): 未阻塞标记。为true时，队列不会阻塞。初始（构造时）默认为阻塞状态。
-2. `queue_(std::queue<T>)`: 底层存储容器。
-3. mutex_(std::mutex): 保证多线程操作安全的互斥锁。
-4. not_empty_（std::condition_variable）：用于线程前同步。
+1. nonblock\_(bool): 未阻塞标记。为true时，队列不会阻塞。初始（构造时）默认为阻塞状态。
+2. queue\_(std::queue<T>): 底层存储容器。
+3. mutex\_(std::mutex): 保证多线程操作安全的互斥锁。
+4. not*empty*（std::condition_variable）：用于线程前同步。
 
 ```cpp
 template <typename T>
@@ -111,7 +124,7 @@ public:
         // 如果该线程已被加锁则进不来
         // condition_variable::wait需要这个unique_lock
         std::unique_lock<std::mutex> lock(mutex_);
-        
+
         // 这一行的主要作用是 维护取操作的安全性(在队列非空的时候才能继续往下走。
         //	   但是如果只判断队列是否为空来决定是否往下走，Cancel之后怎么办？
         //     即我想清空队列后结束所有线程，此时消费者线程依旧会被阻塞在这一行，因为它不知道是否要结束。
@@ -147,18 +160,21 @@ private:
 ```
 
 # 阻塞队列（双队列版）
-单队列中， 生产者和消费者都要竞争同一把锁。  
+
+![画板](https://cdn.nlark.com/yuque/0/2025/jpeg/43055607/1759131100901-946e59ae-cd19-4546-aa9d-a9ee658f0b5a.jpeg)
+
+单队列中， 生产者和消费者都要竞争同一把锁。
 
 双队列：
 
-+ `prod_queue_`：生产者写入队列（保护锁 `prod_mutex_`）。
-+ `cons_queue_`：消费者读取队列（保护锁 `cons_mutex_`）。
-+ 当消费者队列空时，通过 `SwapQueue_()` 将生产队列和消费队列 **交换**，实现“批量搬运”。
+- `prod_queue_`：生产者写入队列（保护锁 `prod_mutex_`）。
+- `cons_queue_`：消费者读取队列（保护锁 `cons_mutex_`）。
+- 当消费者队列空时，通过 `SwapQueue_()` 将生产队列和消费队列 **交换**，实现“批量搬运”。
 
 好处是：
 
-+ **减少锁竞争**：生产者和消费者基本不抢同一把锁。
-+ **吞吐更高**：一次交换，消费者能批量取走数据，减少频繁加锁。
+- **减少锁竞争**：生产者和消费者基本不抢同一把锁。
+- **吞吐更高**：一次交换，消费者能批量取走数据，减少频繁加锁。
 
 ```cpp
 template <typename T>
@@ -212,6 +228,7 @@ private:
 ```
 
 # Test
+
 理论上双队列比单队列快，因为锁的竞争/碰撞少了。下面的实验结果也是如此：
 
 写一个实验：设置4个生产者线程，一个生产者给25000个任务，任务是1000次循环。消费者数量指定当前cpu最适合线程数（std::thread::hardware_concurrency()）。我这个WSL环境是16个。
@@ -282,6 +299,7 @@ void Producer(ThreadPoolSingle& pool, int producer_id, int num_tasks) {
 用平均数更准，但是这么大差距也不会被误差所影响。
 
 # 附录
+
 修改版单队列和双队列
 
 ```cpp
@@ -397,5 +415,3 @@ private:
     std::unique_ptr<BlockingQueuePro<std::function<void()>>> task_queue_;
 };
 ```
-
-

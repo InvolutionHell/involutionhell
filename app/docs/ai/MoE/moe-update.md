@@ -4,6 +4,7 @@ description: ""
 date: "2025-10-05"
 tags:
   - tag-one
+docId: db3qwg25h6l0bh8f2sdabdqc
 ---
 
 # Theory of MoE
@@ -29,6 +30,7 @@ tags:
 ## **重要假设**：
 
 1. 这个文章只想给出闭式遗忘公式，所以直接简化成线性模型。$f(X)=X^{\top}w,\; w\in \mathbb{R}^d$
+
 2. 这个文章只讨论task-wised的路由方法，数据生成的时候每份数据只加入了一个信号数据，其余都是正态分布噪声。目的也是为了简化模型，然后在实际工程应用中，token会被隐式的送到各个experts，而不采用人为设定的方式。
 
 > ### 数据集生成规则

@@ -5,7 +5,11 @@ import type { Metadata } from "next";
 import { getMDXComponents } from "@/mdx-components";
 import { GiscusComments } from "@/app/components/GiscusComments";
 import { EditOnGithub } from "@/app/components/EditOnGithub";
-import { buildDocsEditUrl, getContributors } from "@/lib/github";
+import { buildDocsEditUrl } from "@/lib/github";
+import {
+  getDocContributorsByPath,
+  getDocContributorsByDocId,
+} from "@/lib/contributors";
 import { Contributors } from "@/app/components/Contributors";
 import { DocsAssistant } from "@/app/components/DocsAssistant";
 import fs from "fs/promises";
@@ -13,11 +17,17 @@ import path from "path";
 
 // Extract clean text content from MDX
 function extractTextFromMDX(content: string): string {
-  return content
+  let text = content
     .replace(/^---[\s\S]*?---/m, "") // Remove frontmatter
     .replace(/```[\s\S]*?```/g, "") // Remove code blocks
-    .replace(/`([^`]+)`/g, "$1") // Remove inline code
-    .replace(/<[^>]+>/g, "") // Remove HTML/MDX tags
+    .replace(/`([^`]+)`/g, "$1"); // Remove inline code
+  // Remove HTML/MDX tags recursively to prevent incomplete multi-character sanitization
+  let prevText;
+  do {
+    prevText = text;
+    text = text.replace(/<[^>]+>/g, "");
+  } while (text !== prevText);
+  return text
     .replace(/\*\*([^*]+)\*\*/g, "$1") // Remove bold
     .replace(/\*([^*]+)\*/g, "$1") // Remove italic
     .replace(/#{1,6}\s+/g, "") // Remove headers
@@ -44,10 +54,15 @@ export default async function DocPage({ params }: Param) {
 
   // 统一通过工具函数生成 Edit 链接，内部已处理中文目录编码
   const editUrl = buildDocsEditUrl(page.path);
-  // Get file path for contributors
-  const filePath = "app/docs/" + page.file.path;
-  // Fetch contributors data on server side
-  const contributors = await getContributors(filePath);
+  const docIdFromPage =
+    (page.data as { docId?: string; frontmatter?: { docId?: string } })
+      ?.docId ??
+    (page.data as { docId?: string; frontmatter?: { docId?: string } })
+      ?.frontmatter?.docId;
+
+  const contributorsEntry =
+    getDocContributorsByPath(page.file.path) ||
+    getDocContributorsByDocId(docIdFromPage);
   const Mdx = page.data.body;
 
   // Prepare page content for AI assistant
@@ -75,9 +90,9 @@ export default async function DocPage({ params }: Param) {
             <EditOnGithub href={editUrl} />
           </div>
           <Mdx components={getMDXComponents()} />
-          <Contributors contributors={contributors} />
+          <Contributors entry={contributorsEntry} />
           <section className="mt-16">
-            <GiscusComments />
+            <GiscusComments docId={docIdFromPage ?? null} />
           </section>
         </DocsBody>
       </DocsPage>
