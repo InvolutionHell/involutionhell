@@ -1,16 +1,16 @@
 // import Image from "next/image";
-import type { ImageProps } from "next/image";
+// import type { ImageProps } from "next/image";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
-import type { ComponentPropsWithoutRef } from "react";
+// import type { ComponentPropsWithoutRef } from "react";
 
-type MdxImageProps = ComponentPropsWithoutRef<"img"> & {
-  src?: ImageProps["src"];
-  width?: number | string;
-  height?: number | string;
-};
+// type MdxImageProps = ComponentPropsWithoutRef<"img"> & {
+//   src?: ImageProps["src"];
+//   width?: number | string;
+//   height?: number | string;
+// };
 
-function MdxImage({ src, alt = "", width, height, ...rest }: MdxImageProps) {
+// function MdxImage({ src, alt = "", width, height, ...rest }: MdxImageProps) {
   // if (!src) {
   //   return (
   //     <img
@@ -39,21 +39,21 @@ function MdxImage({ src, alt = "", width, height, ...rest }: MdxImageProps) {
   //     {...rest}
   //   />
   // );
-  return (
-    <img
-      src={src as string}
-      alt={alt}
-      width={width}
-      height={height}
-      {...rest}
-    />
-  );
-}
+//   return (
+//     <img
+//       src={src as string}
+//       alt={alt}
+//       width={width}
+//       height={height}
+//       {...rest}
+//     />
+//   );
+// }
 
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
     ...defaultMdxComponents,
-    img: MdxImage,
+    // img: MdxImage,
     ...components,
   };
 }
