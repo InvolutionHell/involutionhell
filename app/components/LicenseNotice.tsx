@@ -8,7 +8,7 @@ export function LicenseNotice({ className }: LicenseNoticeProps) {
   return (
     <p
       className={cn(
-        "flex flex-wrap items-center justify-center gap-1 text-xs text-muted-foreground",
+        "license-notice flex flex-wrap items-center justify-center gap-1 text-xs text-muted-foreground",
         className,
       )}
     >

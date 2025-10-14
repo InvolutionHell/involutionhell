@@ -35,6 +35,15 @@
   #nd-sidebar [aria-label="Collapse Sidebar"] {
     margin-top: auto;
   }
+  .license-notice a {
+    color: var(--color-foreground);
+    text-decoration: underline;
+    text-decoration-color: currentColor;
+    text-underline-offset: 0.2em;
+  }
+  .license-notice a:visited {
+    color: var(--color-foreground);
+  }
 }
 
 @utility text-balance {
