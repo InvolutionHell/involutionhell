@@ -26,7 +26,7 @@ const imageOptions = shouldForceRemote
 export default defineConfig({
   mdxOptions: {
     remarkPlugins: [remarkMath],
-    rehypePlugins: (v) => [rehypeKatex, ...v],
+    rehypePlugins: (v) => [[rehypeKatex, { strict: false }], ...v],
     ...(imageOptions && { remarkImageOptions: imageOptions }),
   },
 });

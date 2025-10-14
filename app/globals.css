@@ -31,6 +31,10 @@
   body {
     letter-spacing: var(--tracking-normal);
   }
+  /* Center the collapse toggle within the docs sidebar */
+  #nd-sidebar [aria-label="Collapse Sidebar"] {
+    margin-top: auto;
+  }
 }
 
 @utility text-balance {

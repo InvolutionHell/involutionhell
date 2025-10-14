@@ -32,7 +32,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="preload" href="/mascot.webp" as="image" type="image/webp" />
         {/* 谷歌图标字体用于 Edit 按钮的 material symbol */}
         <link
           rel="stylesheet"

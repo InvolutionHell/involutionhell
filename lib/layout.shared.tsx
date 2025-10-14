@@ -13,7 +13,7 @@ export async function baseOptions(): Promise<BaseLayoutProps> {
     nav: {
       title: "内卷地狱",
       children: (
-        <div className="ms-auto flex justify-end">
+        <div className="ms-auto flex items-center gap-2 pr-3">
           {user ? (
             <UserMenu user={user} provider={provider} />
           ) : (
