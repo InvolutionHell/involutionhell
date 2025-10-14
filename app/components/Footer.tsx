@@ -1,5 +1,6 @@
 import { Github, MessageCircle, ExternalLink } from "lucide-react";
 import { BrandMark, BRAND_NAME } from "./BrandMark";
+import { LicenseNotice } from "./LicenseNotice";
 
 export function Footer() {
   return (
@@ -112,9 +113,8 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="border-t border-border mt-12 pt-8 text-center text-muted-foreground">
-          <p>
-            &copy; {new Date().getFullYear()} {BRAND_NAME}. 完全开源，永远免费。
-          </p>
+          <p>完全开源，永远免费</p>
+          <LicenseNotice className="mt-2" />
         </div>
       </div>
     </footer>

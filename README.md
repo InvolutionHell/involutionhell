@@ -24,7 +24,6 @@
 
 [![zread](https://img.shields.io/badge/Ask_Zread-_.svg?style=flat&color=00b0aa&labelColor=000000&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQuOTYxNTYgMS42MDAxSDIuMjQxNTZDMS44ODgxIDEuNjAwMSAxLjYwMTU2IDEuODg2NjQgMS42MDE1NiAyLjI0MDFWNC45NjAxQzEuNjAxNTYgNS4zMTM1NiAxLjg4ODEgNS42MDAxIDIuMjQxNTYgNS42MDAxSDQuOTYxNTZDNS4zMTUwMiA1LjYwMDEgNS42MDE1NiA1LjMxMzU2IDUuNjAxNTYgNC45NjAxVjIuMjQwMUM1LjYwMTU2IDEuODg2NjQgNS4zMTUwMiAxLjYwMDEgNC45NjE1NiAxLjYwMDFaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik00Ljk2MTU2IDEwLjM5OTlIMi4yNDE1NkMxLjg4ODEgMTAuMzk5OSAxLjYwMTU2IDEwLjY4NjQgMS42MDE1NiAxMS4wMzk5VjEzLjc1OTlDMS42MDE1NiAxNC4xMTM0IDEuODg4MSAxNC4zOTk5IDIuMjQxNTYgMTQuMzk5OUg0Ljk2MTU2QzUuMzE1MDIgMTQuMzk5OSA1LjYwMTU2IDE0LjExMzQgNS42MDE1NiAxMy43NTk5VjExLjAzOTlDNS42MDE1NiAxMC42ODY0IDUuMzE1MDIgMTAuMzk5OSA0Ljk2MTU2IDEwLjM5OTlaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik0xMy43NTg0IDEuNjAwMUgxMS4wMzg0QzEwLjY4NSAxLjYwMDEgMTAuMzk4NCAxLjg4NjY0IDEwLjM5ODQgMi4yNDAxVjQuOTYwMUMxMC4zOTg0IDUuMzEzNTYgMTAuNjg1IDUuNjAwMSAxMS4wMzg0IDUuNjAwMUgxMy43NTg0QzE0LjExMTkgNS42MDAxIDE0LjM5ODQgNS4zMTM1NiAxNC4zOTg0IDQuOTYwMVYyLjI0MDFDMTQuMzk4NCAxLjg4NjY0IDE0LjExMTkgMS42MDAxIDEzLjc1ODQgMS42MDAxWiIgZmlsbD0iI2ZmZiIvPgo8cGF0aCBkPSJNNCAxMkwxMiA0TDQgMTJaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik00IDEyTDEyIDQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K&logoColor=ffffff)](https://zread.ai/InvolutionHell/involutionhell.github.io)
 
-
 ## 📋 关于
 
 这是一个基于现代 Web 技术的协作文档平台，帮助学生分享和获取学习资料、课程笔记和项目经验。
@@ -126,26 +125,30 @@ pnpm dev
 
 ## 📜 协议与版权
 
-本项目代码遵循 [MIT License](LICENSE) 开源。
+本项目代码遵循 [署名-非商业性使用-相同方式共享 4.0 国际许可协议（CC BY-NC-SA 4.0）](LICENSE)。
 
 ### 关于项目代码
 
-本项目的**代码**部分（指用于构建和运行本网站的程序代码）遵循 MIT 开源协议。
+本项目的**代码**部分（指用于构建和运行本网站的程序代码）依据 CC BY-NC-SA 4.0 协议开放。
 
-这意味着您可以自由地使用、复制、修改、合并、出版、分发、再授权及销售这些代码的副本，但必须在所有副本或主要部分中包含原始的版权声明和许可声明。
+这意味着您可以在**非商业目的**下复制、修改、分发本项目代码，但需保留署名，并以相同协议（CC BY-NC-SA 4.0）共享衍生作品。
 
 详情请见 [LICENSE](LICENSE) 文件。
 
 ### 关于分享内容
 
-本平台所展示/收录的**文章、评论及其他形式的内容**，其版权归原作者所有。
+本平台所展示/收录的**文章、评论及其他形式的内容**，其版权归原作者及贡献者所有。
 
 **请注意**：
 
-1.  内容的版权**不**遵循 MIT 协议，仍由原作者保留。
-2.  除特殊声明或获得原作者授权外，**任何人不得**将这些内容用于商业目的进行转载、修改等二次创作。
+1.  除非原作者另有声明，投稿内容默认适用 CC BY-NC-SA 4.0 协议。
+2.  进行商业用途或衍生创作仍需获得原作者授权。
 3.  本项目作为分享平台，无法对所有内容的原创性、合法性进行一一核实。
 
 ### 版权侵权处理
 
 我们尊重并致力于保护知识产权。如果您认为平台上的任何内容侵犯了您的合法权益，请立即通过 **[提交 Issue](https://github.com/InvolutionHell/involutionhell.github.io/issues/new)** 与我们联系。我们承诺在收到通知并核实情况后，会迅速采取删除、屏蔽等必要措施。
+
+### 致开发者与贡献者
+
+选择 CC BY-NC-SA 4.0 是为了最大程度保护大家的原创成果：任何人必须在保留署名、非商业使用、相同方式共享的前提下才能转载或改编，从源头降低内容被“白嫖”或闭源盗用的风险。欢迎放心创作与分享，我们也会持续维护这一授权模型。
