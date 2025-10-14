@@ -14,6 +14,8 @@ const shouldDisableRemote =
   remoteImageMode === "disable" ||
   (!shouldForceRemote && process.env.NODE_ENV === "development");
 
+// shouldDisableRemote 为 true 时，Fumadocs 不会再访问远程地址获取尺寸，
+// 而是只依赖手动在文档里声明的宽高或保持未知尺寸，避免在离线或网络较慢时拖慢开发调试。
 const imageOptions = shouldForceRemote
   ? undefined
   : {
