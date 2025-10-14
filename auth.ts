@@ -20,7 +20,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
   if (!databaseUrl) {
     console.warn("[auth] DATABASE_URL missing – running without Neon adapter");
   }
-
   return {
     ...authConfig,
     providers: [
