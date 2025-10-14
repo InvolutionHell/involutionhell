@@ -60,6 +60,8 @@ pnpm dev
 
 打开浏览器访问 [http://localhost:3000](http://localhost:3000)。
 
+> 本地离线调试 Fumadocs 时，如果发现界面加载需要等待远程图片尺寸请求，可以设置环境变量 `DOCS_REMOTE_IMAGE_SIZE=disable` 或直接沿用默认行为（开发模式自动禁用远程图片尺寸请求），显著加快调试速度。如需强制启用远程图片尺寸补全，可手动设置 `DOCS_REMOTE_IMAGE_SIZE=force`。
+
 > Windows + VSCode(Cursor) 可能触发 Husky 提交钩子问题，建议直接使用命令行执行 `git commit`。
 
 更多安装脚本、调试命令与常见问题，请查看 [CONTRIBUTING.md](CONTRIBUTING.md)。
