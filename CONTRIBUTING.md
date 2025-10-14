@@ -101,6 +101,17 @@ git push origin doc_raven
 ```
 
 ---
+## Q&A
+
+> Windows + VSCode(Cursor) 用户：如遇 Husky 在 VSCode 内置终端阻止提交，请使用外部命令行执行 `git commit`。
+
+> 本地离线调试 Fumadocs 时，如果发现界面加载需要等待远程图片尺寸请求，可以设置环境变量 `DOCS_REMOTE_IMAGE_SIZE=disable` 或直接沿用默认行为（开发模式自动禁用远程图片尺寸请求），显著加快调试速度。如需强制启用远程图片尺寸补全，可手动设置 `DOCS_REMOTE_IMAGE_SIZE=force`。
+
+| `DOCS_REMOTE_IMAGE_SIZE` | 行为说明                                                                         |
+| ------------------------ | -------------------------------------------------------------------------------- |
+| 未设置（默认）           | 构建时忽略远程图片尺寸请求报错，开发模式下额外禁用远程尺寸请求，避免离线调试受阻 |
+| `disable`                | 在任何模式下都跳过远程图片尺寸请求，仅使用文档内手动声明的宽高                   |
+| `force`                  | 强制启用远程图片尺寸请求，并在出现错误时抛出异常以暴露问题                       |
 
 ## 🚀 开发环境
 
@@ -143,9 +154,6 @@ pnpm lint:images     # 检查图片是否符合规范
 pnpm migrate:images  # 自动迁移图片到对应 assets 目录
 pnpm postinstall     # 同步必要的 Husky/Fumadocs 配置
 ```
-
-> Windows + VSCode(Cursor) 用户：如遇 Husky 在 VSCode 内置终端阻止提交，请使用外部命令行执行 `git commit`。
-
 ---
 
 ## 📚 文档规范
