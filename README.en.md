@@ -119,7 +119,3 @@ The copyright of **articles, comments, and other contributed content** remains w
 3. We cannot individually verify every submission for originality or legality.
 
 If your rights are infringed, please **[open an issue](https://github.com/InvolutionHell/involutionhell.github.io/issues/new)**. We will review and take appropriate action (removal, blocking, etc.) promptly.
-
-### For Developers & Contributors
-
-We adopted CC BY-NC-SA 4.0 to protect your original work: anyone reusing content must provide attribution, keep it non-commercial, and share derivatives under the same license. This greatly reduces the risk of others lifting materials for proprietary or closed-source use. Keep creating with confidence—we will continue to uphold this licensing model.
