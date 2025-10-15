@@ -12,6 +12,7 @@ import {
 } from "@/lib/contributors";
 import { Contributors } from "@/app/components/Contributors";
 import { DocsAssistant } from "@/app/components/DocsAssistant";
+import { LicenseNotice } from "@/app/components/LicenseNotice";
 import fs from "fs/promises";
 import path from "path";
 
@@ -94,6 +95,7 @@ export default async function DocPage({ params }: Param) {
           <section className="mt-16">
             <GiscusComments docId={docIdFromPage ?? null} />
           </section>
+          <LicenseNotice className="mt-16" />
         </DocsBody>
       </DocsPage>
       <DocsAssistant
