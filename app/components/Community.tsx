@@ -44,11 +44,7 @@ export function Community() {
                   asChild
                   className="text-lg px-8 py-6 h-auto"
                 >
-                  <a
-                    href="https://involutionhell.github.io/docs/ai"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href="docs/ai" target="_blank" rel="noopener noreferrer">
                     访问知识库 <ExternalLink className="ml-2 h-5 w-5" />
                   </a>
                 </Button>
