@@ -50,7 +50,7 @@ sudo dnf groupinstall "Development Tools" -y
 
 将这几个头文件放入MinGW的include下。
 
-1. 代码中引入头文件将include 改为include <mingw.thread.h> （这个点在上述仓库中的ReadMe里有写）
+1. 代码中引入头文件将include 改为include &lt;mingw.thread.h&gt; （这个点在上述仓库中的ReadMe里有写）
 2. 如果是命令行编译，加上-D_WIN32_WINNT=0x0501这个参数，让编译器知道你正在针对 **Windows XP**（或更高版本）进行编译。（不知道是不是我的版本是win32的原因，也许mingw-win64版本不需要）
 
 这是我踩坑的版本
