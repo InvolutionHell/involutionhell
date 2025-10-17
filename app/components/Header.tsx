@@ -6,15 +6,16 @@ import { SignInButton } from "./SignInButton";
 import { auth } from "@/auth";
 import { UserMenu } from "./UserMenu";
 import { BrandMark } from "./BrandMark";
+import { unstable_noStore as noStore } from "next/cache";
 
 export async function Header() {
+  noStore();
   const session = await auth();
   const user = session?.user;
   const provider =
     session && "provider" in session
       ? (session.provider as string | undefined)
       : undefined;
-  console.log("session", session);
   return (
     <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">

@@ -66,6 +66,7 @@ model users {
   email         String?   @db.VarChar(255)
   emailVerified DateTime? @db.Timestamptz(6)
   image         String?
+  comments      comments[]
 }
 
 model verification_token {
@@ -86,4 +87,22 @@ model doc_paths {
 
   @@id([doc_id, path])
   @@index([path])
+}
+
+model comments {
+  id         Int      @id @default(autoincrement())
+  doc_id     String
+  user_id    Int
+  content    String   @db.Text
+  parent_id  Int?
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+
+  user   users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  parent comments? @relation("CommentReplies", fields: [parent_id], references: [id], onDelete: Cascade)
+  replies comments[] @relation("CommentReplies")
+
+  @@index([doc_id])
+  @@index([user_id])
+  @@index([parent_id])
 }

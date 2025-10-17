@@ -2,7 +2,10 @@ import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import { SignInButton } from "@/app/components/SignInButton";
 import { UserMenu } from "@/app/components/UserMenu";
 import { auth } from "@/auth";
+import { unstable_noStore as noStore } from "next/cache";
+
 export async function baseOptions(): Promise<BaseLayoutProps> {
+  noStore();
   const session = await auth();
   const user = session?.user;
   const provider =

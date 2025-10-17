@@ -7,6 +7,7 @@ import "katex/dist/katex.min.css";
 import { ThemeProvider } from "@/app/components/ThemeProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { BRAND_NAME } from "@/app/components/BrandMark";
+import { SessionProviderClient } from "@/app/components/SessionProviderClient";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -54,9 +55,11 @@ export default function RootLayout({
             },
           }}
         >
-          <ThemeProvider defaultTheme="system" storageKey="ih-theme">
-            <div className="relative z-10">{children}</div>
-          </ThemeProvider>
+          <SessionProviderClient>
+            <ThemeProvider defaultTheme="system" storageKey="ih-theme">
+              <div className="relative z-10">{children}</div>
+            </ThemeProvider>
+          </SessionProviderClient>
         </RootProvider>
         {/* 谷歌分析 */}
         <Script

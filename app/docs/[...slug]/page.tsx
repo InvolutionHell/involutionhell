@@ -3,7 +3,7 @@ import { DocsPage, DocsBody } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getMDXComponents } from "@/mdx-components";
-import { GiscusComments } from "@/app/components/GiscusComments";
+import { Comments } from "@/app/components/Comments";
 import { EditOnGithub } from "@/app/components/EditOnGithub";
 import { buildDocsEditUrl } from "@/lib/github";
 import {
@@ -93,7 +93,7 @@ export default async function DocPage({ params }: Param) {
           <Mdx components={getMDXComponents()} />
           <Contributors entry={contributorsEntry} />
           <section className="mt-16">
-            <GiscusComments docId={docIdFromPage ?? null} />
+            <Comments docId={docIdFromPage || page.file.path} />
           </section>
           <LicenseNotice className="mt-16" />
         </DocsBody>
