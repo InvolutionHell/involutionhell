@@ -101,7 +101,7 @@ pnpm dev
 完整流程、PR 检查与 UI 协作约定请参考 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 <a href=" ">
-  < img src="https://contrib.rocks/image?repo=involutionhell/involutionhell.github.io" />
+  <img src="https://contrib.rocks/image?repo=involutionhell/involutionhell.github.io"/>
 </a >
 
 ## 🖼️ 文档与资产
