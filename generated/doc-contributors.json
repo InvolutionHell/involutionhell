@@ -1,9 +1,43 @@
 {
   "repo": "InvolutionHell/involutionhell.github.io",
-  "generatedAt": "2025-10-15T04:19:12.083Z",
+  "generatedAt": "2025-10-17T10:15:29.162Z",
   "docsDir": "app/docs",
-  "totalDocs": 103,
+  "totalDocs": 105,
   "results": [
+    {
+      "docId": "yrg9g9y6peb4ykbkxev5d1j7",
+      "path": "app/docs/ai-projects/index.mdx",
+      "contributorStats": {
+        "163523387": 1
+      },
+      "contributors": [
+        {
+          "githubId": "163523387",
+          "contributions": 1,
+          "lastContributedAt": "2025-10-17T04:26:38.000Z",
+          "login": "Mira190",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
+          "htmlUrl": "https://github.com/Mira190"
+        }
+      ]
+    },
+    {
+      "docId": "ifwz8sqxqsgjrafa79pycrcm",
+      "path": "app/docs/ai-projects/multimodal-rl/index.mdx",
+      "contributorStats": {
+        "163523387": 1
+      },
+      "contributors": [
+        {
+          "githubId": "163523387",
+          "contributions": 1,
+          "lastContributedAt": "2025-10-17T04:26:38.000Z",
+          "login": "Mira190",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
+          "htmlUrl": "https://github.com/Mira190"
+        }
+      ]
+    },
     {
       "docId": "ue27z7z95yzw3lhhfj7nit1c",
       "path": "app/docs/ai/agents-todo/agent-ecosystem.mdx",
@@ -1940,6 +1974,32 @@
       ]
     },
     {
+      "docId": "m37j6a24hb9mlrm0g6jfcxop",
+      "path": "app/docs/CommunityShare/Language/pte-intro.md",
+      "contributorStats": {
+        "114939201": 1,
+        "163523387": 4
+      },
+      "contributors": [
+        {
+          "githubId": "163523387",
+          "contributions": 4,
+          "lastContributedAt": "2025-10-17T04:26:38.000Z",
+          "login": "Mira190",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
+          "htmlUrl": "https://github.com/Mira190"
+        },
+        {
+          "githubId": "114939201",
+          "contributions": 1,
+          "lastContributedAt": "2025-09-26T19:56:04.000Z",
+          "login": "longsizhuo",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
+          "htmlUrl": "https://github.com/longsizhuo"
+        }
+      ]
+    },
+    {
       "docId": "jgyg6bp0nceyrxirz5qw3zsv",
       "path": "app/docs/CommunityShare/Life/unsw-student-benefit.md",
       "contributorStats": {
@@ -2540,6 +2600,76 @@
       ]
     },
     {
+      "docId": "uzoqs57kwc4tfut4wvgnbjhf",
+      "path": "app/docs/computer-science/frontend/frontend-learning/index.mdx",
+      "contributorStats": {
+        "104760545": 1,
+        "114939201": 1,
+        "163523387": 1
+      },
+      "contributors": [
+        {
+          "githubId": "163523387",
+          "contributions": 1,
+          "lastContributedAt": "2025-10-17T04:26:38.000Z",
+          "login": "Mira190",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
+          "htmlUrl": "https://github.com/Mira190"
+        },
+        {
+          "githubId": "114939201",
+          "contributions": 1,
+          "lastContributedAt": "2025-09-26T19:56:04.000Z",
+          "login": "longsizhuo",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
+          "htmlUrl": "https://github.com/longsizhuo"
+        },
+        {
+          "githubId": "104760545",
+          "contributions": 1,
+          "lastContributedAt": "2025-09-19T08:23:36.000Z",
+          "login": "KAGA11",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/104760545?v=4",
+          "htmlUrl": "https://github.com/KAGA11"
+        }
+      ]
+    },
+    {
+      "docId": "y3xkz4kituc738jwsojo7cml",
+      "path": "app/docs/computer-science/frontend/index.mdx",
+      "contributorStats": {
+        "104760545": 1,
+        "114939201": 1,
+        "163523387": 1
+      },
+      "contributors": [
+        {
+          "githubId": "163523387",
+          "contributions": 1,
+          "lastContributedAt": "2025-10-17T04:26:38.000Z",
+          "login": "Mira190",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
+          "htmlUrl": "https://github.com/Mira190"
+        },
+        {
+          "githubId": "114939201",
+          "contributions": 1,
+          "lastContributedAt": "2025-09-26T19:56:04.000Z",
+          "login": "longsizhuo",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
+          "htmlUrl": "https://github.com/longsizhuo"
+        },
+        {
+          "githubId": "104760545",
+          "contributions": 1,
+          "lastContributedAt": "2025-09-19T07:17:15.000Z",
+          "login": "KAGA11",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/104760545?v=4",
+          "htmlUrl": "https://github.com/KAGA11"
+        }
+      ]
+    },
+    {
       "docId": "ksjj9shalh6hqezx6t6am5vw",
       "path": "app/docs/computer-science/index.mdx",
       "contributorStats": {
@@ -2562,58 +2692,6 @@
           "login": "longsizhuo",
           "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
           "htmlUrl": "https://github.com/longsizhuo"
-        }
-      ]
-    },
-    {
-      "docId": "uzoqs57kwc4tfut4wvgnbjhf",
-      "path": "app/docs/frontend/frontend-learning/index.mdx",
-      "contributorStats": {
-        "104760545": 1,
-        "114939201": 1
-      },
-      "contributors": [
-        {
-          "githubId": "114939201",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-26T19:56:04.000Z",
-          "login": "longsizhuo",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
-          "htmlUrl": "https://github.com/longsizhuo"
-        },
-        {
-          "githubId": "104760545",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-19T08:23:36.000Z",
-          "login": "KAGA11",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/104760545?v=4",
-          "htmlUrl": "https://github.com/KAGA11"
-        }
-      ]
-    },
-    {
-      "docId": "y3xkz4kituc738jwsojo7cml",
-      "path": "app/docs/frontend/index.mdx",
-      "contributorStats": {
-        "104760545": 1,
-        "114939201": 1
-      },
-      "contributors": [
-        {
-          "githubId": "114939201",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-26T19:56:04.000Z",
-          "login": "longsizhuo",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
-          "htmlUrl": "https://github.com/longsizhuo"
-        },
-        {
-          "githubId": "104760545",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-19T07:17:15.000Z",
-          "login": "KAGA11",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/104760545?v=4",
-          "htmlUrl": "https://github.com/KAGA11"
         }
       ]
     },
@@ -2788,32 +2866,6 @@
           "login": "Crokily",
           "avatarUrl": "https://avatars.githubusercontent.com/u/7187663?v=4",
           "htmlUrl": "https://github.com/Crokily"
-        }
-      ]
-    },
-    {
-      "docId": "m37j6a24hb9mlrm0g6jfcxop",
-      "path": "app/docs/Language/pte-intro.md",
-      "contributorStats": {
-        "114939201": 1,
-        "163523387": 3
-      },
-      "contributors": [
-        {
-          "githubId": "163523387",
-          "contributions": 3,
-          "lastContributedAt": "2025-09-19T11:24:57.000Z",
-          "login": "Mira190",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
-          "htmlUrl": "https://github.com/Mira190"
-        },
-        {
-          "githubId": "114939201",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-26T19:56:04.000Z",
-          "login": "longsizhuo",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
-          "htmlUrl": "https://github.com/longsizhuo"
         }
       ]
     }
