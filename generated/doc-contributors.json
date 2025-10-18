@@ -1,61 +1,9 @@
 {
   "repo": "InvolutionHell/involutionhell.github.io",
-  "generatedAt": "2025-10-18T03:10:53.063Z",
+  "generatedAt": "2025-10-18T08:44:59.305Z",
   "docsDir": "app/docs",
   "totalDocs": 105,
   "results": [
-    {
-      "docId": "yrg9g9y6peb4ykbkxev5d1j7",
-      "path": "app/docs/ai-projects/index.mdx",
-      "contributorStats": {
-        "150361711": 1,
-        "163523387": 1
-      },
-      "contributors": [
-        {
-          "githubId": "150361711",
-          "contributions": 1,
-          "lastContributedAt": "2025-10-17T10:15:30.000Z",
-          "login": "mojitote",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/150361711?v=4",
-          "htmlUrl": "https://github.com/mojitote"
-        },
-        {
-          "githubId": "163523387",
-          "contributions": 1,
-          "lastContributedAt": "2025-10-17T04:26:38.000Z",
-          "login": "Mira190",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
-          "htmlUrl": "https://github.com/Mira190"
-        }
-      ]
-    },
-    {
-      "docId": "ifwz8sqxqsgjrafa79pycrcm",
-      "path": "app/docs/ai-projects/multimodal-rl/index.mdx",
-      "contributorStats": {
-        "150361711": 1,
-        "163523387": 1
-      },
-      "contributors": [
-        {
-          "githubId": "150361711",
-          "contributions": 1,
-          "lastContributedAt": "2025-10-17T10:15:30.000Z",
-          "login": "mojitote",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/150361711?v=4",
-          "htmlUrl": "https://github.com/mojitote"
-        },
-        {
-          "githubId": "163523387",
-          "contributions": 1,
-          "lastContributedAt": "2025-10-17T04:26:38.000Z",
-          "login": "Mira190",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
-          "htmlUrl": "https://github.com/Mira190"
-        }
-      ]
-    },
     {
       "docId": "ue27z7z95yzw3lhhfj7nit1c",
       "path": "app/docs/ai/agents-todo/agent-ecosystem.mdx",
@@ -1632,6 +1580,49 @@
           "login": "Mira190",
           "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
           "htmlUrl": "https://github.com/Mira190"
+        }
+      ]
+    },
+    {
+      "docId": "bkxwg1m9p9rnm8062wsm020w",
+      "path": "app/docs/all-projects/ai-projects/ai-town.mdx",
+      "contributorStats": {
+        "163523387": 1
+      },
+      "contributors": [
+        {
+          "githubId": "163523387",
+          "contributions": 1,
+          "lastContributedAt": "2025-10-18T04:27:51.000Z",
+          "login": "Mira190",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
+          "htmlUrl": "https://github.com/Mira190"
+        }
+      ]
+    },
+    {
+      "docId": "ifwz8sqxqsgjrafa79pycrcm",
+      "path": "app/docs/all-projects/ai-projects/multimodal-rl.mdx",
+      "contributorStats": {
+        "150361711": 1,
+        "163523387": 2
+      },
+      "contributors": [
+        {
+          "githubId": "163523387",
+          "contributions": 2,
+          "lastContributedAt": "2025-10-18T04:27:51.000Z",
+          "login": "Mira190",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
+          "htmlUrl": "https://github.com/Mira190"
+        },
+        {
+          "githubId": "150361711",
+          "contributions": 1,
+          "lastContributedAt": "2025-10-17T10:15:30.000Z",
+          "login": "mojitote",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/150361711?v=4",
+          "htmlUrl": "https://github.com/mojitote"
         }
       ]
     },
