@@ -12,7 +12,7 @@
     "lint:images": "node scripts/check-images.mjs",
     "migrate:images": "node scripts/move-doc-images.mjs",
     "docs:sync-cuid": "node scripts/uuid.mjs",
-    "lint": "next lint",
+    "lint": "npx @next/codemod@canary next-lint-to-eslint-cli",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
