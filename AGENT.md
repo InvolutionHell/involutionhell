@@ -1,36 +1,37 @@
-# AGENT Guidelines
+# AGENT Log
 
-Welcome! This repository hosts the Involution Hell documentation site, built with Next.js App Router, Fumadocs UI, TypeScript, and Tailwind CSS. Follow the instructions below whenever you contribute changes.
+## Objective
 
-## General workflow
+- Build a custom Giscus-like comment widget for the site, backed by GitHub Discussions via the GitHub API.
 
-- Prefer `pnpm` for all Node.js commands (`pnpm install`, `pnpm dev`, `pnpm build`, etc.).
-- Keep changes focused and provide helpful descriptions in commits and PR messages.
-- When adding dependencies, ensure they are compatible with Node.js 18+.
+## Context
 
-## Coding standards
+- Issue tracker reference: https://github.com/InvolutionHell/involutionhell.github.io/issues/200
+- Prior attempt for inspiration: https://github.com/InvolutionHell/involutionhell.github.io/pull/210
+- Storage will stay in GitHub Discussions; authentication uses NextAuth with GitHub; backend will read/write via GitHub GraphQL; each page already has a `docId` (cuid2) mapping; notifications remain within GitHub.
 
-- Follow existing patterns in the codebase; align new components with the established structure under `app/` and `components/`.
-- Use TypeScript (`.ts` / `.tsx`) and Tailwind CSS utility classes for styling unless a file already uses a different approach.
-- Avoid unnecessary abstractions; keep components small, composable, and accessible.
-- Do not wrap imports in `try/catch` blocks.
+## Plan of Attack
 
-## Documentation & content
+1. Audit the current site implementation to understand where the new discussion widget must hook in. **Status:** TODO
+2. Define the backend interface for reading/writing discussion threads keyed by `docId`. **Status:** TODO
+3. Implement Next.js route handlers that proxy to the GitHub GraphQL API with the required auth. **Status:** TODO
+4. Develop the front-end discussion component that mirrors Giscus UX but targets our custom API. **Status:** TODO
+5. Integrate GitHub login flow with NextAuth to gate posting while allowing read access. **Status:** TODO
+6. Validate end-to-end (local + production build) and document deployment steps. **Status:** TODO
 
-- All documentation lives under `app/docs/` (folder-as-book). Each Markdown/MDX file **must** retain a frontmatter block with at least a `title`.
-- Place images referenced by a document inside the document’s sibling `*.assets/` folder. Use the provided image migration scripts if needed.
-- Prefer relative links within the docs unless cross-referencing an external resource.
+## Current Progress
 
-## Testing & validation
+- Schema review confirms `docs` table stores each `docId` (cuid2) keyed to contributors; `doc_contributors` joins by `doc_id` + `github_id`; `doc_paths` tracks current routes. Env vars for Neon/GitHub live in `.env`.
+- `app/docs/[...slug]/page.tsx` 读取 frontmatter 中的 `docId`，传入 `GiscusComments`，同时利用 `lib/contributors.ts` 通过 docId 读取贡献者数据。
+- `GiscusComments` 组件基于 `docId` 切换 Giscus `mapping="specific"`；替换该组件将是我们嵌入自研讨论区的主要入口。
 
-- Run relevant scripts before submitting changes. Common checks include:
-  - `pnpm dev` for local verification.
-  - `pnpm build` for production validation when you touch runtime logic.
-  - `pnpm lint:images` when you add or move media assets.
+## Open Questions / Risks
 
-## PR expectations
+- Need to confirm where `docId` values are stored/exposed in the current content pipeline.
+- Must verify available GitHub tokens/permissions for server-side API access and rate limits.
 
-- Summarize user-facing changes clearly.
-- Mention any new scripts, configuration, or docs that reviewers should be aware of.
+## Next Actions
 
-For additional details, consult `README.md` and `CONTRIBUTING.md`.
+1. 列出后端接口与会话处理的详细任务（包括服务端 token 读取与用户 token 代理策略）。
+2. 拟定前端评论组件的状态流与 UI 子任务（加载、分页、发送评论、鉴权提示等）。
+3. 规划必要的测试/脚本（GraphQL query mock、端到端自测步骤）。

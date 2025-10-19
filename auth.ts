@@ -24,6 +24,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
     ...authConfig,
     providers: [
       GitHub({
+        authorization: {
+          params: {
+            scope: [
+              "read:user",
+              "user:email",
+              "read:discussion",
+              "write:discussion",
+            ].join(" "),
+          },
+        },
         profile(profile) {
           return {
             id: profile.id.toString(), // 与数据库的整数主键兼容
