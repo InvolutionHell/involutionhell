@@ -6,12 +6,12 @@ import {
   fetchDiscussionWithComments,
   getServerGitHubToken,
   GitHubDiscussionError,
-} from "@/components/discussion/github-discussions";
+} from "@/lib/discussion/github-discussions";
 
-interface RouteParams {
-  params: {
+interface RouteContext {
+  params: Promise<{
     docId: string;
-  };
+  }>;
 }
 
 interface CreateCommentBody {
@@ -21,8 +21,9 @@ interface CreateCommentBody {
   docUrl?: string;
 }
 
-export async function POST(request: Request, { params }: RouteParams) {
-  const docId = params?.docId?.trim();
+export async function POST(request: Request, context: RouteContext) {
+  const { docId: rawDocId } = await context.params;
+  const docId = rawDocId?.trim();
   if (!docId) {
     return NextResponse.json(
       { code: "BAD_REQUEST", message: "docId 参数缺失" },

@@ -1,22 +1,23 @@
 import { NextResponse } from "next/server";
-import { DiscussionResponseSchema } from "@/components/discussion/discussion.dto";
+import { DiscussionResponseSchema } from "@/lib/discussion/discussion.dto";
 import {
   fetchDiscussionWithComments,
   getServerGitHubToken,
   GitHubDiscussionError,
   searchDiscussionByDocId,
-} from "@/components/discussion/github-discussions";
+} from "@/lib/discussion/github-discussions";
 import { ZodError } from "zod";
 
-interface RouteParams {
-  params: {
+interface RouteContext {
+  params: Promise<{
     docId: string;
-  };
+  }>;
 }
 
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(request: Request, context: RouteContext) {
   // 约定 docId 从路径参数传入，前端会保证是 cuid2
-  const docId = params?.docId?.trim();
+  const { docId: rawDocId } = await context.params;
+  const docId = rawDocId?.trim();
   if (!docId) {
     // 缺少 docId 时直接返回 400，便于前端快速定位问题
     return NextResponse.json(

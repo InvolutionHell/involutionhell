@@ -4,14 +4,14 @@ import {
   DiscussionCommentsDTO,
   DiscussionReplyDTO,
   DiscussionSummaryDTO,
-} from "@/components/discussion/discussion.dto";
+} from "@/lib/discussion/discussion.dto";
 import {
   DEFAULT_COMMENT_PAGE_SIZE,
   DEFAULT_DISCUSSION_CATEGORY_NAME,
   DEFAULT_REPLY_PAGE_SIZE,
   GITHUB_GRAPHQL_ENDPOINT,
   USER_AGENT_HEADER,
-} from "@/components/discussion/github-discussions.constants";
+} from "@/lib/discussion/github-discussions.constants";
 import {
   ADD_DISCUSSION_COMMENT_MUTATION,
   ADD_DISCUSSION_REPLY_MUTATION,
@@ -19,7 +19,7 @@ import {
   DISCUSSION_WITH_COMMENTS_QUERY,
   REPOSITORY_METADATA_QUERY,
   SEARCH_DISCUSSION_QUERY,
-} from "@/components/discussion/github-discussions.queries";
+} from "@/lib/discussion/github-discussions.queries";
 
 /**
  * GitHub Discussion GraphQL API 封装。
