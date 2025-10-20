@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 import { streamText } from "ai";
@@ -10,7 +11,7 @@ vi.mock("@/lib/ai/models", () => ({
 }));
 
 vi.mock("@/lib/ai/prompt", () => ({
-  buildSystemMessage: vi.fn((system, pageContext) => {
+  buildSystemMessage: vi.fn((system) => {
     return system || "You are a helpful AI assistant.";
   }),
 }));
