@@ -6,6 +6,7 @@ import "./globals.css";
 import "katex/dist/katex.min.css";
 import { ThemeProvider } from "@/app/components/ThemeProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { BRAND_NAME } from "@/app/components/BrandMark";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -19,7 +20,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Involution Hell",
+  title: BRAND_NAME,
   description: "A modern documentation site built with Fumadocs",
 };
 
@@ -31,7 +32,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="preload" href="/mascot.webp" as="image" type="image/webp" />
         {/* 谷歌图标字体用于 Edit 按钮的 material symbol */}
         <link
           rel="stylesheet"

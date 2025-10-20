@@ -1,0 +1,257 @@
+---
+title: 王树森推荐系统学习笔记_特征交叉
+description: ""
+date: "2025-09-27"
+tags:
+  - tag-one
+docId: hajz43iblku13mmevia8zrhv
+---
+
+# 王树森推荐系统学习笔记\_特征交叉
+
+## 特征交叉
+
+### Factorized Machine (FM)
+
+#### 线性模型
+
+- 有 $d$ 个特征，记作 $ \mathbf{x} = [x_1, \cdots, x_d] $。
+
+- **线性模型**：
+
+  $$
+  p = b + \sum_{i=1}^{d} w_i x_i。
+  $$
+
+- **模型有 $d + 1$ 个参数**：$ \mathbf{w} = [w_1, \cdots, w_d] $ 和 $b$。
+
+- **预测是特征的加权和**。（_只有加，没有乘。_）
+
+#### 二阶交叉特征
+
+- **有 $d$ 个特征，记作** $ \mathbf{x} = [x_1, \cdots, x_d] $。
+
+- **线性模型 + 二阶交叉特征**：
+
+  $$
+  p = b + \sum_{i=1}^{d} w_i x_i + \sum_{i=1}^{d} \sum_{j=i+1}^{d} u_{ij} x_i x_j。
+  $$
+
+- **模型有 $O(d^2)$ 个参数**。
+
+**线性模型 + 二阶交叉特征**：
+
+$$
+p = b + \sum_{i=1}^{d} w_i x_i + \sum_{i=1}^{d} \sum_{j=i+1}^{d} u_{ij} x_i x_j。
+$$
+
+$$
+u_{ij} \approx v^T_iv_j
+$$
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-1-1.png)
+
+矩阵 $U$ $d$ 行 $d$ 列，矩阵 $V$ $d$ 行 $k$ 列，矩阵 $V^T$ $k$ 行 $d$ 列。
+
+- **Factorized Machine (FM)**：
+
+  $$
+  p = b + \sum_{i=1}^{d} w_i x_i + \sum_{i=1}^{d} \sum_{j=i+1}^{d} \left( \mathbf{v}_i^T \mathbf{v}_j \right) x_i x_j。
+  $$
+
+- **FM 模型有 $O(kd)$ 个参数**。（$k \ll d$）
+
+#### Factorized Machine
+
+- FM 是线性模型的替代品，能用线性回归、逻辑回归的场景，都可以用 FM。
+- FM 使用二阶交叉特征，表达能力比线性模型更强。
+- 通过做近似 $ u\_{ij} \approx \mathbf{v}\_i^T \mathbf{v}\_j $，FM 把二阶交叉权重的数量从 $ O(d^2) $ 降低到 $ O(kd) $**。**
+
+### 深度交叉网络（DCN）
+
+#### 召回、排序模型
+
+双塔模型和多目标排序模型只是结构，内部的神经网络可以用任意网络。
+
+#### 交叉层（Cross Layer）
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-2-1.png)
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-2-2.png)
+
+利用 Resnet 思想，防止梯度消失
+
+#### 交叉网络 （Cross Network）
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-2-3.png)
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-2-4.png)
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-2-5.png)
+
+**深度交叉网络 （Deep & Cross Network）**
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-2-6.png)
+
+DCN 的实际效果优于全连接，可以用于双塔模型中的用户塔和物品塔，多目标排序模型中的 shared bottom 神经网络，以及MMoE中的专家神经网络。
+
+### Learning Hidden Unit Contributions (LHUC)
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-3-1.png)
+
+神经网络中的结构为[多个全连接层] ➝ [Sigmoid 乘以 2]，这样神经网络的输出向量中都是 0 到 2 之间的数。
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-3-2.png)
+
+### SENet & Bilinear Cross
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-4-1.png)
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-4-2.png)
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-4-3.png)
+
+- **SENet 对离散特征做 field-wise 加权。**
+
+- **Field**：
+  - 用户 ID Embedding 是 64 维向量。
+  - 64 个元素（即一个特征的 embedding 向量）算一个 field，获得相同的权重。
+  - 特征越重要，获得的权重越大。
+
+- **如果有 $m$ 个 fields，那么权重向量是 $m$ 维。**
+
+#### Field 间特征交叉
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-4-4.png)
+
+**内积**
+
+$x^T_i$ 和 $x_j$ 都是特征的 embedding 向量，$f_{ij}$ 是一个实数，如果有 $m$ 个 field，他们之间两两内积，就会有 $m^2$ 个实数。
+
+**哈达玛乘积**
+
+$x^T_i$ 和 $x_j$ 都是特征的 embedding 向量，$f_{ij}$ 是一个向量，如果有 $m$ 个 field，他们之间两两哈达玛乘积，就会有 $m^2$ 个向量。量太大，需要人工指定一部分向量做交叉，而不是所有向量都交叉。
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-4-5.png)
+
+**Bilineard Cross（内积）**
+
+如果有 $m$ 个 field，就会有 $m^2$ 个实数 $f_{ij}$，$m^2/2$ 个参数矩阵 $W_{ij}$。
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-4-6.png)
+
+**Bilineard Cross（哈达玛）**
+
+如果有 $m$ 个 field，就会有 $m^2$ 个向量 $f_ij$，$m^2/2$ 个参数矩阵 $W_{ij}$。
+
+#### FiBiNet
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/4-4-7.png)
+
+## 行为序列
+
+### 用户行为序列建模
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/5-1-1.png)
+
+**LastN 特征**
+
+- **LastN**：用户最近的 $n$ 次交互（点击、点赞等）的物品 ID。
+- 对 **LastN** 物品 ID 做 embedding，得到 $n$ 个向量。
+- 把 $n$ 个向量取平均，作为用户的一种特征。
+- 适用于召回双塔模型、粗排三塔模型、精排模型。
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/5-1-2.png)
+
+### DIN 模型
+
+**DIN 模型**
+
+- DIN 用 加权平均 代替 平均，即注意力机制（attention）。
+- 权重：候选物品与用户 **LastN** 物品的相似度。
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/5-2-1.png)
+
+**DIN 模型**
+
+- 对于某候选物品，计算它与用户 **LastN** 物品的相似度。
+- 以相似度为权重，求用户 **LastN** 物品向量的加权和，结果是一个向量。
+- 把得到的向量作为一种用户特征，输入排序模型，预估（用户，候选物品）的点击率、点赞率等指标。
+- 本质是注意力机制（attention）。
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/5-2-2.png)
+
+**简单平均 v.s 注意力机制**
+
+- _简单平均_ 和 注意力机制 都适用于精排模型。
+- _简单平均_ 适用于双塔模型、三塔模型。
+  - _简单平均_ 只需要用到 **LastN**，属于用户自身的特征。
+  - 把 LastN 向量的平均作为用户塔的输入。
+- 注意力机制 不适用于双塔模型、三塔模型。
+  - 注意力机制 需要用到 **LastN** + **候选物品**。
+  - 用户塔看不到候选物品，不能把 注意力机制 用在用户塔。
+
+### SIM模型
+
+**DIN 模型**
+
+- 计算用户 **LastN** 向量的加权平均。
+- 权重是候选物品与 LastN 物品的相似度。
+
+**DIN 模型的缺点**
+
+- 注意力层的计算量 $\propto n$（用户行为序列的长度）。
+- 只能记录最近几百个物品，否则计算量太大。
+- 缺点：关注短期兴趣，遗忘长期兴趣。
+
+**如何改进** **DIN**？
+
+- **目标**：保留用户长期行为序列（$n$ 很大），而且计算量不会过大。
+
+- **改进 DIN**：
+  - DIN 对 **LastN** 向量做加权平均，权重是相似度。
+  - 如果某 **LastN** 物品与候选物品差异很大，则权重接近零。
+  - 快速排除掉与候选物品无关的 **LastN** 物品，降低注意力层的计算量。
+
+#### SIM 模型
+
+- 保留用户长期行为记录，$n$ 的大小可以是几千。
+- 对于每个候选物品，在用户 **LastN** 记录中做快速查找，找到 $k$ 个相似物品。
+- 把 **LastN** 变成 **TopK**，然后输入到注意力层。
+- **SIM** 模型减小计算量（从 $n$ 降到 $k$）。
+
+**第一步：查找**
+
+- **方法一：Hard Search**
+  - 根据候选物品的类别，保留 **LastN** 物品中类别相同的。
+  - 简单，快速，无需训练。
+
+- **方法二：Soft Search**
+  - 把物品做 **embedding**，变成向量。
+  - 把候选物品向量作为 **query**，做 $k$ 近邻查找，保留 **LastN** 物品中最近的 $k$ 个。
+  - 效果更好，编程实现更复杂。
+
+**第二步：注意力机制**
+
+**使用时间信息**
+
+- 用户与某个 **LastN** 物品的交互时刻距离今为 $\delta$。
+- 对 $\delta$ 做离散化，再做 **embedding**，变成向量 **d**。
+- 把两个向量做 **concatenation**，表征一个 **LastN** 物品。
+  - 向量 **x** 是物品 **embedding**。
+  - 向量 **d** 是时间的 **embedding**。
+
+![](https://raw.githubusercontent.com/H0SH123/Books-and-Notes/main/RecommenderSystem/images/5-3-1.png)
+
+为什么 SIM **使用时间信息**？
+
+- **DIN** 的序列短，记录用户近期行为。
+- **SIM** 的序列长，记录用户长期行为。
+- 时间越久远，重要性越低。
+
+#### 结论
+
+- 长序列（长期兴趣）优于短序列（近期兴趣）。
+- 注意力机制 优于 简单平均。
+- **Soft search** 还是 **Hard search**？取决于工程基建。
+- 使用时间信息有提升。

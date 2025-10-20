@@ -1,81 +1,52 @@
-import { createOpenAI } from "@ai-sdk/openai";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText, UIMessage, convertToModelMessages } from "ai";
+import { getModel, requiresApiKey, type AIProvider } from "@/lib/ai/models";
+import { buildSystemMessage } from "@/lib/ai/prompt";
 
-// Allow streaming responses up to 30 seconds
+// 流式响应最长30秒
 export const maxDuration = 30;
 
+interface ChatRequest {
+  messages: UIMessage[];
+  system?: string;
+  tools?: unknown;
+  pageContext?: {
+    title?: string;
+    description?: string;
+    content?: string;
+    slug?: string;
+  };
+  provider?: AIProvider;
+  apiKey?: string;
+}
+
 export async function POST(req: Request) {
-  const {
-    messages,
-    system,
-    pageContext,
-    provider,
-    apiKey,
-  }: {
-    messages: UIMessage[];
-    system?: string; // System message forwarded from AssistantChatTransport
-    tools?: unknown; // Frontend tools forwarded from AssistantChatTransport
-    pageContext?: {
-      title?: string;
-      description?: string;
-      content?: string;
-      slug?: string;
-    };
-    provider?: "openai" | "gemini";
-    apiKey?: string;
-  } = await req.json();
-
-  // Check if API key is provided
-  if (!apiKey || apiKey.trim() === "") {
-    return Response.json(
-      {
-        error:
-          "API key is required. Please configure your API key in the settings.",
-      },
-      { status: 400 },
-    );
-  }
-
   try {
-    // Build system message with page context
-    let systemMessage =
-      system ||
-      `You are a helpful AI assistant for a documentation website. 
-    You can help users understand the documentation, answer questions about the content, 
-    and provide guidance on the topics covered in the docs. Be concise and helpful.`;
+    const {
+      messages,
+      system,
+      pageContext,
+      provider = "intern", // 默认使用书生模型
+      apiKey,
+    }: ChatRequest = await req.json();
 
-    // Add current page context if available
-    if (pageContext?.content) {
-      systemMessage += `\n\n--- CURRENT PAGE CONTEXT ---\n`;
-      if (pageContext.title) {
-        systemMessage += `Page Title: ${pageContext.title}\n`;
-      }
-      if (pageContext.description) {
-        systemMessage += `Page Description: ${pageContext.description}\n`;
-      }
-      if (pageContext.slug) {
-        systemMessage += `Page URL: /docs/${pageContext.slug}\n`;
-      }
-      systemMessage += `Page Content:\n${pageContext.content}`;
-      systemMessage += `\n--- END OF CONTEXT ---\n\nWhen users ask about "this page", "current page", or refer to the content they're reading, use the above context to provide accurate answers. You can summarize, explain, or answer specific questions about the current page content.`;
+    // 对指定Provider验证key是否存在
+    if (requiresApiKey(provider) && (!apiKey || apiKey.trim() === "")) {
+      return Response.json(
+        {
+          error:
+            "API key is required. Please configure your API key in the settings.",
+        },
+        { status: 400 },
+      );
     }
 
-    // Select model based on provider
-    let model;
-    if (provider === "gemini") {
-      const customGoogle = createGoogleGenerativeAI({
-        apiKey: apiKey,
-      });
-      model = customGoogle("models/gemini-2.0-flash");
-    } else {
-      // Default to OpenAI
-      const customOpenAI = createOpenAI({
-        apiKey: apiKey,
-      });
-      model = customOpenAI("gpt-4.1-nano");
-    }
+    // 构建系统消息，包含页面上下文
+    const systemMessage = buildSystemMessage(system, pageContext);
 
+    // 根据Provider获取 AI 模型实例
+    const model = getModel(provider, apiKey);
+
+    // 生成流式响应
     const result = streamText({
       model: model,
       system: systemMessage,
@@ -85,6 +56,12 @@ export async function POST(req: Request) {
     return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error("Chat API error:", error);
+
+    // 处理特定模型创建错误
+    if (error instanceof Error && error.message.includes("API key")) {
+      return Response.json({ error: error.message }, { status: 400 });
+    }
+
     return Response.json(
       { error: "Failed to process chat request" },
       { status: 500 },

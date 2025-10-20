@@ -1,4 +1,6 @@
 import { Github, MessageCircle, ExternalLink } from "lucide-react";
+import { BrandMark, BRAND_NAME } from "./BrandMark";
+import { LicenseNotice } from "./LicenseNotice";
 
 export function Footer() {
   return (
@@ -7,16 +9,10 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">
-                  IH
-                </span>
-              </div>
-              <span className="font-bold text-xl bg-gradient-primary bg-clip-text text-transparent">
-                Involution Hell
-              </span>
-            </div>
+            <BrandMark
+              className="mb-4 gap-3"
+              textClassName="font-bold text-xl"
+            />
             <p className="text-muted-foreground mb-6 max-w-md">
               一个由开发者自发组织的、完全免费且开放的学习社区。让每个人都能在轻松氛围下成长。
             </p>
@@ -117,10 +113,8 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="border-t border-border mt-12 pt-8 text-center text-muted-foreground">
-          <p>
-            &copy; {new Date().getFullYear()} Involution Hell.
-            完全开源，永远免费。
-          </p>
+          <p>完全开源，永远免费</p>
+          <LicenseNotice className="mt-2" />
         </div>
       </div>
     </footer>

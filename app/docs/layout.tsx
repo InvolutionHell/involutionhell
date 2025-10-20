@@ -62,16 +62,16 @@ function pruneEmptyFolders(root: PageTree.Root): PageTree.Root {
   return transformRoot(root);
 }
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default async function Layout({ children }: { children: ReactNode }) {
   const tree = pruneEmptyFolders(source.pageTree);
-
+  const options = await baseOptions();
   return (
     <>
       {/* Add a class on <html> while in docs to adjust global backgrounds */}
       <DocsRouteFlag />
       <DocsLayout
         tree={tree}
-        {...baseOptions()}
+        {...options}
         sidebar={{
           // Only show top-level items on first load
           defaultOpenLevel: 0,

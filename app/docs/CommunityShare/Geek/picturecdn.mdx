@@ -1,0 +1,159 @@
+---
+title: 如何部署你自己的Github图床-PictureCDN
+description: ""
+date: "2025-09-27"
+tags:
+  - tag-one
+docId: e6udpzrorhvgeeda6xpy1e0s
+---
+
+# 一.什么是图床？
+
+- 图床，顾名思义，就是存储图片的“床”。它是一种在线服务，允许用户上传、存储和分享图片。通过图床，用户可以将图片上传到云端，然后获得一个链接，可以在任何地方分享这个链接，而不需要担心图片的存储和带宽问题。
+
+## 图床能解决什么问题？
+
+- 1.个人用户或者小型网站往往没有足够的服务器空间和带宽来存储和传输大量图片。图床提供了廉价甚至免费的图片存储解决方案，让用户可以无忧地存储大量图片。
+- 2.图床通常具备图片管理的功能，用户可以组织和管理自己的图片，方便查找和使用。
+- 3.性能问题：图床往往拥有强大的服务器和CDN（内容分发网络），可以快速地向全球用户传输图片，提高图片的加载速度。这对于提升用户体验至关重要。
+
+# 二.在github上面创建图床仓库
+
+## 2.1 创建仓库
+
+![创建仓库](https://ravencaffeine.github.io/PictureCDN/images/20250927160645295.png)
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645296.png)
+
+## 2.2 生成token令牌
+
+- 点击右上角的头像或照片。
+- 从下拉菜单中选择 “Settings”。
+  ![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645297.png)
+
+### 2.2.1 在 “Developer settings” 页面中，点击 “Personal access tokens”。
+
+- 在左侧菜单中，点击 “Developer settings”。
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645298.png)
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645299.png)
+
+### 2.2.2 Generate new token (classic)
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645300.png)
+
+- 在 “Note” 字段中，输入一个描述性名称，以便你记住这个令牌的用途。
+- 选择令牌的 “Expiration” 日期。你可以选择让令牌永不过期，或者设置一个过期日期。
+- 选择令牌的 “Scopes” 或权限。根据你利用令牌的目的，选择合适的权限。例如，如果你只需要访问仓库内容，可以选择 “repo” 权限。
+- 下划，点击 “Generate token” 按钮。
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645301.png)
+
+- 一旦生成令牌，你将看到令牌的明文。请立即复制并保存这个令牌到一个安全的地方。这是你唯一一次看到这个令牌的机会。
+- 之后，你将无法查看这个令牌的明文，只能看到它是否仍然使用。
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645302.png)
+
+注意:
+
+- 个人访问令牌非常敏感，应像密码一样保护。不要将其泄露给他人，也不要将其硬编码在代码中。
+- 如果你怀疑令牌的安全性受到了威胁，应立即在 GitHub 设置中撤销该令牌。
+- 通过GitHub 令牌能够用于执行与你的 GitHub 账户相关的各种操作，因此请谨慎选择令牌的权限。
+
+# 三. PicGo
+
+PicGo 是一个开源的图片上传工具，支持多种图床服务，如七牛云、又拍云、SM.MS等。它可以帮助用户将本地图片上传到图床，并生成图片链接，方便在社交媒体、博客或论坛中分享。
+
+## 3.1 PicGo能解决什么问题？
+
+1. 图片上传：PicGo可以快速上传本地图片到图床，节省用户手动上传的时间。
+2. 图片管理：PicGo支持图片的批量上传和管理，用户可以方便地查找和使用已上传的图片。
+3. 图片链接生成：PicGo在上传图片后，会自动生成图片链接，方便用户在各种平台上分享。
+4. 图床切换：PicGo支撑多种图床服务，用户允许根据要求随时切换图床，灵活应对不同的需求。
+
+## 3.2 下载地址
+
+- 山东大学镜像
+- https://mirrors.sdu.edu.cn/github-release/Molunerfinn_PicGo/v2.3.1/
+- 原Github仓库地址可在release下载
+- https://github.com/Molunerfinn/PicGo
+- 下载后在左下角小图标打开
+  ![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645303.png)
+
+## 3.3 配置Github图床
+
+- 打开图床设置
+- 打开Github
+  ![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645304.png)
+
+- 设定仓库名，实际上就是用户名+仓库名。这个仓库就是你刚刚在2.1中新建的仓库。
+- 设定分支名：就是你的仓库在哪个分支里，就填哪个分支。一般有main分支，master分支等。我这里是main分支
+- 设定Token：就是刚刚在2.2中大家复制的Token字符串。将其填进去即可。
+- 设定存储路径，一般来说，它行是你项目仓库中的一个文件夹。大家这里就统一设置成了img/，会自动创建文件夹的
+- 设置自定义域名。
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645305.png)
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645306.png)
+
+# 四.Github Pages设置自定义域名
+
+## 4.1 GitHub Pages 的基本限制
+
+GitHub Pages 是一种静态网站托管服务，允许用户通过 GitHub 仓库创建网站。根据 GitHub 的规则，GitHub Pages 分为以下三种类型：
+
+#### 1. 用户/组织站点（User/Organization Site）：
+
+- 每个 GitHub 账户（用户或组织）只能创建一个用户或组织站点。
+- 用户站点的仓库必须命名为 .github.io（例如 jacinli.github.io），组织站点则是 .github.io。
+- 域名格式为 https://.github.io 或 https://.github.io。
+  限制：每个账户只能有一个用户/组织站点。
+
+#### 2. 项目站点（Project Site）：
+
+- 项目站点与特定的 GitHub 仓库相关联，域名格式为 https://.github.io/。
+- 每个 GitHub 仓库都可以启用一个项目站点。
+- 限制：项目站点的数量没有明确上限，你可以为每个仓库创建一个项目站点（只要你的仓库数量不受限）。
+  ####3. GitHub Pages 的总体限制：
+- GitHub Pages 源仓库建议大小不超过 1GB。
+- 已发布的 GitHub Pages 站点总大小不得超过 1GB。
+- 每月带宽限制为 100GB（软限制）。
+- 每小时构建次数限制为 10 次（软限制，适用于使用 GitHub Actions 构建的情况）。
+
+## 4.2 启用 GitHub Pages
+
+- 如果你想用更简洁的 URL 访问图片，可以启用 GitHub Pages：
+- 进入你的 GitHub 仓库，点击 “Settings”。
+- 向下滚动到 “Pages” 部分。
+- 在 “Source” 下拉菜单中选择 main 分支（或 master，取决于你的默认分支），然后点击 “Save”。
+- 稍等片刻，GitHub 会生成一个 Pages 链接（比如 https://your-username.github.io/image-hosting）。
+- 返回 PicGo，在 GitHub 图床设置中将 “自定义域名” 设为这个 Pages 链接。
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645308.png)
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645309.png)
+
+# 五.图床上传
+
+- 拖拽上传：
+  1. 打开 PicGo 窗口，将图片拖到窗口中，PicGo 会自动上传。
+- 手动选择文件：
+  1. 点击 PicGo 窗口中的 “上传” 按钮，选择本地图片文件上传。
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645310.png)
+
+![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645311.png)
+
+- 可以看到仓库里也自动添加了
+  ![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645312.png)
+
+- 可以获取图片的链接地址了
+  ![](https://ravencaffeine.github.io/PictureCDN/images/20250927160645313.png)
+
+# 参考文章
+
+- 1.完整教程：2025最新在GitHub上搭建个人图床，保姆级图文教程，实现图片高效管理
+  https://www.cnblogs.com/ljbguanli/p/18928090
+- 2.CSDN博主「三金C_C」Picgo 配置--免费图床使用
+- 原文链接：https://blog.csdn.net/QAZJOU/article/details/146449613

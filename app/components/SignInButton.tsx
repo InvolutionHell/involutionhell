@@ -15,7 +15,7 @@ export function SignInButton({ className }: SignInButtonProps) {
       }}
     >
       <Button type="submit" size="sm" variant="outline">
-        Sign in with GitHub
+        SignIn
       </Button>
     </form>
   );

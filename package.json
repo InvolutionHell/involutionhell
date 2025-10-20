@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/escape-angles.mjs",
     "build": "next build",
     "start": "next start -p 3000",
     "postinstall": "fumadocs-mdx",
     "prepare": "husky",
     "lint:images": "node scripts/check-images.mjs",
     "migrate:images": "node scripts/move-doc-images.mjs",
+    "docs:sync-cuid": "node scripts/uuid.mjs",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
@@ -19,6 +21,7 @@
   "dependencies": {
     "@ai-sdk/google": "^2.0.14",
     "@ai-sdk/openai": "^2.0.32",
+    "@ai-sdk/openai-compatible": "^1.0.19",
     "@ai-sdk/react": "^2.0.48",
     "@assistant-ui/react": "^0.11.14",
     "@assistant-ui/react-ai-sdk": "^1.1.0",
@@ -42,6 +45,8 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "dotenv": "^17.2.3",
+    "fast-glob": "^3.3.3",
     "fumadocs-core": "^15.7.13",
     "fumadocs-mdx": "^11.10.1",
     "fumadocs-ui": "^15.7.13",
@@ -61,6 +66,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@paralleldrive/cuid2": "^2.2.2",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "latest",
     "@types/react": "^19.1.13",
@@ -68,6 +74,8 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^9.36.0",
     "eslint-config-next": "^15.5.3",
+    "fast-glob": "^3.3.3",
+    "gray-matter": "^4.0.3",
     "husky": "^9.1.7",
     "katex": "^0.16.22",
     "lint-staged": "^16.1.6",

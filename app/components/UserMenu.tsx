@@ -32,7 +32,7 @@ export function UserMenu({ user, provider }: UserMenuProps) {
         </Avatar>
       </summary>
 
-      <div className="absolute right-0 mt-2 w-60 overflow-hidden rounded-md border border-border bg-popover shadow-lg">
+      <div className="absolute right-0 mt-2 w-60 overflow-hidden rounded-md border border-border bg-popover shadow-lg z-50">
         <div className="border-b border-border bg-muted/40 px-4 py-3">
           <p className="text-sm font-medium text-foreground">
             {user.name ?? "Signed in"}

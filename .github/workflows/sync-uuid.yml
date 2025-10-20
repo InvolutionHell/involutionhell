@@ -1,0 +1,71 @@
+name: Docs Backfill (on docs changes)
+
+on:
+  push:
+    branches:
+      - main
+      - feat/contributor
+    paths:
+      - "app/docs/**"
+      - "scripts/uuid.mjs"
+      - "scripts/backfill-contributors.mjs"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/sync-uuid.yml"
+      - "generated/doc-contributors.json"
+  workflow_dispatch: {}
+
+concurrency:
+  group: backfill-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backfill:
+    # 防止 fork、限定 main、并避免机器人循环
+    if: github.repository == 'InvolutionHell/involutionhell.github.io' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feat/contributor') &&
+      github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      GITHUB_TOKEN: ${{ secrets.GH_PAT }} # 供脚本调用 GitHub API 提升速率
+      DOCS_DIR: app/docs
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm" # 顺便启用 pnpm 缓存，加速
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm prisma generate
+
+      - name: Ensure docId frontmatter
+        run: pnpm exec node scripts/uuid.mjs
+
+      - name: Backfill contributors & sync DB
+        run: pnpm exec node scripts/backfill-contributors.mjs
+
+      - name: Auto-commit doc metadata (if any)
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(docs): sync doc metadata [skip ci]" # ← 防循环
+          file_pattern: "app/docs/**/*.md app/docs/**/*.mdx generated/doc-contributors.json"
+
+      - name: Upload snapshot JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: doc-contributors-snapshot
+          path: generated/doc-contributors.json
+          if-no-files-found: ignore

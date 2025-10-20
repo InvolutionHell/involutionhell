@@ -51,9 +51,13 @@ export const SettingsDialog = ({
             <RadioGroup
               value={provider}
               onValueChange={(value) =>
-                setProvider(value as "openai" | "gemini")
+                setProvider(value as "openai" | "gemini" | "intern")
               }
             >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="intern" id="intern" />
+                <Label htmlFor="intern">InternS1 (Free)</Label>
+              </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="openai" id="openai" />
                 <Label htmlFor="openai">OpenAI</Label>
@@ -88,6 +92,15 @@ export const SettingsDialog = ({
                 value={geminiApiKey}
                 onChange={(e) => setGeminiApiKey(e.target.value)}
               />
+            </div>
+          )}
+
+          {provider === "intern" && (
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">
+                感谢上海AILab的书生大模型对本项目的算力支持，Intern-AI
+                模型已预配置，无需提供 API Key。
+              </div>
             </div>
           )}
         </div>
