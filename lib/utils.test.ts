@@ -64,7 +64,7 @@ describe("cn utility", () => {
   it("should handle complex conditional rendering patterns", () => {
     const isActive = true;
     const isDisabled = false;
-    const size = "lg";
+    const size: "lg" | "sm" | undefined = "lg";
 
     expect(
       cn(
@@ -72,7 +72,6 @@ describe("cn utility", () => {
         isActive && "btn-active",
         isDisabled && "btn-disabled",
         size === "lg" && "btn-lg",
-        size === "sm" && "btn-sm",
       ),
     ).toBe("btn btn-active btn-lg");
   });

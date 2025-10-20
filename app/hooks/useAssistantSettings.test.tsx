@@ -6,11 +6,9 @@ import {
 } from "./useAssistantSettings";
 
 describe("useAssistantSettings", () => {
-  const mockLocalStorage = vi.mocked(global.localStorage);
-
   beforeEach(() => {
-    mockLocalStorage.getItem.mockReturnValue(null);
-    mockLocalStorage.setItem.mockClear();
+    vi.mocked(localStorage.getItem).mockReturnValue(null);
+    vi.mocked(localStorage.setItem).mockClear();
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -44,7 +42,9 @@ describe("useAssistantSettings", () => {
       openaiApiKey: "test-openai-key",
       geminiApiKey: "test-gemini-key",
     };
-    mockLocalStorage.getItem.mockReturnValue(JSON.stringify(savedSettings));
+    vi.mocked(localStorage.getItem).mockReturnValue(
+      JSON.stringify(savedSettings),
+    );
 
     const { result } = renderHook(() => useAssistantSettings(), { wrapper });
 
@@ -54,7 +54,7 @@ describe("useAssistantSettings", () => {
   });
 
   it("should handle invalid localStorage data gracefully", () => {
-    mockLocalStorage.getItem.mockReturnValue("invalid json");
+    vi.mocked(localStorage.getItem).mockReturnValue("invalid json");
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const { result } = renderHook(() => useAssistantSettings(), { wrapper });
@@ -78,7 +78,7 @@ describe("useAssistantSettings", () => {
     });
 
     expect(result.current.provider).toBe("gemini");
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+    expect(vi.mocked(localStorage.setItem)).toHaveBeenCalledWith(
       "assistant-settings-storage",
       expect.stringContaining('"provider":"gemini"'),
     );
@@ -92,7 +92,7 @@ describe("useAssistantSettings", () => {
     });
 
     expect(result.current.openaiApiKey).toBe("new-openai-key");
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+    expect(vi.mocked(localStorage.setItem)).toHaveBeenCalledWith(
       "assistant-settings-storage",
       expect.stringContaining('"openaiApiKey":"new-openai-key"'),
     );
@@ -106,7 +106,7 @@ describe("useAssistantSettings", () => {
     });
 
     expect(result.current.geminiApiKey).toBe("new-gemini-key");
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+    expect(vi.mocked(localStorage.setItem)).toHaveBeenCalledWith(
       "assistant-settings-storage",
       expect.stringContaining('"geminiApiKey":"new-gemini-key"'),
     );
@@ -114,7 +114,7 @@ describe("useAssistantSettings", () => {
 
   it("should handle localStorage save errors gracefully", () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    mockLocalStorage.setItem.mockImplementation(() => {
+    vi.mocked(localStorage.setItem).mockImplementation(() => {
       throw new Error("Storage error");
     });
 
@@ -146,7 +146,9 @@ describe("useAssistantSettings", () => {
       openaiApiKey: "refreshed-key",
       geminiApiKey: "",
     };
-    mockLocalStorage.getItem.mockReturnValue(JSON.stringify(newSettings));
+    vi.mocked(localStorage.getItem).mockReturnValue(
+      JSON.stringify(newSettings),
+    );
 
     // Refresh from storage
     act(() => {
@@ -207,7 +209,9 @@ describe("useAssistantSettings", () => {
       openaiApiKey: "key",
       geminiApiKey: "",
     };
-    mockLocalStorage.getItem.mockReturnValue(JSON.stringify(invalidSettings));
+    vi.mocked(localStorage.getItem).mockReturnValue(
+      JSON.stringify(invalidSettings),
+    );
 
     const { result } = renderHook(() => useAssistantSettings(), { wrapper });
 
@@ -220,7 +224,9 @@ describe("useAssistantSettings", () => {
       provider: "gemini",
       // Missing API keys
     };
-    mockLocalStorage.getItem.mockReturnValue(JSON.stringify(partialSettings));
+    vi.mocked(localStorage.getItem).mockReturnValue(
+      JSON.stringify(partialSettings),
+    );
 
     const { result } = renderHook(() => useAssistantSettings(), { wrapper });
 

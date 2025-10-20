@@ -63,12 +63,12 @@ describe("chat API route", () => {
   });
 
   it("should use intern provider by default", async () => {
-    const mockModel = { id: "intern-model" };
+    const mockModel = { id: "intern-model" } as any;
     mockGetModel.mockReturnValue(mockModel);
 
     const mockStreamResponse = {
       toUIMessageStreamResponse: vi.fn(() => new Response()),
-    };
+    } as any;
     mockStreamText.mockReturnValue(mockStreamResponse);
 
     const request = new Request("http://localhost:3000/api/chat", {
@@ -89,12 +89,12 @@ describe("chat API route", () => {
   });
 
   it("should use OpenAI provider when specified", async () => {
-    const mockModel = { id: "openai-model" };
+    const mockModel = { id: "openai-model" } as any;
     mockGetModel.mockReturnValue(mockModel);
 
     const mockStreamResponse = {
       toUIMessageStreamResponse: vi.fn(() => new Response()),
-    };
+    } as any;
     mockStreamText.mockReturnValue(mockStreamResponse);
 
     const request = new Request("http://localhost:3000/api/chat", {
@@ -112,12 +112,12 @@ describe("chat API route", () => {
   });
 
   it("should include page context in system message", async () => {
-    const mockModel = { id: "test-model" };
+    const mockModel = { id: "test-model" } as any;
     mockGetModel.mockReturnValue(mockModel);
 
     const mockStreamResponse = {
       toUIMessageStreamResponse: vi.fn(() => new Response()),
-    };
+    } as any;
     mockStreamText.mockReturnValue(mockStreamResponse);
 
     const pageContext = {
@@ -142,12 +142,12 @@ describe("chat API route", () => {
   });
 
   it("should use custom system message when provided", async () => {
-    const mockModel = { id: "test-model" };
+    const mockModel = { id: "test-model" } as any;
     mockGetModel.mockReturnValue(mockModel);
 
     const mockStreamResponse = {
       toUIMessageStreamResponse: vi.fn(() => new Response()),
-    };
+    } as any;
     mockStreamText.mockReturnValue(mockStreamResponse);
 
     const customSystem = "You are a specialized AI assistant.";
@@ -167,7 +167,7 @@ describe("chat API route", () => {
   });
 
   it("should handle API errors gracefully", async () => {
-    const mockModel = { id: "test-model" };
+    const mockModel = { id: "test-model" } as any;
     mockGetModel.mockReturnValue(mockModel);
 
     mockStreamText.mockImplementation(() => {

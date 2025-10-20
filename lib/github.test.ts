@@ -1,10 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   buildDocsEditUrl,
   buildDocsNewUrl,
   normalizeDocsPath,
   githubConstants,
-  getContributors,
 } from "./github";
 
 describe("github utilities", () => {
