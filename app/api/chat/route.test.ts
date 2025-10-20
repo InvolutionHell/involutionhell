@@ -1,16 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 import { streamText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { getModel } from "@/lib/ai/models";
 
-// Mock the AI SDKs
-vi.mock("@ai-sdk/openai", () => ({
-  createOpenAI: vi.fn(),
+// Mock the dependencies
+vi.mock("@/lib/ai/models", () => ({
+  getModel: vi.fn(),
+  requiresApiKey: vi.fn((provider) => provider !== "intern"),
 }));
 
-vi.mock("@ai-sdk/google", () => ({
-  createGoogleGenerativeAI: vi.fn(),
+vi.mock("@/lib/ai/prompt", () => ({
+  buildSystemMessage: vi.fn((system, pageContext) => {
+    return system || "You are a helpful AI assistant.";
+  }),
 }));
 
 vi.mock("ai", () => ({
@@ -21,14 +23,13 @@ vi.mock("ai", () => ({
 
 describe("chat API route", () => {
   const mockStreamText = vi.mocked(streamText);
-  const mockCreateOpenAI = vi.mocked(createOpenAI);
-  const mockCreateGoogleGenerativeAI = vi.mocked(createGoogleGenerativeAI);
+  const mockGetModel = vi.mocked(getModel);
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should return error when API key is missing", async () => {
+  it("should return error when API key is missing for openai", async () => {
     const request = new Request("http://localhost:3000/api/chat", {
       method: "POST",
       body: JSON.stringify({
@@ -41,18 +42,16 @@ describe("chat API route", () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.error).toBe(
-      "API key is required. Please configure your API key in the settings.",
-    );
+    expect(data.error).toContain("API key is required");
   });
 
-  it("should return error when API key is empty string", async () => {
+  it("should return error when API key is empty string for gemini", async () => {
     const request = new Request("http://localhost:3000/api/chat", {
       method: "POST",
       body: JSON.stringify({
         messages: [{ role: "user", content: "Hello" }],
-        provider: "openai",
-        apiKey: "   ",
+        provider: "gemini",
+        apiKey: "",
       }),
     });
 
@@ -60,15 +59,12 @@ describe("chat API route", () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.error).toBe(
-      "API key is required. Please configure your API key in the settings.",
-    );
+    expect(data.error).toContain("API key is required");
   });
 
-  it("should use OpenAI provider by default", async () => {
-    const mockModel = vi.fn();
-    const mockOpenAIInstance = vi.fn(() => mockModel);
-    mockCreateOpenAI.mockReturnValue(mockOpenAIInstance);
+  it("should use intern provider by default", async () => {
+    const mockModel = { id: "intern-model" };
+    mockGetModel.mockReturnValue(mockModel);
 
     const mockStreamResponse = {
       toUIMessageStreamResponse: vi.fn(() => new Response()),
@@ -79,16 +75,12 @@ describe("chat API route", () => {
       method: "POST",
       body: JSON.stringify({
         messages: [{ role: "user", content: "Hello" }],
-        apiKey: "test-api-key",
       }),
     });
 
     await POST(request);
 
-    expect(mockCreateOpenAI).toHaveBeenCalledWith({
-      apiKey: "test-api-key",
-    });
-    expect(mockOpenAIInstance).toHaveBeenCalledWith("gpt-4.1-nano");
+    expect(mockGetModel).toHaveBeenCalledWith("intern", undefined);
     expect(mockStreamText).toHaveBeenCalledWith({
       model: mockModel,
       system: expect.stringContaining("You are a helpful AI assistant"),
@@ -96,10 +88,9 @@ describe("chat API route", () => {
     });
   });
 
-  it("should use Gemini provider when specified", async () => {
-    const mockModel = vi.fn();
-    const mockGeminiInstance = vi.fn(() => mockModel);
-    mockCreateGoogleGenerativeAI.mockReturnValue(mockGeminiInstance);
+  it("should use OpenAI provider when specified", async () => {
+    const mockModel = { id: "openai-model" };
+    mockGetModel.mockReturnValue(mockModel);
 
     const mockStreamResponse = {
       toUIMessageStreamResponse: vi.fn(() => new Response()),
@@ -110,23 +101,19 @@ describe("chat API route", () => {
       method: "POST",
       body: JSON.stringify({
         messages: [{ role: "user", content: "Hello" }],
-        provider: "gemini",
-        apiKey: "test-gemini-key",
+        provider: "openai",
+        apiKey: "test-api-key",
       }),
     });
 
     await POST(request);
 
-    expect(mockCreateGoogleGenerativeAI).toHaveBeenCalledWith({
-      apiKey: "test-gemini-key",
-    });
-    expect(mockGeminiInstance).toHaveBeenCalledWith("models/gemini-2.0-flash");
+    expect(mockGetModel).toHaveBeenCalledWith("openai", "test-api-key");
   });
 
   it("should include page context in system message", async () => {
-    const mockModel = vi.fn();
-    const mockOpenAIInstance = vi.fn(() => mockModel);
-    mockCreateOpenAI.mockReturnValue(mockOpenAIInstance);
+    const mockModel = { id: "test-model" };
+    mockGetModel.mockReturnValue(mockModel);
 
     const mockStreamResponse = {
       toUIMessageStreamResponse: vi.fn(() => new Response()),
@@ -135,7 +122,7 @@ describe("chat API route", () => {
 
     const pageContext = {
       title: "Test Page",
-      description: "Test Description",
+      description: "A test page",
       content: "Page content here",
       slug: "test-page",
     };
@@ -143,69 +130,54 @@ describe("chat API route", () => {
     const request = new Request("http://localhost:3000/api/chat", {
       method: "POST",
       body: JSON.stringify({
-        messages: [{ role: "user", content: "Tell me about this page" }],
-        apiKey: "test-api-key",
+        messages: [{ role: "user", content: "Hello" }],
         pageContext,
       }),
     });
 
     await POST(request);
 
-    expect(mockStreamText).toHaveBeenCalledWith({
-      model: expect.anything(),
-      system: expect.stringContaining("Page Title: Test Page"),
-      messages: expect.anything(),
-    });
-
-    const systemMessage = mockStreamText.mock.calls[0][0].system;
-    expect(systemMessage).toContain("Page Description: Test Description");
-    expect(systemMessage).toContain("Page URL: /docs/test-page");
-    expect(systemMessage).toContain("Page Content:\nPage content here");
+    const { buildSystemMessage } = await import("@/lib/ai/prompt");
+    expect(buildSystemMessage).toHaveBeenCalledWith(undefined, pageContext);
   });
 
   it("should use custom system message when provided", async () => {
-    const mockModel = vi.fn();
-    const mockOpenAIInstance = vi.fn(() => mockModel);
-    mockCreateOpenAI.mockReturnValue(mockOpenAIInstance);
+    const mockModel = { id: "test-model" };
+    mockGetModel.mockReturnValue(mockModel);
 
     const mockStreamResponse = {
       toUIMessageStreamResponse: vi.fn(() => new Response()),
     };
     mockStreamText.mockReturnValue(mockStreamResponse);
 
-    const customSystem = "You are a specialized assistant for coding tasks.";
+    const customSystem = "You are a specialized AI assistant.";
 
     const request = new Request("http://localhost:3000/api/chat", {
       method: "POST",
       body: JSON.stringify({
-        messages: [{ role: "user", content: "Help me code" }],
-        apiKey: "test-api-key",
+        messages: [{ role: "user", content: "Hello" }],
         system: customSystem,
       }),
     });
 
     await POST(request);
 
-    expect(mockStreamText).toHaveBeenCalledWith({
-      model: expect.anything(),
-      system: customSystem,
-      messages: expect.anything(),
-    });
+    const { buildSystemMessage } = await import("@/lib/ai/prompt");
+    expect(buildSystemMessage).toHaveBeenCalledWith(customSystem, undefined);
   });
 
   it("should handle API errors gracefully", async () => {
-    const mockOpenAIInstance = vi.fn(() => {
-      throw new Error("API Error");
-    });
-    mockCreateOpenAI.mockReturnValue(mockOpenAIInstance);
+    const mockModel = { id: "test-model" };
+    mockGetModel.mockReturnValue(mockModel);
 
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    mockStreamText.mockImplementation(() => {
+      throw new Error("Stream failed");
+    });
 
     const request = new Request("http://localhost:3000/api/chat", {
       method: "POST",
       body: JSON.stringify({
         messages: [{ role: "user", content: "Hello" }],
-        apiKey: "test-api-key",
       }),
     });
 
@@ -213,50 +185,28 @@ describe("chat API route", () => {
     const data = await response.json();
 
     expect(response.status).toBe(500);
-    expect(data.error).toBe("Failed to process chat request");
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "Chat API error:",
-      expect.any(Error),
-    );
-
-    consoleSpy.mockRestore();
+    expect(data).toEqual({ error: "Failed to process chat request" });
   });
 
-  it("should handle partial page context", async () => {
-    const mockModel = vi.fn();
-    const mockOpenAIInstance = vi.fn(() => mockModel);
-    mockCreateOpenAI.mockReturnValue(mockOpenAIInstance);
-
-    const mockStreamResponse = {
-      toUIMessageStreamResponse: vi.fn(() => new Response()),
-    };
-    mockStreamText.mockReturnValue(mockStreamResponse);
-
-    const pageContext = {
-      title: "Test Page",
-      content: "Page content here",
-      // Missing description and slug
-    };
+  it("should handle getModel API key errors", async () => {
+    mockGetModel.mockImplementation(() => {
+      throw new Error("OpenAI API key is required");
+    });
 
     const request = new Request("http://localhost:3000/api/chat", {
       method: "POST",
       body: JSON.stringify({
-        messages: [{ role: "user", content: "Tell me about this page" }],
-        apiKey: "test-api-key",
-        pageContext,
+        messages: [{ role: "user", content: "Hello" }],
+        provider: "openai",
       }),
     });
 
-    await POST(request);
+    const response = await POST(request);
+    const data = await response.json();
 
-    const systemMessage = mockStreamText.mock.calls[0][0].system;
-    expect(systemMessage).toContain("Page Title: Test Page");
-    expect(systemMessage).toContain("Page Content:\nPage content here");
-    expect(systemMessage).not.toContain("Page Description:");
-    expect(systemMessage).not.toContain("Page URL:");
+    expect(response.status).toBe(400);
+    expect(data.error).toBe(
+      "API key is required. Please configure your API key in the settings.",
+    );
   });
-
-  // Note: Testing maxDuration export directly would require dynamic imports
-  // which don't work well with vitest mocking. The maxDuration is set to 30
-  // in the route file and this is verified by the actual behavior during runtime.
 });

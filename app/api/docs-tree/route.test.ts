@@ -84,7 +84,7 @@ describe("docs-tree API route", () => {
       }
       // Otherwise return string array
       return [];
-    }) as any;
+    }) as typeof fs.readdirSync;
 
     const response = await GET();
     const data = await response.json();
@@ -160,7 +160,7 @@ describe("docs-tree API route", () => {
         return mockDirents;
       }
       return [];
-    }) as any;
+    }) as typeof fs.readdirSync;
 
     const response = await GET();
     const data = await response.json();
@@ -195,7 +195,7 @@ describe("docs-tree API route", () => {
         return mockDirents;
       }
       return [];
-    }) as any;
+    }) as typeof fs.readdirSync;
 
     // Mock localeCompare to throw for Chinese locale
     const originalLocaleCompare = String.prototype.localeCompare;
@@ -236,7 +236,7 @@ describe("docs-tree API route", () => {
         return [];
       }
       return [];
-    }) as any;
+    }) as typeof fs.readdirSync;
 
     const response = await GET();
     const data = await response.json();
@@ -262,7 +262,7 @@ describe("docs-tree API route", () => {
         return [{ name: "test-folder", isDirectory: () => true }];
       }
       return [];
-    }) as any;
+    }) as typeof fs.readdirSync;
 
     const response = await GET();
     const data = await response.json();
@@ -296,7 +296,7 @@ describe("docs-tree API route", () => {
         }
       }
       return [];
-    }) as any;
+    }) as typeof fs.readdirSync;
 
     const response = await GET();
     const data = await response.json();
