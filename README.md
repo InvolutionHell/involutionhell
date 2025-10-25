@@ -4,7 +4,14 @@
 
 <p align="center">
   <a href="https://involutionhell.github.io">
-    <img src="./public/mascot.svg" width="150">
+    <picture>
+      <!-- Dark mode logo -->
+      <source media="(prefers-color-scheme: dark)" srcset="./public/logo/logoInDark.svg">
+      <!-- Light mode logo -->
+      <source media="(prefers-color-scheme: light)" srcset="./public/logo/logoInLight.svg">
+      <!-- Fallback (legacy browsers, or if media query fails) -->
+      <img src="./public/mascot.svg" width="150" alt="Involution Hell Logo">
+    </picture>
   </a>
 </p>
 
