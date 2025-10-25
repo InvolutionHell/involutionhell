@@ -1,3 +1,8 @@
+/**
+ * @description: 获取文档树
+ * 该文件后期可以通过Fumadocs的API替代，但也可以保留以方便拓展
+ * @returns {Promise<NextResponse>}
+ */
 import { NextResponse } from "next/server";
 import * as fs from "node:fs";
 import * as path from "node:path";

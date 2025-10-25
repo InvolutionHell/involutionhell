@@ -1,4 +1,5 @@
 # Allow legitimate search engines, block aggressive scrapers + AI bots
+Sitemap: https://involutionhell.vercel.app/sitemap.xml
 User-agent: *
 Disallow: /api/
 Disallow: /_next/

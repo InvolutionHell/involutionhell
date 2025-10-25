@@ -80,17 +80,14 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
   icons: {
-    // SVG + ICO 兼容方案
     icon: [
       {
         url: "/logo/logoInLight.svg",
         type: "image/svg+xml",
-        media: "(prefers-color-scheme: light)",
       },
-      { url: "/favicon.ico", sizes: "any" },
     ],
-    shortcut: "/favicon.ico",
-    apple: "/logo/favicon-apple.png", // e.g. 180x180 PNG placed under /public/logo/
+    shortcut: "/logo/favicon-apple.png",
+    apple: "/logo/favicon-apple.png",
   },
   appleWebApp: {
     capable: true,
