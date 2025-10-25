@@ -15,9 +15,10 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export const BRAND_NAME = "Involution Hell";
-export const BRAND_ICON_WEBP_SRC = "/icon.webp";
-export const BRAND_ICON_PNG_SRC = "/icon.png";
-export const BRAND_ICON_ALT = "Involution Hell 图标";
+export const BRAND_LOGO_LIGHT_SRC = "/logo/logoInLight.svg";
+export const BRAND_LOGO_DARK_SRC = "/logo/logoInDark.svg";
+export const BRAND_LOGO_ALT = "Involution Hell 品牌标志";
+const BRAND_LOGO_ASPECT_RATIO = 283.17334 / 160.50055;
 
 type BrandMarkProps = {
   className?: string;
@@ -34,20 +35,28 @@ export function BrandMark({
   imageSize = 32,
   priority = false,
 }: BrandMarkProps) {
+  const width = Math.round(imageSize * BRAND_LOGO_ASPECT_RATIO);
+
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <picture>
-        <source srcSet={BRAND_ICON_WEBP_SRC} type="image/webp" />
-        <source srcSet={BRAND_ICON_PNG_SRC} type="image/png" />
+      <div className="relative">
         <Image
-          src={BRAND_ICON_PNG_SRC}
-          alt={BRAND_ICON_ALT}
-          width={imageSize}
+          src={BRAND_LOGO_LIGHT_SRC}
+          alt={BRAND_LOGO_ALT}
+          width={width}
           height={imageSize}
           priority={priority}
-          className={cn("object-contain", imageClassName)}
+          className={cn("object-contain dark:hidden", imageClassName)}
         />
-      </picture>
+        <Image
+          src={BRAND_LOGO_DARK_SRC}
+          alt={BRAND_LOGO_ALT}
+          width={width}
+          height={imageSize}
+          priority={priority}
+          className={cn("hidden dark:block object-contain", imageClassName)}
+        />
+      </div>
       <span
         className={cn("font-semibold text-lg tracking-tight", textClassName)}
       >

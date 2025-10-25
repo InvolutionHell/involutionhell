@@ -6,7 +6,6 @@ import "./globals.css";
 import "katex/dist/katex.min.css";
 import { ThemeProvider } from "@/app/components/ThemeProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { BRAND_NAME } from "@/app/components/BrandMark";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -19,9 +18,114 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://involutionhell.vercel.app";
+
 export const metadata: Metadata = {
-  title: BRAND_NAME,
-  description: "A modern documentation site built with Fumadocs",
+  metadataBase: new URL(SITE_URL),
+  applicationName: "Involution Hell",
+  title: {
+    default: "Involution Hell",
+    template: "%s · Involution Hell",
+  },
+  description:
+    "Involution Hell is a free, developer-led open-source community focused on algorithms, system design, and practical engineering to help builders grow together.",
+  keywords: [
+    "Involution Hell",
+    "open-source community",
+    "algorithms",
+    "system design",
+    "software engineering",
+    "coding interview",
+    "LeetCode",
+    "Codeforces",
+    "Kaggle",
+    "frontend",
+    "backend",
+    "DevOps",
+    "TypeScript",
+    "Go",
+    "Python",
+    "React",
+    "Next.js",
+  ],
+  authors: [{ name: "Involution Hell Maintainers", url: SITE_URL }],
+  creator: "longsizhuo",
+  publisher: "Involution Hell",
+  category: "Technology",
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: true, // 禁止缓存内容，用于抑制批量复制
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "standard",
+      "max-snippet": 160,
+      "max-video-preview": 0,
+    },
+    // 针对恶意爬虫匿名代理屏蔽
+    // Extra headers 可以在 nginx/vercel edge middleware 里做进一步限制
+  },
+
+  formatDetection: {
+    telephone: false,
+    date: true,
+    address: false,
+    email: true,
+    url: true,
+  },
+  manifest: "/site.webmanifest",
+  icons: {
+    // SVG + ICO 兼容方案
+    icon: [
+      {
+        url: "/logo/logoInLight.svg",
+        type: "image/svg+xml",
+        media: "(prefers-color-scheme: light)",
+      },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/logo/favicon-apple.png", // e.g. 180x180 PNG placed under /public/logo/
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Involution Hell",
+  },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "Involution Hell",
+    title: "Involution Hell",
+    description:
+      "Involution Hell is a free, developer-led open-source community focused on algorithms, system design, and practical engineering to help builders grow together.",
+    images: [
+      {
+        url: "/og/cover.png",
+        width: 2560,
+        height: 1440,
+        alt: "Involution Hell — Open-source Community",
+      },
+    ],
+    locale: "zh_CN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@longsizhuo",
+    creator: "@longsizhuo",
+    title: "Involution Hell",
+    description:
+      "A free, developer-led open-source community for algorithms, system design, and real-world engineering.",
+    images: ["/og/cover.png"],
+  },
+  verification: {
+    google: "Qg1UVFQ9IzpVU8Z071mdqUp8gx7RRD23VE0UYVeENHM",
+  },
 };
 
 export default function RootLayout({

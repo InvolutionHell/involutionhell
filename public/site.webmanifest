@@ -1,0 +1,18 @@
+{
+  "name": "Involution Hell",
+  "short_name": "InvolutionHell",
+  "description": "Involution Hell is a free, developer-led open-source community focused on algorithms, system design, and engineering growth.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0b0b0f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo/logoInLight.svg",
+      "sizes": "283.17334x160.50055",
+      "type": "image/svg+xml"
+    }
+  ]
+}
