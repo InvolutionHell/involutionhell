@@ -1,25 +1,26 @@
 import Link from "next/link";
 
-// 复用的编辑链接按钮，统一封装图标与样式
-interface EditOnGithubProps {
-  href: string;
-}
-
-export function EditOnGithub({ href }: EditOnGithubProps) {
+export function EditOnGithub({ href }: { href: string }) {
   return (
     <Link
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center justify-center rounded-md border border-transparent w-9 h-9 text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      aria-label="Edit on GitHub"
+      className="inline-flex items-center gap-2 rounded-md px-4 h-11 text-base font-medium hover:bg-muted/80 hover:text-foreground no-underline"
     >
-      <span
-        aria-hidden
-        className="material-symbols-outlined text-lg flex items-center justify-center"
+      <svg
+        aria-hidden="true"
+        className="h-8 w-8"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
-        edit
-      </span>
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+        <path d="m15 5 4 4" />
+      </svg>
+      Edit Me
     </Link>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ZoteroFeed } from "@/app/components/ZoteroFeed";
+import ZoteroFeedLazy from "@/app/components/ZoteroFeedLazy";
 import { Contribute } from "@/app/components/Contribute";
+import Image from "next/image";
 
 export function Hero() {
   const categories: { title: string; desc: string; href: string }[] = [
@@ -30,19 +31,18 @@ export function Hero() {
     <section className="relative">
       <div className="container mx-auto px-6 pt-12 pb-0 text-center">
         <div className="relative mx-auto max-w-5xl mt-12">
-          <picture>
-            <source srcSet="/mascot.webp" type="image/webp" />
-            <source srcSet="/mascot.png" type="image/png" />
-            <img
-              src="/mascot.webp"
-              alt="Mascot"
-              className="mx-auto h-[25vh] w-auto object-contain"
-              loading="eager"
-              fetchPriority="high"
-              width="420"
-              height="400"
-            />
-          </picture>
+          <Image
+            src="/mascot.webp"
+            alt="Mascot"
+            width={420}
+            height={400}
+            priority
+            loading="eager"
+            fetchPriority="high"
+            sizes="216px"
+            className="mx-auto w-auto max-h-[25vh] object-contain"
+            style={{ maxWidth: "216px", height: "auto" }}
+          />
           <h1 className="pointer-events-none select-none text-4xl md:text-6xl font-semibold leading-tight bg-gradient-primary bg-clip-text text-transparent">
             内卷地狱
           </h1>
@@ -75,7 +75,7 @@ export function Hero() {
           </ul>
         </div>
         {/* 最新文献（Zotero，避免被 iframe 拒绝） */}
-        <ZoteroFeed groupId={6053219} limit={8} />
+        <ZoteroFeedLazy groupId={6053219} limit={8} />
       </div>
     </section>
   );

@@ -133,10 +133,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* 谷歌图标字体用于 Edit 按钮的 material symbol */}
+        {/* Preconnect to critical third-party origins to shrink the critical request chain */}
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        {/* Preload the decorative sky texture so the LCP background image is discovered immediately */}
         <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=edit"
+          rel="preload"
+          href="/cloud_2.png"
+          as="image"
+          type="image/png"
+          fetchPriority="high"
         />
       </head>
       <body
@@ -162,9 +167,9 @@ export default function RootLayout({
         {/* 谷歌分析 */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-ED4GVN8YVW"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="gtag-init" strategy="afterInteractive">
+        <Script id="gtag-init" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
