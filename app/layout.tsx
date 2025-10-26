@@ -32,6 +32,7 @@ export const metadata: Metadata = {
     "Involution Hell is a free, developer-led open-source community focused on algorithms, system design, and practical engineering to help builders grow together.",
   keywords: [
     "Involution Hell",
+    "内卷地狱",
     "open-source community",
     "algorithms",
     "system design",
