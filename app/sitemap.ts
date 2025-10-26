@@ -121,13 +121,22 @@ function sanitizeSlugPath(slugs: string[]): string {
     .join("/");
 }
 
+type VisibilityFlags = {
+  draft?: boolean;
+  hidden?: boolean;
+  frontmatter?: {
+    draft?: boolean;
+    hidden?: boolean;
+  };
+};
+
 function isDraftOrHidden(page: SourcePage): boolean {
-  const d: any = page.data ?? {};
-  return !!(
-    d.draft ||
-    d.hidden ||
-    d.frontmatter?.draft ||
-    d.frontmatter?.hidden
+  const data = (page.data ?? {}) as VisibilityFlags;
+  return Boolean(
+    data.draft ||
+      data.hidden ||
+      data.frontmatter?.draft ||
+      data.frontmatter?.hidden,
   );
 }
 

@@ -1,7 +1,7 @@
 ---
 title: 求职活动回放站
 description: Career Events Recap Introduction Page
-date: "2025-09-11"
+date: "2025-10-26"
 tags:
   - intro
   - job
