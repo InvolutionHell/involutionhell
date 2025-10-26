@@ -1,8 +1,8 @@
 {
   "repo": "InvolutionHell/involutionhell.github.io",
-  "generatedAt": "2025-10-25T19:17:57.672Z",
+  "generatedAt": "2025-10-26T11:26:44.718Z",
   "docsDir": "app/docs",
-  "totalDocs": 105,
+  "totalDocs": 104,
   "results": [
     {
       "docId": "ue27z7z95yzw3lhhfj7nit1c",
@@ -2705,37 +2705,19 @@
       ]
     },
     {
-      "docId": "e7hcn9xwnicxj6smk2zijhyj",
-      "path": "app/docs/jobs/business-flow/HelloWorld.md",
+      "docId": "s8w3d2p5k9m4h7z1x0c2a8r6",
+      "path": "app/docs/jobs/event-keynote/event-takeway.md",
       "contributorStats": {
-        "7187663": 1,
-        "114939201": 1,
-        "163523387": 1
+        "163523387": 2
       },
       "contributors": [
         {
           "githubId": "163523387",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-27T10:49:41.000Z",
-          "login": null,
-          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387",
-          "htmlUrl": null
-        },
-        {
-          "githubId": "114939201",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-26T19:56:04.000Z",
-          "login": "longsizhuo",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
-          "htmlUrl": "https://github.com/longsizhuo"
-        },
-        {
-          "githubId": "7187663",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-17T12:57:02.000Z",
-          "login": "Crokily",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/7187663?v=4",
-          "htmlUrl": "https://github.com/Crokily"
+          "contributions": 2,
+          "lastContributedAt": "2025-10-26T11:14:38.000Z",
+          "login": "Mira190",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387?v=4",
+          "htmlUrl": "https://github.com/Mira190"
         }
       ]
     },
@@ -2840,41 +2822,6 @@
           "login": "SiYG",
           "avatarUrl": "https://avatars.githubusercontent.com/u/90535573?v=4",
           "htmlUrl": "https://github.com/SiYG"
-        }
-      ]
-    },
-    {
-      "docId": "fzieiqiepxw9yfo2id9eham3",
-      "path": "app/docs/jobs/tech-stack/HelloWorld.md",
-      "contributorStats": {
-        "7187663": 1,
-        "114939201": 1,
-        "163523387": 1
-      },
-      "contributors": [
-        {
-          "githubId": "163523387",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-27T10:49:41.000Z",
-          "login": null,
-          "avatarUrl": "https://avatars.githubusercontent.com/u/163523387",
-          "htmlUrl": null
-        },
-        {
-          "githubId": "114939201",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-26T19:56:04.000Z",
-          "login": "longsizhuo",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/114939201?v=4",
-          "htmlUrl": "https://github.com/longsizhuo"
-        },
-        {
-          "githubId": "7187663",
-          "contributions": 1,
-          "lastContributedAt": "2025-09-17T12:57:02.000Z",
-          "login": "Crokily",
-          "avatarUrl": "https://avatars.githubusercontent.com/u/7187663?v=4",
-          "htmlUrl": "https://github.com/Crokily"
         }
       ]
     }
