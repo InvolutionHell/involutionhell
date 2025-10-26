@@ -4,15 +4,9 @@ import { BotIcon, ChevronDownIcon } from "lucide-react";
 
 import { type FC, forwardRef, useState, useEffect } from "react";
 import { AssistantModalPrimitive } from "@assistant-ui/react";
-import { usePathname } from "next/navigation";
 
 import { Thread } from "@/app/components/assistant-ui/thread";
 import { TooltipIconButton } from "@/app/components/assistant-ui/tooltip-icon-button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/app/components/ui/tooltip";
 
 interface AssistantModalProps {
   errorMessage?: string;

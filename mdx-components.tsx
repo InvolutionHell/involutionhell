@@ -11,34 +11,34 @@ import type { MDXComponents } from "mdx/types";
 // };
 
 // function MdxImage({ src, alt = "", width, height, ...rest }: MdxImageProps) {
-  // if (!src) {
-  //   return (
-  //     <img
-  //       src={src as string}
-  //       alt={alt}
-  //       width={width}
-  //       height={height}
-  //       {...rest}
-  //     />
-  //   );
-  // }
-  // const numericWidth = typeof width === "string" ? Number(width) : width;
-  // const numericHeight = typeof height === "string" ? Number(height) : height;
+// if (!src) {
+//   return (
+//     <img
+//       src={src as string}
+//       alt={alt}
+//       width={width}
+//       height={height}
+//       {...rest}
+//     />
+//   );
+// }
+// const numericWidth = typeof width === "string" ? Number(width) : width;
+// const numericHeight = typeof height === "string" ? Number(height) : height;
 
-  // if (!Number.isFinite(numericWidth) || !Number.isFinite(numericHeight)) {
-  //   // fallback: 当 width/height 不是可解析数值时，直接使用原生 <img>
-  //   return <img src={src ?? ""} alt={alt ?? ""} {...rest} />;
-  // }
+// if (!Number.isFinite(numericWidth) || !Number.isFinite(numericHeight)) {
+//   // fallback: 当 width/height 不是可解析数值时，直接使用原生 <img>
+//   return <img src={src ?? ""} alt={alt ?? ""} {...rest} />;
+// }
 
-  // return (
-  //   <Image
-  //     src={src ?? ""}
-  //     alt={alt ?? ""}
-  //     width={numericWidth}
-  //     height={numericHeight}
-  //     {...rest}
-  //   />
-  // );
+// return (
+//   <Image
+//     src={src ?? ""}
+//     alt={alt ?? ""}
+//     width={numericWidth}
+//     height={numericHeight}
+//     {...rest}
+//   />
+// );
 //   return (
 //     <img
 //       src={src as string}

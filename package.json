@@ -12,7 +12,8 @@
     "lint:images": "node scripts/check-images.mjs",
     "migrate:images": "node scripts/move-doc-images.mjs",
     "docs:sync-cuid": "node scripts/uuid.mjs",
-    "lint": "next lint",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -43,6 +44,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "dotenv": "^17.2.3",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "fast-glob": "^3.3.3",
     "fumadocs-core": "^15.7.13",
     "fumadocs-mdx": "^11.10.1",
@@ -63,6 +65,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@eslint/js": "^9.38.0",
     "@paralleldrive/cuid2": "^2.2.2",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "latest",
@@ -71,7 +74,10 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^9.36.0",
     "eslint-config-next": "^15.5.3",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "fast-glob": "^3.3.3",
+    "globals": "^16.4.0",
     "gray-matter": "^4.0.3",
     "husky": "^9.1.7",
     "katex": "^0.16.22",
@@ -83,6 +89,7 @@
     "tailwindcss": "^4.1.13",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.46.2",
     "vercel": "^48.1.0"
   },
   "lint-staged": {

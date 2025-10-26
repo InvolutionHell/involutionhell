@@ -101,6 +101,7 @@ git push origin doc_raven
 ```
 
 ---
+
 ## Q&A
 
 > Windows + VSCode(Cursor) 用户：如遇 Husky 在 VSCode 内置终端阻止提交，请使用外部命令行执行 `git commit`。
@@ -154,6 +155,7 @@ pnpm lint:images     # 检查图片是否符合规范
 pnpm migrate:images  # 自动迁移图片到对应 assets 目录
 pnpm postinstall     # 同步必要的 Husky/Fumadocs 配置
 ```
+
 ---
 
 ## 📚 文档规范

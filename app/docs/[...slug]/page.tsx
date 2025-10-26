@@ -34,7 +34,7 @@ function extractTextFromMDX(content: string): string {
     .replace(/#{1,6}\s+/g, "") // Remove headers
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Remove links, keep text
     .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1") // Remove images, keep alt text
-    .replace(/[#*`\[\]()!]/g, "") // Remove common markdown symbols
+    .replace(/[#*`()[!\]!]/g, "") // Remove common markdown symbols
     .replace(/\n{2,}/g, "\n") // Normalize line breaks
     .trim();
 }

@@ -41,7 +41,9 @@ export function ThemeProvider({
       if (stored) {
         setTheme(stored);
       }
-    } catch {}
+    } catch {
+      console.error("Error reading theme from localStorage");
+    }
 
     const root = window.document.documentElement;
 
@@ -67,7 +69,9 @@ export function ThemeProvider({
         if (typeof window !== "undefined") {
           localStorage.setItem(storageKey, t);
         }
-      } catch {}
+      } catch {
+        console.error("Error setting theme in localStorage");
+      }
       setTheme(t);
     },
   };

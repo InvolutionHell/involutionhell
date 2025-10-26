@@ -1,5 +1,5 @@
 import { Github, MessageCircle, ExternalLink } from "lucide-react";
-import { BrandMark, BRAND_NAME } from "./BrandMark";
+import { BrandMark } from "./BrandMark";
 import { LicenseNotice } from "./LicenseNotice";
 
 export function Footer() {
