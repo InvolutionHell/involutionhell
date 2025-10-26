@@ -40,20 +40,16 @@ jobs:
         env:
           SITE_ORIGIN: https://involutionhell.vercel.app
           INDEXNOW_API: https://involutionhell.vercel.app/api/indexnow
-          INDEXNOW_API_TOKEN: ${{ secrets.INDEXNOW_API_TOKEN }} # 若未启用鉴权可删
+          INDEXNOW_API_TOKEN: ${{ secrets.INDEXNOW_API_TOKEN }}
         run: |
           set -euo pipefail
 
-          # 获取本次代码变更
           git fetch --depth=2 origin ${{ github.ref }} || true
           CHANGED="$(git diff --name-only HEAD~1 HEAD || true)"
-
-          # 过滤属于文档或页面的变更（按需调整正则）
           CHANGED_DOCS="$(echo "$CHANGED" | grep -E '^(app/docs/|content/docs/).*\.(mdx?|tsx?)$' || true)"
 
           URLS=()
 
-          # 规则 1：app/docs/**/page.(md/tsx) → /docs/**
           while IFS= read -r f; do
             [ -z "$f" ] && continue
             if [[ "$f" =~ ^app/docs/(.*)/page\.(mdx|md|tsx|ts|jsx|js)$ ]]; then
@@ -62,7 +58,6 @@ jobs:
             fi
           done <<< "$CHANGED_DOCS"
 
-          # 规则 2：content/docs/**.(md|mdx) → /docs/**（若不用 MDX 直出可删掉此段）
           while IFS= read -r f; do
             [ -z "$f" ] && continue
             if [[ "$f" =~ ^content/docs/(.*)\.(md|mdx)$ ]]; then
@@ -72,10 +67,8 @@ jobs:
             fi
           done <<< "$CHANGED_DOCS"
 
-          # 去重
           mapfile -t URLS < <(printf "%s\n" "${URLS[@]}" | awk 'NF' | sort -u)
 
-          # 兜底：没有匹配就推首页
           if [ "${#URLS[@]}" -eq 0 ]; then
             URLS=("$SITE_ORIGIN/")
           fi
@@ -83,17 +76,29 @@ jobs:
           echo "✅ Submitting URLs to IndexNow:"
           printf ' - %s\n' "${URLS[@]}"
 
-          # 组 JSON
           JSON="$(jq -n --argjson arr "$(printf '%s\n' "${URLS[@]}" | jq -R . | jq -s .)" '{urlList: $arr}')"
 
-          # 可选鉴权
           AUTH_HEADER=()
           if [ -n "${INDEXNOW_API_TOKEN:-}" ]; then
             AUTH_HEADER=(-H "Authorization: Bearer ${INDEXNOW_API_TOKEN}")
           fi
 
-          # 调用你的 /api/indexnow
-          curl -sS -X POST "$INDEXNOW_API" \
+          echo "📡 Sending request to $INDEXNOW_API ..."
+          RESPONSE=$(curl -sS -w "\nHTTP_STATUS=%{http_code}" -X POST "$INDEXNOW_API" \
             -H "Content-Type: application/json" \
             "${AUTH_HEADER[@]}" \
-            -d "$JSON"
+            -d "$JSON")
+
+          BODY=$(echo "$RESPONSE" | sed -e 's/HTTP_STATUS=.*//g')
+          STATUS=$(echo "$RESPONSE" | tr -d '\n' | sed -e 's/.*HTTP_STATUS=//')
+
+          echo "📥 API Response Status: $STATUS"
+          echo "📦 Response Body:"
+          echo "$BODY"
+
+          if [ "$STATUS" -ge 400 ]; then
+            echo "❌ IndexNow submission failed!"
+            exit 1
+          fi
+
+          echo "✅ IndexNow submission completed."
