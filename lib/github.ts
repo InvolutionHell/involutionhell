@@ -1,6 +1,6 @@
 // GitHub 相关工具方法：集中维护仓库常量与文档路径生成逻辑
 const GITHUB_OWNER = "InvolutionHell";
-const GITHUB_REPO = "involutionhell.github.io";
+const GITHUB_REPO = "involutionhell";
 const DEFAULT_BRANCH = "main";
 const DOCS_BASE = "app/docs";
 

@@ -14,7 +14,7 @@ export function GiscusComments({ className, docId }: GiscusCommentsProps) {
   return (
     <div className={className}>
       <Giscus
-        repo="InvolutionHell/involutionhell.github.io"
+        repo="InvolutionHell/involutionhell"
         repoId="R_kgDOPuD_8A"
         category="Comments"
         categoryId="DIC_kwDOPuD_8M4Cvip8"

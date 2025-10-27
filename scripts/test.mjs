@@ -13,10 +13,10 @@
  *
  * 用法示例：
  *  # 仅预览（dry run，默认）
- *  node scripts/migrate-giscus-add-docid.mjs --owner=InvolutionHell --repo=involutionhell.github.io
+ *  node scripts/migrate-giscus-add-docid.mjs --owner=InvolutionHell --repo=involutionhell
  *
  *  # 真正执行（写入）
- *  node scripts/migrate-giscus-add-docid.mjs --owner=InvolutionHell --repo=involutionhell.github.io --apply=true
+ *  node scripts/migrate-giscus-add-docid.mjs --owner=InvolutionHell --repo=involutionhell --apply=true
  *
  *  # 用映射文件（不连 DB）
  *  node scripts/migrate-giscus-add-docid.mjs --map=tmp/discussion-map.json --apply=true
@@ -53,8 +53,7 @@ try {
 // Node18+ 自带 fetch
 const GH_TOKEN = process.env.GH_TOKEN || process.env.GITHUB_TOKEN || "";
 const OWNER = getArg("owner") || process.env.GITHUB_OWNER || "InvolutionHell";
-const REPO =
-  getArg("repo") || process.env.GITHUB_REPO || "involutionhell.github.io";
+const REPO = getArg("repo") || process.env.GITHUB_REPO || "involutionhell";
 const MAP = getArg("map") || process.env.GISCUS_DISCUSSION_MAP || ""; // JSON 文件（映射文件模式）
 const APPLY = (getArg("apply") || "false").toLowerCase() === "true"; // 是否真的更新标题
 

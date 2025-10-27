@@ -43,7 +43,7 @@ _注意取消勾选仅克隆当前分支_
 #### 2. 克隆项目
 
 ```
-git clone https://github.com/你自己的仓库名/involutionhell.github.io.git
+git clone https://github.com/你自己的仓库名/involutionhell.git
 ```
 
 修改为自己fork的仓库，改为你的https仓库的git地址
@@ -119,8 +119,8 @@ git push origin doc_raven
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/involutionhell/involutionhell.github.io.git
-cd involutionhell.github.io
+git clone https://github.com/involutionhell/involutionhell.git
+cd involutionhell
 ```
 
 ### 2. 安装依赖

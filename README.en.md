@@ -14,8 +14,8 @@
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
   <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" />
   <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" />
-  <a href="https://github.com/InvolutionHell/involutionhell.github.io/blob/main/LICENSE">
-    <img alt="License" src="https://img.shields.io/github/license/InvolutionHell/involutionhell.github.io?style=for-the-badge&color=blue">
+  <a href="https://github.com/InvolutionHell/involutionhell/blob/main/LICENSE">
+    <img alt="License" src="https://img.shields.io/github/license/InvolutionHell/involutionhell?style=for-the-badge&color=blue">
   </a>
 </p>
 
@@ -41,8 +41,8 @@ A collaborative documentation platform built with modern web technologies to hel
 **Local preview**
 
 ```bash
-git clone https://github.com/involutionhell/involutionhell.github.io.git
-cd involutionhell.github.io
+git clone https://github.com/involutionhell/involutionhell.git
+cd involutionhell
 pnpm install
 pnpm dev
 ```
@@ -56,7 +56,7 @@ Looking for additional scripts, debugging tips, or contribution workflows? Check
 ## 📁 Directory Overview
 
 ```
-📦 involutionhell.github.io
+📦 involutionhell
 ├── 📂 app/              # Next.js App Router
 │   ├── 📂 components/   # UI components
 │   ├── 📂 docs/         # Content (folder-as-a-book)
@@ -79,7 +79,7 @@ Community contributions are always welcome:
 
 For the full workflow, PR checklist, and UI collaboration guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-[![Contributors](https://contrib.rocks/image?repo=InvolutionHell/involutionhell.github.io)](https://github.com/InvolutionHell/involutionhell.github.io/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=InvolutionHell/involutionhell)](https://github.com/InvolutionHell/involutionhell/graphs/contributors)
 
 ## 🖼️ Documentation & Assets
 
@@ -100,7 +100,7 @@ Thanks to Shanghai AI Lab for providing computing support!
 
 ## ⭐️ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=InvolutionHell/involutionhell.github.io&type=Date)](https://star-history.com/#InvolutionHell/involutionhell.github.io&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=InvolutionHell/involutionhell&type=Date)](https://star-history.com/#InvolutionHell/involutionhell&Date)
 
 ## 📜 License & Copyright
 
@@ -118,4 +118,4 @@ The copyright of **articles, comments, and other contributed content** remains w
 2. Commercial reuse or derivative works still require explicit permission from the author.
 3. We cannot individually verify every submission for originality or legality.
 
-If your rights are infringed, please **[open an issue](https://github.com/InvolutionHell/involutionhell.github.io/issues/new)**. We will review and take appropriate action (removal, blocking, etc.) promptly.
+If your rights are infringed, please **[open an issue](https://github.com/InvolutionHell/involutionhell/issues/new)**. We will review and take appropriate action (removal, blocking, etc.) promptly.

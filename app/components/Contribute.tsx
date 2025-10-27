@@ -224,7 +224,7 @@ export function Contribute() {
         </DialogTrigger>
         {/* 跳转的投稿指南 */}
         <a
-          href="https://github.com/InvolutionHell/involutionhell.github.io?tab=contributing-ov-file#%E6%8A%95%E7%A8%BF%E6%8C%87%E5%8D%97"
+          href="https://github.com/InvolutionHell/involutionhell?tab=contributing-ov-file#%E6%8A%95%E7%A8%BF%E6%8C%87%E5%8D%97"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="查看投稿指南"

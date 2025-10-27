@@ -32,7 +32,7 @@
  *
  * 环境变量/CLI 覆盖：
  * - GITHUB_TOKEN：可选，设置后可提高速率限制
- * - GITHUB_OWNER / GITHUB_REPO：覆盖默认仓库 (InvolutionHell/involutionhell.github.io)
+ * - GITHUB_OWNER / GITHUB_REPO：覆盖默认仓库 (InvolutionHell/involutionhell)
  * - DOCS_DIR：相对于仓库根的文档目录（默认值：app/docs）
  * - OUTPUT：输出 JSON 路径（默认：generated/doc-contributors.json）
  * - GITHUB_PER_PAGE：每页 commits 数，1..100，默认 100
@@ -84,7 +84,7 @@ const args = Object.fromEntries(
 
 // 基础配置
 const OWNER = args.owner || process.env.GITHUB_OWNER || "InvolutionHell";
-const REPO = args.repo || process.env.GITHUB_REPO || "involutionhell.github.io";
+const REPO = args.repo || process.env.GITHUB_REPO || "involutionhell";
 const DOCS_DIR = args.docs || process.env.DOCS_DIR || "app/docs";
 const OUTPUT =
   args.output || process.env.OUTPUT || "generated/doc-contributors.json";
