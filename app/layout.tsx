@@ -22,7 +22,7 @@ const geistMono = localFont({
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://involutionhell.com";
 const en_description =
-  "Involution Hell (内卷地狱) is a free, developer-led open-source community focused on algorithms, system design, and practical engineering to help builders grow together.";
+  "内卷地狱（Involution Hell）是一个由开发者发起的开源学习社区，专注算法、系统设计、工程实践与技术分享，帮助华人程序员高效成长，专注真实进步。Involution Hell is an open-source community empowering builders with real-world engineering.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -103,8 +103,8 @@ export const metadata: Metadata = {
         alt: "Involution Hell — Open-source Community",
       },
     ],
-    locale: "en_US",
-    alternateLocale: ["zh_CN"],
+    locale: "zh-CN",
+    alternateLocale: ["en-US"],
   },
   twitter: {
     card: "summary_large_image",
@@ -123,7 +123,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         {/* 预连接：缩短关键请求链 */}
         <link rel="preconnect" href="https://www.google-analytics.com" />
