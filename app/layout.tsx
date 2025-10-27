@@ -1,3 +1,4 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { RootProvider } from "fumadocs-ui/provider";
@@ -20,6 +21,8 @@ const geistMono = localFont({
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://involutionhell.com";
+const en_description =
+  "Involution Hell (内卷地狱) is a free, developer-led open-source community focused on algorithms, system design, and practical engineering to help builders grow together.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -28,8 +31,7 @@ export const metadata: Metadata = {
     default: "Involution Hell",
     template: "%s · Involution Hell",
   },
-  description:
-    "Involution Hell is a free, developer-led open-source community focused on algorithms, system design, and practical engineering to help builders grow together.",
+  description: `${en_description}`,
   keywords: [
     "Involution Hell",
     "内卷地狱",
@@ -60,7 +62,7 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    nocache: true, // 禁止缓存内容，用于抑制批量复制
+    nocache: true,
     googleBot: {
       index: true,
       follow: true,
@@ -68,10 +70,7 @@ export const metadata: Metadata = {
       "max-snippet": 160,
       "max-video-preview": 0,
     },
-    // 针对恶意爬虫匿名代理屏蔽
-    // Extra headers 可以在 nginx/vercel edge middleware 里做进一步限制
   },
-
   formatDetection: {
     telephone: false,
     date: true,
@@ -81,12 +80,7 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
   icons: {
-    icon: [
-      {
-        url: "/logo/logoInLight.svg",
-        type: "image/svg+xml",
-      },
-    ],
+    icon: [{ url: "/logo/logoInLight.svg", type: "image/svg+xml" }],
     shortcut: "/logo/favicon-apple.png",
     apple: "/logo/favicon-apple.png",
   },
@@ -100,8 +94,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "Involution Hell",
     title: "Involution Hell",
-    description:
-      "Involution Hell is a free, developer-led open-source community focused on algorithms, system design, and practical engineering to help builders grow together.",
+    description: `${en_description}`,
     images: [
       {
         url: "/og/cover.png",
@@ -110,15 +103,15 @@ export const metadata: Metadata = {
         alt: "Involution Hell — Open-source Community",
       },
     ],
-    locale: "zh_CN",
+    locale: "en_US",
+    alternateLocale: ["zh_CN"],
   },
   twitter: {
     card: "summary_large_image",
     site: "@longsizhuo",
     creator: "@longsizhuo",
     title: "Involution Hell",
-    description:
-      "A free, developer-led open-source community for algorithms, system design, and real-world engineering.",
+    description: `${en_description}`,
     images: ["/og/cover.png"],
   },
   verification: {
@@ -128,13 +121,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Preconnect to critical third-party origins to shrink the critical request chain */}
+        {/* 预连接：缩短关键请求链 */}
         <link rel="preconnect" href="https://www.google-analytics.com" />
         {/* Preload the decorative sky texture so the LCP background image is discovered immediately */}
         <link
@@ -144,21 +135,39 @@ export default function RootLayout({
           type="image/png"
           fetchPriority="high"
         />
+        {/* 结构化数据：英文主名 + 中文 alternateName */}
+        <script
+          type="application/ld+json"
+          // 注意：必须在运行时插入字符串
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Involution Hell",
+              alternateName: ["内卷地狱"],
+              url: SITE_URL,
+              description: `${en_description}`,
+              sameAs: [
+                "https://github.com/InvolutionHell",
+                "https://discord.gg/6CGP73ZWbD",
+              ],
+              logo: `${SITE_URL}/logo/logoInLight.svg`,
+            }),
+          }}
+        />
       </head>
       <body
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Global animated backgrounds (sky / stars) */}
+        {/* 全局装饰背景（不参与可访问性） */}
         <div className="site-bg site-bg--sky" aria-hidden />
         <div className="site-bg site-bg--stars" aria-hidden />
+
         <RootProvider
           search={{
-            // Use static index so it works in `next export` and dev.
-            options: {
-              type: "static",
-              api: "/search.json",
-            },
+            // 使用静态索引，兼容 next export 与本地开发
+            options: { type: "static", api: "/search.json" },
           }}
         >
           <ThemeProvider defaultTheme="system" storageKey="ih-theme">
@@ -177,7 +186,6 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-
             gtag('config', 'G-ED4GVN8YVW');
           `}
         </Script>
