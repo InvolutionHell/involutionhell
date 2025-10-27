@@ -12,7 +12,7 @@ export function LicenseNotice({ className }: LicenseNoticeProps) {
         className,
       )}
     >
-      <a href="https://involutionhell.vercel.app">Involution Hell</a>
+      <a href="https://involutionhell.com">Involution Hell</a>
       <span>© 2025 by</span>
       <a href="https://github.com/InvolutionHell">Involution Hell Community</a>
       <span>is licensed under</span>

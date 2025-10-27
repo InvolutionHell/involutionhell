@@ -21,17 +21,23 @@ export function Footer() {
                 href="https://github.com/involutionhell"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-card border border-border hover:bg-accent hover:scale-110 transition-all duration-300"
+                aria-label="访问 Involution Hell 的 GitHub"
+                title="访问 GitHub"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-card border border-border hover:bg-accent hover:scale-110 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <Github className="h-5 w-5" />
+                <Github className="h-5 w-5" aria-hidden="true" />
+                <span className="sr-only">访问 GitHub</span>
               </a>
               <a
                 href="https://discord.com/invite/6CGP73ZWbD"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-card border border-border hover:bg-accent hover:scale-110 transition-all duration-300"
+                aria-label="加入 Discord 社区"
+                title="加入 Discord"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-card border border-border hover:bg-accent hover:scale-110 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <MessageCircle className="h-5 w-5" />
+                <MessageCircle className="h-5 w-5" aria-hidden="true" />
+                <span className="sr-only">加入 Discord 社区</span>
               </a>
             </div>
           </div>

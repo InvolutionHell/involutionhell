@@ -229,9 +229,10 @@ export function Contribute() {
           rel="noopener noreferrer"
           aria-label="查看投稿指南"
           title="查看投稿指南"
-          className="absolute top-0 right-0 flex h-9 w-9 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/80 bg-white text-sky-600 shadow-lg ring-1 ring-sky-400/60 transition-transform hover:-translate-y-1/2 hover:translate-x-1/2 hover:scale-105 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900 dark:text-sky-300"
+          className="absolute top-0 right-0 flex h-11 w-11 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/80 bg-white text-sky-600 shadow-lg ring-1 ring-sky-400/60 transition-transform hover:-translate-y-1/2 hover:translate-x-1/2 hover:scale-105 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-slate-700 dark:bg-slate-900 dark:text-sky-300"
         >
           <span className="text-lg font-semibold">?</span>
+          <span className="sr-only">查看投稿指南</span>
         </a>
       </div>
       <DialogContent className="sm:max-w-2xl">

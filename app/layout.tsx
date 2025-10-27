@@ -19,7 +19,7 @@ const geistMono = localFont({
 });
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://involutionhell.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://involutionhell.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -162,7 +162,9 @@ export default function RootLayout({
           }}
         >
           <ThemeProvider defaultTheme="system" storageKey="ih-theme">
-            <div className="relative z-10">{children}</div>
+            <main id="main-content" className="relative z-10">
+              {children}
+            </main>
           </ThemeProvider>
         </RootProvider>
         {/* 谷歌分析 */}

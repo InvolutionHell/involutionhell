@@ -61,12 +61,12 @@ export function ZoteroFeed({
     <section className="mt-16 mb-10" aria-labelledby="zotero-heading">
       <div className="border border-border bg-background/20 backdrop-blur-sm rounded-lg p-6">
         <div className="mb-3 flex items-baseline justify-between">
-          <h3
+          <h2
             id="zotero-heading"
             className="text-xs font-semibold tracking-wide uppercase text-muted-foreground"
           >
             我们在读什么:
-          </h3>
+          </h2>
           <a
             href={openUrl}
             target="_blank"

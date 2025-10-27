@@ -26,7 +26,7 @@ import { source } from "@/lib/source";
  * 默认为一个回退地址。
  */
 const RAW_SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://involutionhell.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://involutionhell.com";
 
 /**
  * 经过规范化处理的站点 URL（确保有协议头，且不带尾部斜杠）。
