@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://involutionhell.github.io">
+  <a href="https://involutionhell.com">
     <img src="./public/mascot.svg" width="150">
   </a>
 </p>

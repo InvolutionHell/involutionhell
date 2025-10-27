@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://involutionhell.github.io">
+  <a href="https://involutionhell.com">
     <picture>
       <!-- Dark mode logo -->
       <source media="(prefers-color-scheme: dark)" srcset="./public/logo/logoInDark.svg">

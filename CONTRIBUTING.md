@@ -318,7 +318,7 @@ pnpm export
 
 本仓库配置了 **GitHub Actions**，push 到 `main` 分支会自动构建并部署到：
 
-👉 [https://involutionhell.github.io/](https://involutionhell.github.io/)
+👉 [https://involutionhell.com/](https://involutionhell.com/)
 
 无需手动操作。
 

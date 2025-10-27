@@ -1,6 +1,6 @@
 # Security Policy
 
-Thanks for helping keep involutionhell.github.io safe. We run a public-facing Next.js site deployed to Vercel, so even seemingly small bugs can have a big impact. Please follow the guidance below if you discover a vulnerability.
+Thanks for helping keep involutionhell.com safe. We run a public-facing Next.js site deployed to Vercel, so even seemingly small bugs can have a big impact. Please follow the guidance below if you discover a vulnerability.
 
 ## Supported Versions
 

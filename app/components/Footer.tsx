@@ -48,13 +48,11 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="https://involutionhell.github.io/docs/ai"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/docs/ai"
                   className="text-muted-foreground hover:text-foreground transition-colors flex items-center"
                 >
                   知识库
-                  <ExternalLink className="ml-1 h-3 w-3" />
+                  <ExternalLink className="ml-1 h-3 w-3" aria-hidden="true" />
                 </a>
               </li>
               <li>
