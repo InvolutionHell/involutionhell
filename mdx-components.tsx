@@ -30,7 +30,15 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
     ...defaultMdxComponents,
     // 覆盖默认的 img 映射，使用原生 <img> 标签而不是 Next.js Image 组件
-    img: (props) => <img {...props} alt={props.alt || ""} />,
+    // 本地相对路径图片会被 remark-image 编译成静态 import，src 是
+    // StaticImageData 对象而不是字符串，直接透传会渲染成 "[object Object]"
+    img: ({ src, ...props }) => {
+      const resolved =
+        src && typeof src === "object" && "src" in src
+          ? (src as { src: string }).src
+          : src;
+      return <img {...props} src={resolved} alt={props.alt || ""} />;
+    },
     ...components,
   };
 }

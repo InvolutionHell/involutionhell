@@ -63,7 +63,9 @@ async function resolveDocPath(
       }
       return null;
     }
-    // 非 3xx：记录真实状态，便于从 Vercel 日志定位（CF 403 / 后端异常等）
+    // 404 = 后端无历史映射，是正常的"真 404"结论，不算故障
+    if (res.status === 404) return null;
+    // 其余非 3xx：记录真实状态，便于从 Vercel 日志定位（CF 403 / 后端异常等）
     console.error("[docs/resolve] non-redirect status", {
       path: strippedPath,
       status: res.status,
