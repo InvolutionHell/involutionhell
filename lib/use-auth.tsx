@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { authorizePath, takePending } from "@/lib/sso";
 
 // 对应后端 UserView DTO 的 TypeScript 类型
 // 字段与 involutionhell-backend/.../dto/UserView.java 保持一致
@@ -121,6 +122,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setStatus("authenticated");
         // 已登录用户每次刷新也重写 cookie，覆盖掉可能过期 / 丢失的副本
         syncTokenCookie(token);
+        // 登录前在 /sso/authorize 存下的请求：不管走哪种登录方式回来，都在这里接上
+        const pending = takePending(sessionStorage);
+        if (pending) window.location.replace(authorizePath(pending));
       } else {
         // token 无效或已过期，localStorage + cookie 都清
         localStorage.removeItem("satoken");

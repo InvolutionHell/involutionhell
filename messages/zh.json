@@ -510,5 +510,13 @@
   },
   "shareLink": {
     "button": "丢个链接"
+  },
+  "sso": {
+    "heading": "IH 通行证",
+    "signInAs": "以 <user>{name}</user> 登录 {client}",
+    "continue": "继续",
+    "switchAccount": "换个账号",
+    "invalid": "登录请求无效。请回到原网站重新发起登录。",
+    "failed": "授权失败。请重试，仍然不行就回到原网站重新发起登录。"
   }
 }
