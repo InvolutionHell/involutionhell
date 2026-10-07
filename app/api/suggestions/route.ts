@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 import { getModel, requiresApiKey, type AIProvider } from "@/lib/ai/models";
 import { createGlmFlashModel } from "@/lib/ai/providers/glm";
 import { limitChat, rateLimitResponse } from "@/lib/rate-limit";
+import { parseSuggestionJson } from "@/lib/ai/parse-suggestions";
 
 // 允许流式响应最长30秒
 export const maxDuration = 30;
@@ -150,43 +151,7 @@ export async function POST(req: Request) {
 
     let questions: unknown[] = [];
     try {
-      // 尝试解析 JSON
-      // 清理可能存在的 Markdown 代码块标记
-      let cleanedText = text
-        .replace(/```json/gi, "")
-        .replace(/```/g, "")
-        .trim();
-
-      // 修复大模型可能生成的中文引号
-      cleanedText = cleanedText.replace(/“/g, '"').replace(/”/g, '"');
-      // 修复 key 后的全角冒号 / 冒号被包进引号，如 "action："xx" 或 "action:"xx"
-      cleanedText = cleanedText.replace(
-        /"(title|label|action)"?\s*[：:]\s*"/g,
-        '"$1":"',
-      );
-
-      // 尝试仅提取数组部分，防止 AI 返回了前缀描述文本
-      const arrayMatch = cleanedText.match(/\[[\s\S]*\]/);
-      if (arrayMatch) {
-        cleanedText = arrayMatch[0];
-      }
-
-      try {
-        questions = JSON.parse(cleanedText);
-      } catch (parseError) {
-        // 编号列表 / 多个数组拼接等非法外壳：逐个提取对象
-        const objects = (cleanedText.match(/\{[^{}]*\}/g) ?? []).flatMap(
-          (chunk) => {
-            try {
-              return [JSON.parse(chunk)];
-            } catch {
-              return [];
-            }
-          },
-        );
-        if (objects.length === 0) throw parseError;
-        questions = objects;
-      }
+      questions = parseSuggestionJson(text);
     } catch (e) {
       console.error("解析建议 JSON 失败:", e, "原始文本:", text);
 
