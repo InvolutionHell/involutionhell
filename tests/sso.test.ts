@@ -35,6 +35,15 @@ describe("parseSsoRequest", () => {
     expect(parseSsoRequest({ ...VALID, extra: "x" })).toEqual(VALID);
   });
 
+  it("HoloCard 的 staging 是单独的 client，也认", () => {
+    const staging = {
+      ...VALID,
+      client_id: "holocard-staging",
+      redirect_uri: "https://holocard.staging.longsizhuo.com/auth/callback",
+    };
+    expect(parseSsoRequest(staging)).toEqual(staging);
+  });
+
   it.each(Object.keys(VALID))("缺 %s 或为空 → 拒绝", (key) => {
     expect(parseSsoRequest({ ...VALID, [key]: undefined })).toBeNull();
     expect(parseSsoRequest({ ...VALID, [key]: "" })).toBeNull();

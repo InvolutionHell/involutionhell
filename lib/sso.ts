@@ -1,4 +1,8 @@
-export const SSO_CLIENTS: Record<string, string> = { holocard: "HoloCard" };
+// 授权页上显示的站点名。和后端 sso.clients 表对应（后端还会再校验 client 和回跳地址）
+export const SSO_CLIENTS: Record<string, string> = {
+  holocard: "HoloCard",
+  "holocard-staging": "HoloCard（staging）",
+};
 
 export const SSO_PENDING_KEY = "ih:sso:pending";
 const PENDING_TTL_MS = 10 * 60 * 1000;
