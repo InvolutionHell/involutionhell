@@ -510,5 +510,13 @@
   },
   "shareLink": {
     "button": "Share a Link"
+  },
+  "sso": {
+    "heading": "IH Pass",
+    "signInAs": "Sign in to {client} as <user>{name}</user>",
+    "continue": "Continue",
+    "switchAccount": "Use a different account",
+    "invalid": "This sign-in request is invalid. Please go back to the site and start signing in again.",
+    "failed": "Authorization failed. Try again, or go back to the site and start signing in again."
   }
 }

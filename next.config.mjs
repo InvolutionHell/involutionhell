@@ -353,6 +353,19 @@ const config = {
       // / NEXT_LOCALE 协商（307，单跳到 /zh 或 /en）才是对的。
     ];
   },
+  async headers() {
+    return [
+      {
+        // IH 通行证授权页不许被别的网站嵌进 iframe：防点击劫持骗已登录的访客点「继续」，
+        // 替攻击者发起的登录签出授权码（见 lib/sso.ts、后端 SECURITY.md 的 INV-010）
+        source: "/:locale/sso/:path*",
+        headers: [
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "X-Frame-Options", value: "DENY" },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8080";
     return [

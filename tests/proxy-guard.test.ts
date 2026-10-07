@@ -54,6 +54,8 @@ describe("matcher：docs 带点路径进 middleware，其余排除规则不回�
     '/zh/docs/learn/cs/dev-tips/你的图片.jpg "自定义鼠标悬停显示名"',
     // leetcode 带点中文旧 URL：一直要能进 middleware 吃 slug-map 301
     "/docs/CommunityShare/Leetcode/46.全排列",
+    // 外站（HoloCard）跳来的地址不带 locale，要靠 next-intl 补前缀，否则 404
+    "/sso/authorize",
   ])("进 middleware: %s", (p) => {
     expect(re.test(p)).toBe(true);
   });
