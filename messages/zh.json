@@ -74,7 +74,8 @@
     "errorDiscordCanary": "Discord 登录正在灰度测试中，暂未对外开放，敬请期待～",
     "errorGeneric": "登录未完成，请重试。",
     "errorOauthState": "登录会话已失效（可能是等待授权太久，或浏览器拦截了 Cookie）。请重新点击登录。",
-    "errorOauthProvider": "该登录方式服务端未配置好，重试也无法解决。请联系管理员。"
+    "errorOauthProvider": "该登录方式服务端未配置好，重试也无法解决。请联系管理员。",
+    "errorAccountDisabled": "该账号已被停用，无法登录。如有疑问请联系管理员。"
   },
   "verifyEmail": {
     "title": "验证邮箱",

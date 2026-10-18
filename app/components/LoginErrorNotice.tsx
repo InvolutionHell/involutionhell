@@ -14,6 +14,7 @@ const ERROR_KEYS: Record<string, string> = {
   oauth_state: "errorOauthState",
   oauth_provider: "errorOauthProvider",
   oauth_failed: "errorGeneric",
+  account_disabled: "errorAccountDisabled",
 };
 
 /** null 表示不显示提示。未知 code 一律落到通用文案，绝不透传原值。 */

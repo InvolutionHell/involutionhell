@@ -10,6 +10,7 @@ const BACKEND_ERROR_CODES = [
   "oauth_failed",
   "oauth_state",
   "oauth_provider",
+  "account_disabled",
 ];
 
 describe("resolveErrorKey", () => {
