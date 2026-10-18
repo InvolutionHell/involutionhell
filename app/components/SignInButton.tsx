@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/app/components/ui/button";
+import { armLoginNonce } from "@/lib/use-auth";
 
 interface SignInButtonProps {
   className?: string;
@@ -18,7 +19,12 @@ export function SignInButton({
   // provider 已定：同源跳 /oauth/render/{provider}，经 next.config rewrite 代理到后端。
   // provider 未定：跳 /login 选择页（middleware 会补 locale 前缀）。
   const handleSignIn = () => {
-    window.location.href = provider ? `/oauth/render/${provider}` : "/login";
+    if (!provider) {
+      window.location.href = "/login";
+      return;
+    }
+    armLoginNonce(sessionStorage);
+    window.location.href = `/oauth/render/${provider}`;
   };
 
   return (

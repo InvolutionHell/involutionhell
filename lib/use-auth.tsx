@@ -68,6 +68,26 @@ function syncTokenCookie(token: string | null) {
   }
 }
 
+const LOGIN_NONCE_KEY = "ih:login:nonce";
+const LOGIN_NONCE_TTL_MS = 10 * 60 * 1000;
+
+// #token 只认本标签页自己发起的登录：否则任何人发一个 /#token=<自己的 token> 链接，
+// 就能把受害者静默登进攻击者账号，再诱导其在设置页把自己的第三方身份绑过去。
+// 所有跳 /oauth/render/* 或带 #token 回站的地方，跳转前都必须先调这个。
+// ponytail: 后端不回传 nonce，只能校验"本标签页 10 分钟内发起过登录"；要逐次比对需后端在回跳里带回它
+export function armLoginNonce(storage: Storage) {
+  storage.setItem(LOGIN_NONCE_KEY, String(Date.now()));
+}
+
+// 取出即删；没有、过期、损坏都返回 false
+export function takeLoginNonce(storage: Storage): boolean {
+  const raw = storage.getItem(LOGIN_NONCE_KEY);
+  if (raw === null) return false;
+  storage.removeItem(LOGIN_NONCE_KEY);
+  const age = Date.now() - Number(raw);
+  return age >= 0 && age < LOGIN_NONCE_TTL_MS;
+}
+
 // 调用后端 /auth/me 验证 token 并获取用户信息
 // 走 Next.js rewrite（/auth/* → 后端），浏览器无跨域问题
 async function fetchCurrentUser(token: string): Promise<UserView | null> {
@@ -92,12 +112,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 1. 检查 URL fragment 中是否携带 #token=xxx（后端 OAuth 登录成功后跳回来时携带）
     // 使用 fragment 而非 query param：fragment 不会出现在服务器日志和 Referer 头中
     const hashParams = new URLSearchParams(window.location.hash.slice(1));
-    const urlToken = hashParams.get("token");
+    const hashToken = hashParams.get("token");
+    // 没有本标签页发起登录的 nonce → 丢弃，只清 URL 不存
+    const urlToken =
+      hashToken && takeLoginNonce(sessionStorage) ? hashToken : null;
 
     if (urlToken) {
       // 存入 localStorage + 同步写 cookie（供 api 子域直连场景使用，比如 pgAdmin）
       localStorage.setItem("satoken", urlToken);
       syncTokenCookie(urlToken);
+    }
+    if (hashToken) {
       // 用 replaceState 清除 URL 中的 fragment，避免刷新或分享时 token 泄露
       hashParams.delete("token");
       const newHash = hashParams.toString();
