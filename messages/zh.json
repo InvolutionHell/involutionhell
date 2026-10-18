@@ -76,6 +76,26 @@
     "errorOauthState": "登录会话已失效（可能是等待授权太久，或浏览器拦截了 Cookie）。请重新点击登录。",
     "errorOauthProvider": "该登录方式服务端未配置好，重试也无法解决。请联系管理员。"
   },
+  "verifyEmail": {
+    "title": "验证邮箱",
+    "intro": "这是你第一次用 {provider} 登录。验证一个邮箱即可完成注册。",
+    "haveAccount": "已经有账号了（比如用 GitHub 注册过）？请用原来的方式登录，再到「设置 → 登录方式」里连接 {provider}，否则会多出一个新账号。",
+    "backToLogin": "返回登录",
+    "emailLabel": "邮箱",
+    "sendCode": "发送验证码",
+    "codeSent": "验证码已发送到 {email}，10 分钟内有效。",
+    "codeLabel": "6 位验证码",
+    "verify": "验证并完成注册",
+    "resend": "重新发送",
+    "changeEmail": "换个邮箱",
+    "errorInvalidEmail": "邮箱格式不正确。",
+    "errorInvalidCode": "验证码不对或已过期。连续输错 5 次需要重新登录。",
+    "errorRateLimited": "发送太频繁：两次发送至少间隔 60 秒，同一邮箱每天最多 5 封。",
+    "errorSendFailed": "验证码发送失败，请稍后重试。",
+    "errorExpired": "注册会话已失效（超过 15 分钟，或验证码输错太多次）。请重新登录。",
+    "errorEmailTaken": "这个邮箱已经属于一个账号。请用那个账号登录，再到「设置 → 登录方式」里连接 {provider}。",
+    "errorGeneric": "出了点问题，请重试。"
+  },
   "settings": {
     "theme": {
       "label": "主题",
