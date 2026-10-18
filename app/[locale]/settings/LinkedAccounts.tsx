@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode, useCallback, useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -49,6 +49,7 @@ const BIND_ERROR_KEYS: Record<string, string> = {
  */
 export function LinkedAccounts() {
   const t = useTranslations("settings.linked");
+  const locale = useLocale();
   const [items, setItems] = useState<LinkedIdentity[] | null>(null);
   const [supported, setSupported] = useState<string[]>([]);
   const [error, setError] = useState<ReactNode>(null);
@@ -108,7 +109,7 @@ export function LinkedAccounts() {
       res?.status === 401
         ? t.rich("bindNeedLogin", {
             login: (chunks) => (
-              <Link href="/login" className="underline">
+              <Link href={`/${locale}/login`} className="underline">
                 {chunks}
               </Link>
             ),

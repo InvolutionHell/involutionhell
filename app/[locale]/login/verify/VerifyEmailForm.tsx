@@ -105,7 +105,7 @@ export function VerifyEmailForm() {
         <div role="alert" className={ALERT_CLASS}>
           {t(error ?? "errorExpired", vars)}
         </div>
-        <Link href="/login" className="text-sm underline">
+        <Link href={`/${locale}/login`} className="text-sm underline">
           {t("backToLogin")}
         </Link>
       </div>
@@ -181,7 +181,7 @@ export function VerifyEmailForm() {
       )}
       <p className="text-sm text-muted-foreground">
         {t("haveAccount", vars)}{" "}
-        <Link href="/login" className="underline">
+        <Link href={`/${locale}/login`} className="underline">
           {t("backToLogin")}
         </Link>
       </p>
