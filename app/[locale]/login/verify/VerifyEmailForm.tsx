@@ -88,9 +88,9 @@ export function VerifyEmailForm() {
     e.preventDefault();
     const body = await post("verify", { email, code });
     if (!body) return;
-    armLoginNonce(sessionStorage);
+    const n = armLoginNonce(sessionStorage);
     window.location.replace(
-      `/${locale}#token=${encodeURIComponent(body.data.tokenValue)}`,
+      `/${locale}#token=${encodeURIComponent(body.data.tokenValue)}&n=${n}`,
     );
   }
 

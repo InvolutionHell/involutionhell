@@ -23,8 +23,8 @@ export function SignInButton({
       window.location.href = "/login";
       return;
     }
-    armLoginNonce(sessionStorage);
-    window.location.href = `/oauth/render/${provider}`;
+    const n = armLoginNonce(sessionStorage);
+    window.location.href = `/oauth/render/${provider}?n=${n}`;
   };
 
   return (
