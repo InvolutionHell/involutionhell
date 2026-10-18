@@ -74,7 +74,28 @@
     "errorDiscordCanary": "Discord sign-in is in limited testing and not open yet — stay tuned!",
     "errorGeneric": "Sign-in didn't complete. Please try again.",
     "errorOauthState": "Your sign-in session expired (took too long on the provider's page, or cookies were blocked). Please start the sign-in again.",
-    "errorOauthProvider": "This sign-in method isn't configured on the server — retrying won't help. Please contact an admin."
+    "errorOauthProvider": "This sign-in method isn't configured on the server — retrying won't help. Please contact an admin.",
+    "errorAccountDisabled": "This account has been disabled and can't sign in. Please contact an admin if you think this is a mistake."
+  },
+  "verifyEmail": {
+    "title": "Verify your email",
+    "intro": "First time signing in with {provider}: verify an email to finish creating your account.",
+    "haveAccount": "Already have an account (e.g. via GitHub)? Sign in that way and connect {provider} under Settings → Sign-in methods — otherwise you'll end up with a second account.",
+    "backToLogin": "Back to sign in",
+    "emailLabel": "Email",
+    "sendCode": "Send code",
+    "codeSent": "We sent a code to {email}. It expires in 10 minutes.",
+    "codeLabel": "6-digit code",
+    "verify": "Verify and create account",
+    "resend": "Resend code",
+    "changeEmail": "Use a different email",
+    "errorInvalidEmail": "That doesn't look like a valid email.",
+    "errorInvalidCode": "Wrong or expired code. After 5 wrong attempts you'll need to sign in again.",
+    "errorRateLimited": "Too many emails: wait 60s between sends; at most 5 per address per day.",
+    "errorSendFailed": "We couldn't send the code. Please try again shortly.",
+    "errorExpired": "This sign-up session expired (over 15 minutes, or too many wrong codes). Please sign in again.",
+    "errorEmailTaken": "This email already belongs to an account. Sign in with that account, then connect {provider} under Settings → Sign-in methods.",
+    "errorGeneric": "Something went wrong. Please try again."
   },
   "settings": {
     "theme": {
@@ -106,7 +127,15 @@
       "empty": "No linked sign-in methods",
       "loadFail": "Failed to load sign-in methods",
       "unbindFail": "Unlink failed",
-      "lastHint": "This is your only sign-in method and can't be unlinked"
+      "lastHint": "This is your only sign-in method and can't be unlinked",
+      "connect": "Connect",
+      "bindOk": "Linked successfully",
+      "bindTaken": "That sign-in method already belongs to another account. To merge the two accounts, please contact an admin.",
+      "bindDuplicate": "You've already linked this sign-in method — one per account.",
+      "bindAlreadyYours": "This sign-in method is already on your account.",
+      "bindSession": "Your session changed during linking. Please click Connect again.",
+      "bindFailed": "Linking failed. Please try again.",
+      "bindNeedLogin": "Your session has expired. <login>Sign in again</login>, then connect."
     }
   },
   "signIn": {

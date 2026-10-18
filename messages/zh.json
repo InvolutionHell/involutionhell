@@ -74,7 +74,28 @@
     "errorDiscordCanary": "Discord 登录正在灰度测试中，暂未对外开放，敬请期待～",
     "errorGeneric": "登录未完成，请重试。",
     "errorOauthState": "登录会话已失效（可能是等待授权太久，或浏览器拦截了 Cookie）。请重新点击登录。",
-    "errorOauthProvider": "该登录方式服务端未配置好，重试也无法解决。请联系管理员。"
+    "errorOauthProvider": "该登录方式服务端未配置好，重试也无法解决。请联系管理员。",
+    "errorAccountDisabled": "该账号已被停用，无法登录。如有疑问请联系管理员。"
+  },
+  "verifyEmail": {
+    "title": "验证邮箱",
+    "intro": "这是你第一次用 {provider} 登录。验证一个邮箱即可完成注册。",
+    "haveAccount": "已经有账号了（比如用 GitHub 注册过）？请用原来的方式登录，再到「设置 → 登录方式」里连接 {provider}，否则会多出一个新账号。",
+    "backToLogin": "返回登录",
+    "emailLabel": "邮箱",
+    "sendCode": "发送验证码",
+    "codeSent": "验证码已发送到 {email}，10 分钟内有效。",
+    "codeLabel": "6 位验证码",
+    "verify": "验证并完成注册",
+    "resend": "重新发送",
+    "changeEmail": "换个邮箱",
+    "errorInvalidEmail": "邮箱格式不正确。",
+    "errorInvalidCode": "验证码不对或已过期。连续输错 5 次需要重新登录。",
+    "errorRateLimited": "发送太频繁：两次发送至少间隔 60 秒，同一邮箱每天最多 5 封。",
+    "errorSendFailed": "验证码发送失败，请稍后重试。",
+    "errorExpired": "注册会话已失效（超过 15 分钟，或验证码输错太多次）。请重新登录。",
+    "errorEmailTaken": "这个邮箱已经属于一个账号。请用那个账号登录，再到「设置 → 登录方式」里连接 {provider}。",
+    "errorGeneric": "出了点问题，请重试。"
   },
   "settings": {
     "theme": {
@@ -106,7 +127,15 @@
       "empty": "暂无绑定的第三方登录",
       "loadFail": "加载登录方式失败",
       "unbindFail": "解绑失败",
-      "lastHint": "这是你唯一的登录方式，不能解绑"
+      "lastHint": "这是你唯一的登录方式，不能解绑",
+      "connect": "连接",
+      "bindOk": "绑定成功",
+      "bindTaken": "这个登录方式已经属于另一个账号了。如需把两个账号合并，请联系管理员。",
+      "bindDuplicate": "你已经绑定过这种登录方式了，一个账号同一登录方式只能绑一个。",
+      "bindAlreadyYours": "这个登录方式已经在你的账号上了，无需重复绑定。",
+      "bindSession": "绑定过程中登录状态发生了变化，请重新点一次连接。",
+      "bindFailed": "绑定失败，请重试。",
+      "bindNeedLogin": "登录已过期，请<login>重新登录</login>后再连接。"
     }
   },
   "signIn": {
