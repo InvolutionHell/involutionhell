@@ -69,7 +69,8 @@ export function VerifyEmailForm() {
     ).catch(() => null);
     if (res?.ok) return res.json();
     setBusy(false);
-    if (res?.status === 410) setStep("expired");
+    // 409 时后端已消费掉注册会话，和 410 一样是终态
+    if (res?.status === 410 || res?.status === 409) setStep("expired");
     setError(res ? resolveVerifyError(res.status, kind) : "errorGeneric");
     return null;
   }
