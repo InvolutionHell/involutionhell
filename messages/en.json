@@ -109,11 +109,12 @@
       "lastHint": "This is your only sign-in method and can't be unlinked",
       "connect": "Connect",
       "bindOk": "Linked successfully",
-      "bindTaken": "That account is already linked to a different user. Unlink it there first, then come back.",
+      "bindTaken": "That sign-in method already belongs to another account. To merge the two accounts, please contact an admin.",
       "bindDuplicate": "You've already linked this sign-in method — one per account.",
       "bindAlreadyYours": "This sign-in method is already on your account.",
       "bindSession": "Your session changed during linking. Please click Connect again.",
-      "bindFailed": "Linking failed. Please try again."
+      "bindFailed": "Linking failed. Please try again.",
+      "bindNeedLogin": "Your session has expired. <login>Sign in again</login>, then connect."
     }
   },
   "signIn": {

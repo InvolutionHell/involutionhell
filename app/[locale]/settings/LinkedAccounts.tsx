@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
+import { Link } from "@/i18n/navigation";
 
 type LinkedIdentity = {
   provider: string;
@@ -23,7 +24,7 @@ const PROVIDER_LABEL: Record<string, string> = {
   discord: "Discord",
 };
 
-function labelOf(provider: string): string {
+export function labelOf(provider: string): string {
   return Object.hasOwn(PROVIDER_LABEL, provider)
     ? PROVIDER_LABEL[provider]!
     : provider;
@@ -50,10 +51,20 @@ export function LinkedAccounts() {
   const t = useTranslations("settings.linked");
   const [items, setItems] = useState<LinkedIdentity[] | null>(null);
   const [supported, setSupported] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [error, setError] = useState<ReactNode>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const params = useSearchParams();
+
+  // 回调结果直接从 URL 派生，不能放进 error state：load() 成功时会 setError(null) 把它冲掉
+  const bindOk = params.get("bind") === "ok";
+  const bindCode = params.get("bind_error");
+  const bindError = bindCode
+    ? t(
+        Object.hasOwn(BIND_ERROR_KEYS, bindCode)
+          ? BIND_ERROR_KEYS[bindCode]!
+          : "bindFailed",
+      )
+    : null;
 
   const load = useCallback(async () => {
     const token = getToken();
@@ -78,22 +89,33 @@ export function LinkedAccounts() {
     load();
   }, [load]);
 
-  // 绑定回调结果：成功给提示，失败给出可区分的原因（"已被别的账号占用"等）
-  useEffect(() => {
-    if (params.get("bind") === "ok") {
-      setNotice(t("bindOk"));
+  // 必须 POST + satoken header 拿授权地址，不能是 <a href> GET：GET 可被别的站点直接触发
+  async function connect(provider: string) {
+    const token = getToken();
+    if (!token) return;
+    setBusy(provider);
+    const res = await fetch(`/oauth/bind/${provider}`, {
+      method: "POST",
+      headers: { satoken: token },
+    }).catch(() => null);
+    const body = await res?.json().catch(() => null);
+    if (res?.ok && typeof body?.data?.url === "string") {
+      window.location.assign(body.data.url); // 不清 busy，跳走前不让再点
       return;
     }
-    const code = params.get("bind_error");
-    if (!code) return;
+    setBusy(null);
     setError(
-      t(
-        Object.hasOwn(BIND_ERROR_KEYS, code)
-          ? BIND_ERROR_KEYS[code]!
-          : "bindFailed",
-      ),
+      res?.status === 401
+        ? t.rich("bindNeedLogin", {
+            login: (chunks) => (
+              <Link href="/login" className="underline">
+                {chunks}
+              </Link>
+            ),
+          })
+        : (body?.message ?? t("bindFailed")),
     );
-  }, [params, t]);
+  }
 
   async function unbind(provider: string) {
     const token = getToken();
@@ -130,10 +152,13 @@ export function LinkedAccounts() {
       <label className="block font-serif font-bold text-lg mb-3">
         {t("label")}
       </label>
-      {notice && (
+      {bindOk && (
         <p className="font-mono text-xs text-green-700 dark:text-green-400 mb-3">
-          {notice}
+          {t("bindOk")}
         </p>
+      )}
+      {bindError && (
+        <p className="font-mono text-xs text-[#CC0000] mb-3">{bindError}</p>
       )}
       {error && (
         <p className="font-mono text-xs text-[#CC0000] mb-3">{error}</p>
@@ -164,12 +189,14 @@ export function LinkedAccounts() {
             <span className="font-mono text-sm text-[var(--foreground)]/50">
               {labelOf(p)}
             </span>
-            <a
-              href={`/oauth/bind/${p}`}
-              className="font-mono text-xs uppercase tracking-widest text-[var(--foreground)]/70 hover:text-[var(--foreground)] transition-colors"
+            <button
+              type="button"
+              onClick={() => connect(p)}
+              disabled={busy === p}
+              className="font-mono text-xs uppercase tracking-widest text-[var(--foreground)]/70 hover:text-[var(--foreground)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {t("connect")}
-            </a>
+              {busy === p ? "…" : t("connect")}
+            </button>
           </li>
         ))}
         {bound.length === 0 && bindable.length === 0 && (
