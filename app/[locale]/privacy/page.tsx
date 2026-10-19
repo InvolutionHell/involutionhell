@@ -40,6 +40,17 @@ const CONTENT: Record<
         ],
       },
       {
+        heading: "Google 用户数据",
+        items: [
+          "使用 Google 登录时，本站只请求 openid、email、profile 三个权限，从 Google 获取你的 Google 用户 ID（sub）、邮箱地址及其是否已验证、姓名、头像链接和语言设置。",
+          "这些数据只用于登录、识别你的账号和展示你的个人资料；邮箱的「已验证」状态用于判断能否关联到你已有的账号。",
+          "本站不保存 Google 颁发的访问令牌，也不会代表你调用任何其他 Google API。",
+          "我们不出售 Google 用户数据，不把它用于广告，不用它训练 AI 模型，也不会转交给第三方，法律要求的情况除外。",
+          "在设置页解绑 Google 后，本站会删除这条 Google 身份记录（Google 用户 ID 及绑定时的邮箱和名称）；如需删除整个账号，请按下方「你的权利」联系我们。",
+          "本站对通过 Google API 获取的信息的使用和传输遵守 Google API Services User Data Policy，包括其中的 Limited Use（有限使用）要求。",
+        ],
+      },
+      {
         heading: "第三方服务",
         items: [
           "登录：GitHub、Discord、Google。",
@@ -90,6 +101,17 @@ const CONTENT: Record<
           "To send necessary notices such as account verification emails.",
           "To understand site usage, improve the site, and find and fix errors.",
           "We do not sell your personal information, and we do not use information obtained through Google Sign-In for advertising.",
+        ],
+      },
+      {
+        heading: "Google user data",
+        items: [
+          "When you sign in with Google, the site requests only the openid, email and profile scopes, and receives your Google user ID (sub), email address and whether it is verified, name, profile picture URL and locale.",
+          "This data is used only to sign you in, identify your account and show your profile. The email's verified status decides whether the sign-in can be linked to an account you already have.",
+          "The site does not store the access tokens Google issues and does not call any other Google API on your behalf.",
+          "We do not sell Google user data, use it for advertising, use it to train AI models, or transfer it to third parties, except as required by law.",
+          'When you unlink Google on the settings page, the site deletes that Google identity record (your Google user ID and the email and name stored when it was linked). To delete your whole account, contact us as described under "Your rights".',
+          "The site's use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements.",
         ],
       },
       {
