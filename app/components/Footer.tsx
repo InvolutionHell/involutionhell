@@ -163,6 +163,14 @@ export async function Footer() {
               <div className="font-body text-xs text-neutral-500 leading-relaxed">
                 <p className="mb-4">Edition: Vol 1.0.0</p>
                 <p className="mb-4">Printed in the Cloud</p>
+                <p className="mb-4">
+                  <Link
+                    href="/privacy"
+                    className="hover:text-[#CC0000] transition-colors"
+                  >
+                    Privacy Policy
+                  </Link>
+                </p>
                 <LicenseNotice />
               </div>
             </div>

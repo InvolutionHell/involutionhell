@@ -70,6 +70,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.6,
       }),
     );
+
+    entries.push(
+      buildLocaleEntry({
+        pathname: "/privacy",
+        currentLocale: locale,
+        changeFrequency: "yearly",
+        priority: 0.2,
+      }),
+    );
   }
 
   // 2. 文档页面：每个 locale 拿一份，按 fumadocs i18n 接口取
