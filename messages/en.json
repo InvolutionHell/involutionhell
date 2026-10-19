@@ -71,6 +71,7 @@
     "subheading": "Sign in to access protected pages",
     "github": "Sign in with GitHub",
     "discord": "Sign in with Discord",
+    "google": "Sign in with Google",
     "errorDiscordCanary": "Discord sign-in is in limited testing and not open yet — stay tuned!",
     "errorGeneric": "Sign-in didn't complete. Please try again.",
     "errorOauthState": "Your sign-in session expired (took too long on the provider's page, or cookies were blocked). Please start the sign-in again.",

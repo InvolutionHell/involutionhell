@@ -6,8 +6,8 @@ import { armLoginNonce } from "@/lib/use-auth";
 interface SignInButtonProps {
   className?: string;
   // 传了 provider（登录页两个按钮）→ 直跳该 provider 授权；
-  // 不传（header 的 "Sign In"）→ 跳 /login 让用户在 GitHub / Discord 间选。
-  provider?: "github" | "discord";
+  // 不传（header 的 "Sign In"）→ 跳 /login 让用户在 GitHub / Discord / Google 间选。
+  provider?: "github" | "discord" | "google";
   label?: string;
 }
 
