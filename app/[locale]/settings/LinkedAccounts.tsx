@@ -22,6 +22,7 @@ function getToken(): string | null {
 const PROVIDER_LABEL: Record<string, string> = {
   github: "GitHub",
   discord: "Discord",
+  google: "Google",
 };
 
 export function labelOf(provider: string): string {

@@ -38,6 +38,7 @@ export default async function LoginPage({ params }: Props) {
         <div className="flex flex-col items-center gap-3">
           <SignInButton provider="github" label={t("github")} />
           <SignInButton provider="discord" label={t("discord")} />
+          <SignInButton provider="google" label={t("google")} />
         </div>
       </div>
     </div>
