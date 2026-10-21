@@ -120,7 +120,7 @@ export async function POST(req: Request) {
 
     let text = "";
     // 判断是否可以使用缓存（如果使用了自定义 apiKey，为了防止数据交叉，不采用公用缓存）
-    if (provider !== "intern" && !process.env.ZHIPU_API_KEY) {
+    if (provider !== "intern") {
       const { text: directText } = await generateText({
         model,
         prompt,
@@ -128,12 +128,7 @@ export async function POST(req: Request) {
       text = directText;
     } else {
       // 确定内部用于缓存匹配的模型标识
-      const internalModelId =
-        provider === "intern"
-          ? process.env.ZHIPU_API_KEY
-            ? "glm"
-            : "intern"
-          : "intern";
+      const internalModelId = process.env.ZHIPU_API_KEY ? "glm" : "intern";
       // 将缓存粒度关联到请求本身的内容上
       const suggestionKey = isWelcomeRequest
         ? `welcome-${pageContext?.slug || "default"}`
