@@ -214,6 +214,7 @@ export default async function DocPage({ params }: Param) {
           title: page.data.title,
           description: page.data.description,
           slug: slug?.join("/"),
+          locale,
         }}
       />
     </>
