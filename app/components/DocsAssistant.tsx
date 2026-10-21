@@ -19,6 +19,7 @@ interface PageContext {
   title?: string;
   description?: string;
   slug?: string;
+  locale?: string;
 }
 
 export interface WelcomeSuggestion {

@@ -2,6 +2,8 @@ import { streamText, UIMessage, convertToModelMessages } from "ai";
 import { getModel, requiresApiKey, type AIProvider } from "@/lib/ai/models";
 import { buildSystemMessage } from "@/lib/ai/prompt";
 import { source } from "@/lib/source";
+import { routing } from "@/i18n/routing";
+import { hasLocale } from "next-intl";
 import { limitChat, rateLimitResponse } from "@/lib/rate-limit";
 import fs from "fs/promises";
 import path from "path";
@@ -20,6 +22,7 @@ interface ChatRequest {
     description?: string;
     content?: string;
     slug?: string;
+    locale?: string;
   };
   provider?: AIProvider;
   apiKey?: string;
@@ -140,7 +143,11 @@ export async function POST(req: Request) {
     if (pageContext?.slug && !pageContext.content) {
       try {
         const slugArray = pageContext.slug.split("/");
-        const page = source.getPage(slugArray);
+        // 不传 locale 会固定拿到 zh 原文，/en 页的助手就读中文；非法值交给 fallback（zh）
+        const locale = hasLocale(routing.locales, pageContext.locale)
+          ? pageContext.locale
+          : undefined;
+        const page = source.getPage(slugArray, locale);
 
         if (page) {
           const cachedContent = mdxContentCache.get(page.path);
