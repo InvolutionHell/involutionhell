@@ -37,7 +37,17 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
         src && typeof src === "object" && "src" in src
           ? (src as { src: string }).src
           : src;
-      return <img {...props} src={resolved} alt={props.alt || ""} />;
+      return (
+        // images.unoptimized=true，next/image 不会带来优化，见文件头注释
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          loading="lazy"
+          decoding="async"
+          {...props}
+          src={resolved}
+          alt={props.alt || ""}
+        />
+      );
     },
     ...components,
   };
